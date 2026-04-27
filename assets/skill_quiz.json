@@ -1,0 +1,122 @@
+[
+  {
+    "question": "Where do you live? I live __ London.",
+    "options": [
+      "in",
+      "on",
+      "at",
+      "into"
+    ],
+    "correct": "in"
+  },
+  {
+    "question": "I have a sister. __ name's Jessica.",
+    "options": [
+      "She",
+      "His",
+      "Her",
+      "He"
+    ],
+    "correct": "Her"
+  },
+  {
+    "question": "__ five apples on the table.",
+    "options": [
+      "There is",
+      "There are",
+      "Their is",
+      "Their are"
+    ],
+    "correct": "There are"
+  },
+  {
+    "question": "What are his hobbies?",
+    "options": [
+      "He tennis playing likes.",
+      "He likes playing tennis.",
+      "He tennis likes to play.",
+      "He likes to play a tennis."
+    ],
+    "correct": "He likes playing tennis."
+  },
+  {
+    "question": "What is Jane doing now?",
+    "options": [
+      "She has a book reading.",
+      "She's reading a book.",
+      "She reads a book.",
+      "She's a book reading."
+    ],
+    "correct": "She's reading a book."
+  },
+  {
+    "question": "Joe's mum has two brothers. His mum's brothers are Joe's __.",
+    "options": [
+      "nephews",
+      "uncles",
+      "cousins",
+      "aunts"
+    ],
+    "correct": "uncles"
+  },
+  {
+    "question": "What did she do in the clothes shop?",
+    "options": [
+      "She took out her jeans and tried a new dress in.",
+      "She took her jeans out and tried in a new dress.",
+      "She took her jeans off and tried on a new dress.",
+      "She took off her jeans and tried a new dresses on."
+    ],
+    "correct": "She took her jeans off and tried on a new dress."
+  },
+  {
+    "question": "We __ to work, but now we take the train.",
+    "options": [
+      "used to drove",
+      "used to drive",
+      "use to drove",
+      "use to drive"
+    ],
+    "correct": "used to drive"
+  },
+  {
+    "question": "I love to travel, but __ to Australia since 2010.",
+    "options": [
+      "I haven't went",
+      "I didn't been",
+      "I didn't went",
+      "I haven't been"
+    ],
+    "correct": "I haven't been"
+  },
+  {
+    "question": "Who is the team leader least impressed by? Team performance notes: 'Overall the team has performed extremely well on this project. Sarah is extremely motivated, Linda is disorganised but still very passionate, Jason is quite pessimistic and fairly stubborn, and Max is incredibly enthusiastic. However, they all seem to get on well with each other.'",
+    "options": [
+      "Jason",
+      "Sarah",
+      "Max",
+      "Linda"
+    ],
+    "correct": "Jason"
+  },
+  {
+    "question": "I __ for the last few months, because I moved to Madrid and had to study Spanish.",
+    "options": [
+      "I'm not working",
+      "haven't working",
+      "wouldn't have worked",
+      "haven't been working"
+    ],
+    "correct": "haven't been working"
+  },
+  {
+    "question": "Choose the correct sentence:",
+    "options": [
+      "If she had started the job, she would have moved abroad.",
+      "If she had started the job, she would moved abroad.",
+      "If she did started the job, she would have moved abroad.",
+      "If she has started the job, she would moved abroad."
+    ],
+    "correct": "If she had started the job, she would have moved abroad."
+  }
+]
