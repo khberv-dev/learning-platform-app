@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/presentation/user/current_user_provider.dart';
+import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/ui/shared/widget/notification_icon_button.dart';
 
 class HomeTopbar extends ConsumerWidget {

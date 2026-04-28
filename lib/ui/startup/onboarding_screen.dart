@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/domain/startup/model/illustration.dart';
+import 'package:student/core/startup/domain/model/illustration.dart';
 import 'package:student/ui/shared/widget/dot_progress.dart';
 import 'package:student/ui/startup/welcome_screen.dart';
 import 'package:student/ui/startup/widget/onboarding_carousel.dart';

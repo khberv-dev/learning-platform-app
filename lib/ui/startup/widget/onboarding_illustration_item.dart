@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/domain/startup/model/illustration.dart';
+import 'package:student/core/startup/domain/model/illustration.dart';
 
 class OnboardingIllustrationItem extends StatelessWidget {
   final Illustration illustration;

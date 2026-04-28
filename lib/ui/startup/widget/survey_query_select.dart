@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/domain/startup/model/survey_query_option.dart';
+import 'package:student/core/startup/domain/model/survey_query_option.dart';
 import 'package:student/ui/startup/widget/survey_query_select_item.dart';
 
 class SurveyQuerySelect extends StatelessWidget {

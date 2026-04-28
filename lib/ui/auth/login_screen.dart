@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/presentation/auth/login_controller.dart';
+import 'package:student/core/auth/presentation/login_controller.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/utils/messenger.dart';
 import 'package:student/utils/uz_phone_formatter.dart';

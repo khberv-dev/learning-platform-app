@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:student/core/domain/startup/model/illustration.dart';
+import 'package:student/core/startup/domain/model/illustration.dart';
 import 'package:student/ui/startup/widget/onboarding_illustration_item.dart';
 
 class OnboardingCarousel extends StatelessWidget {

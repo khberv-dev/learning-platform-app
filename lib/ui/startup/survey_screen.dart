@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/domain/startup/model/survey_query.dart';
-import 'package:student/core/domain/startup/model/survey_query_option.dart';
+import 'package:student/core/startup/domain/model/survey_query.dart';
+import 'package:student/core/startup/domain/model/survey_query_option.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 import 'package:student/ui/startup/widget/survey_header.dart';
 import 'package:student/ui/startup/widget/survey_query_select.dart';
