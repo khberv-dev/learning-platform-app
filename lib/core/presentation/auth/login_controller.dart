@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/domain/auth/usecase/use_sign_in.dart';
+import 'package:student/core/domain/user/usecase/use_get_me.dart';
+import 'package:student/core/presentation/user/current_user_provider.dart';
 
-final loginControllerProvider =
-    AsyncNotifierProvider<LoginController, void>(LoginController.new);
+final loginControllerProvider = AsyncNotifierProvider<LoginController, void>(
+  LoginController.new,
+);
 
 class LoginController extends AsyncNotifier<void> {
   @override
@@ -16,12 +19,13 @@ class LoginController extends AsyncNotifier<void> {
     required String password,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(useSignInProvider).call(
-        phoneNumber: phoneNumber,
-        password: password,
-      ),
-    );
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(useSignInProvider)
+          .call(phoneNumber: phoneNumber, password: password);
+      final user = await ref.read(useGetMeProvider).call();
+      ref.read(currentUserProvider.notifier).state = user;
+    });
   }
 
   // Extracts a user-facing message from a DioException or any other error.

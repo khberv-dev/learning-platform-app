@@ -3,6 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/app/data/network/token_storage.dart';
+import 'package:student/core/domain/user/usecase/use_get_me.dart';
+import 'package:student/core/presentation/user/current_user_provider.dart';
+import 'package:student/ui/auth/login_screen.dart';
+import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -26,7 +31,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   void initState() {
     super.initState();
 
-    final logoAnimationDuration = Duration(seconds: 2);
+    const logoAnimationDuration = Duration(seconds: 2);
 
     logoAnimationController = AnimationController(
       vsync: this,
@@ -35,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     titleAnimationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1, milliseconds: 500),
+      duration: const Duration(seconds: 1, milliseconds: 500),
     );
 
     logoRotateAnimation = Tween(begin: 0.0, end: 2 * pi).animate(
@@ -60,9 +65,31 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       titleAnimationController.forward();
     });
 
-    Future.delayed(Duration(seconds: 4), () async {
+    _checkAuthAndNavigate();
+  }
+
+  Future<void> _checkAuthAndNavigate() async {
+    // Let the full splash animation play before navigating.
+    await Future.delayed(const Duration(seconds: 4));
+    if (!mounted) return;
+
+    final token = await ref.read(tokenStorageProvider).getAccessToken();
+    if (!mounted) return;
+
+    if (token == null) {
       context.go(OnboardingScreen.path);
-    });
+      return;
+    }
+
+    try {
+      final user = await ref.read(useGetMeProvider).call();
+      if (!mounted) return;
+      ref.read(currentUserProvider.notifier).state = user;
+      context.go(AppScreen.path);
+    } catch (_) {
+      if (!mounted) return;
+      context.go(LoginScreen.path);
+    }
   }
 
   @override
@@ -90,7 +117,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 child: Image.asset('assets/images/brand.png', width: 150),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             AnimatedBuilder(
               animation: titleAnimationController,
               builder: (context, _) => Opacity(
@@ -98,7 +125,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 child: Transform.translate(
                   offset: Offset(0, titleTranslateAnimation.value),
                   child: Text(
-                    "Welcome to iTeach!",
+                    'Welcome to iTeach!',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
@@ -110,5 +137,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    logoAnimationController.dispose();
+    titleAnimationController.dispose();
+    super.dispose();
   }
 }

@@ -22,7 +22,9 @@ final dioClientProvider = Provider<Dio>((ref) {
       tokenStorage: ref.read(tokenStorageProvider),
       router: ref.read(appRouterProvider),
     ),
-    TalkerDioLogger(),
+    TalkerDioLogger(
+      settings: TalkerDioLoggerSettings(printRequestHeaders: true),
+    ),
   ]);
 
   return dio;

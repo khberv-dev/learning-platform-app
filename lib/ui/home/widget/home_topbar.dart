@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/presentation/user/current_user_provider.dart';
 import 'package:student/ui/shared/widget/notification_icon_button.dart';
 
-class HomeTopbar extends StatelessWidget {
+class HomeTopbar extends ConsumerWidget {
   const HomeTopbar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firstName = ref.watch(currentUserProvider)?.firstName ?? '';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Row(
@@ -26,7 +30,7 @@ class HomeTopbar extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                'Alex Johnson',
+                firstName,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: const Color(0xFF111827),
                   fontWeight: FontWeight.w700,

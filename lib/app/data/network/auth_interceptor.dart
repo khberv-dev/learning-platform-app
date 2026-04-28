@@ -47,7 +47,7 @@ class AuthInterceptor extends Interceptor {
     }
 
     // Guard: the refresh endpoint itself returned 401 → force logout.
-    if (err.requestOptions.path == '/api/auth/refresh') {
+    if (err.requestOptions.path == 'auth/refresh') {
       await _logout();
       return handler.reject(err);
     }
@@ -101,7 +101,7 @@ class AuthInterceptor extends Interceptor {
     }
 
     final response = await _dio.post(
-      '/api/auth/refresh',
+      'auth/refresh',
       options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
     );
 
