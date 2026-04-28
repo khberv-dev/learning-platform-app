@@ -13,7 +13,7 @@ import 'package:student/ui/startup/welcome_screen.dart';
 final appRouterProvider = Provider((ref) => _appRouter);
 
 final _appRouter = GoRouter(
-  initialLocation: AppScreen.path,
+  // initialLocation: AppScreen.path,
   routes: [
     GoRoute(path: SplashScreen.path, builder: (_, _) => SplashScreen()),
     GoRoute(path: OnboardingScreen.path, builder: (_, _) => OnboardingScreen()),

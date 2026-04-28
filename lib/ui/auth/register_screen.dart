@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student/utils/uz_phone_formatter.dart';
 import 'package:student/app/theme/app_spacing.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -62,6 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixText: '+998 ',
                     ),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [UzPhoneFormatter()],
                   ),
                   SizedBox(height: AppSpacing.lg),
                   TextFormField(

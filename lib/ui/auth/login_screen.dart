@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/utils/uz_phone_formatter.dart';
 
 class LoginScreen extends StatefulWidget {
   static const path = '/login';
@@ -48,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       prefixText: '+998 ',
                     ),
                     keyboardType: TextInputType.number,
+                    inputFormatters: [UzPhoneFormatter()],
                   ),
                   SizedBox(height: AppSpacing.lg),
                   TextFormField(

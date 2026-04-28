@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -14,7 +15,9 @@ class WelcomeScreen extends StatelessWidget {
       context.push(SurveyScreen.path);
     }
 
-    void onGotoLoginClick() {}
+    void onGotoLoginClick() {
+      context.push(LoginScreen.path);
+    }
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
