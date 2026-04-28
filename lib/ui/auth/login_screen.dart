@@ -1,70 +1,106 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/presentation/auth/login_controller.dart';
+import 'package:student/ui/main/app_screen.dart';
+import 'package:student/utils/messenger.dart';
 import 'package:student/utils/uz_phone_formatter.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   static const path = '/login';
 
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final formKey = GlobalKey<FormState>();
-  final phoneNumberInputController = TextEditingController();
-  final passwordInputController = TextEditingController();
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<void>>(loginControllerProvider, (prev, next) {
+      if (prev?.isLoading != true) return;
+      next.whenOrNull(
+        data: (_) => context.go(AppScreen.path),
+        error: (e, _) =>
+            showErrorMessage(context, LoginController.errorMessage(e)),
+      );
+    });
+
+    final isLoading = ref.watch(loginControllerProvider).isLoading;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Form(
-              key: formKey,
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.xl),
                   Text(
-                    "Welcome Back",
+                    'Welcome Back',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  SizedBox(height: AppSpacing.sm),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
-                    "Sign in to continue your learning journey",
+                    'Sign in to continue your learning journey',
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.xxl),
                   TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Phone number",
+                    controller: _phoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'Phone number',
                       prefixText: '+998 ',
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [UzPhoneFormatter()],
+                    validator: (value) {
+                      final digits = (value ?? '').replaceAll(' ', '');
+                      if (digits.length != 9) return 'Enter a valid phone number';
+                      return null;
+                    },
                   ),
-                  SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
                   TextFormField(
+                    controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(labelText: "Password"),
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    validator: (value) {
+                      if ((value ?? '').length < 8) return 'Password must be at least 8 characters';
+                      return null;
+                    },
                   ),
-                  SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.xxl),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: () {},
-                      child: Text("Create Account"),
+                      onPressed: isLoading ? null : _submit,
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Sign In'),
                     ),
                   ),
-                  SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
                   SizedBox(
                     width: double.infinity,
                     child: RichText(
@@ -74,14 +110,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         children: [
-                          TextSpan(text: "Don't have account? "),
+                          const TextSpan(text: "Don't have account? "),
                           TextSpan(
-                            text: "Register",
-                            style: Theme.of(context).textTheme.bodyMedium!
-                                .copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                            text: 'Register',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium!.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
                         ],
                       ),
@@ -96,11 +133,22 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+
+    final digits = _phoneController.text.replaceAll(' ', '');
+    final phoneNumber = '998$digits';
+
+    ref.read(loginControllerProvider.notifier).signIn(
+      phoneNumber: phoneNumber,
+      password: _passwordController.text,
+    );
+  }
+
   @override
   void dispose() {
-    phoneNumberInputController.dispose();
-    passwordInputController.dispose();
-
+    _phoneController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 }

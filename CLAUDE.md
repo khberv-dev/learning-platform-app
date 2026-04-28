@@ -60,6 +60,35 @@ Defined entirely in `lib/app/theme/app_theme.dart`. Primary color is `0xff18c96a
 - `assets/images/` — PNG illustrations
 - `assets/skill_quiz.json` — static quiz data (loaded at runtime via `rootBundle`)
 
+### Clean Architecture
+
+Every feature is split across three layers — **no layer may import from a layer above it**.
+
+| Layer | Path | Rule |
+|---|---|---|
+| Domain | `lib/core/domain/<feature>/` | Pure Dart only. No Flutter, no Dio, no Riverpod. |
+| Data | `lib/core/data/<feature>/` | Implements domain interfaces. Imports Dio, SharedPreferences, etc. |
+| Presentation | `lib/core/presentation/<feature>/` | Riverpod controllers only. Imports use cases, never repositories directly. |
+
+**Usecase naming convention:**
+- Class: `UseFeatureName` — e.g. `UseSignIn`, `UseLoadSkillQuiz`
+- File: `use_feature_name.dart` — e.g. `use_sign_in.dart`, `use_load_skill_quiz.dart`
+- Provider: `useFeatureNameProvider` — e.g. `useSignInProvider`
+
+**Domain** contains:
+- `entity/` — immutable plain Dart classes
+- `repository/` — abstract `IXxxRepository` interface
+- `usecase/` — one `call()` method, depends only on the interface
+
+**Data** contains:
+- `model/` — JSON-parsing classes with `fromJson` + `.toEntity()` conversion
+- `repository/` — concrete class implementing `IXxxRepository`; exposes a Riverpod `Provider`
+
+**Presentation** contains:
+- `AsyncNotifier` (async operations) or `Notifier` (sync state)
+- Exposes `xxxControllerProvider`
+- Error messages extracted via a static helper on the controller, not in the UI
+
 ### Navigation rule
 
 **Always use `go_router` for navigation — never `Navigator` directly.** Use `context.go()` / `context.push()` / `context.pop()` in widgets. From non-widget code (interceptors, services) use the `GoRouter` instance from `appRouterProvider` and call `router.go()`.

@@ -47,7 +47,7 @@ class AuthInterceptor extends Interceptor {
     }
 
     // Guard: the refresh endpoint itself returned 401 → force logout.
-    if (err.requestOptions.path == '/auth/refresh') {
+    if (err.requestOptions.path == '/api/auth/refresh') {
       await _logout();
       return handler.reject(err);
     }
@@ -101,13 +101,16 @@ class AuthInterceptor extends Interceptor {
     }
 
     final response = await _dio.post(
-      '/auth/refresh',
+      '/api/auth/refresh',
       options: Options(headers: {'Authorization': 'Bearer $refreshToken'}),
     );
 
-    final newAccessToken = response.data['access_token'] as String;
+    final data = response.data as Map<String, dynamic>;
+    final newAccessToken =
+        (data['accessToken'] ?? data['access_token']) as String;
     final newRefreshToken =
-        response.data['refresh_token'] as String? ?? refreshToken;
+        (data['refreshToken'] ?? data['refresh_token'] ?? refreshToken)
+            as String;
 
     await _tokenStorage.saveTokens(
       accessToken: newAccessToken,
