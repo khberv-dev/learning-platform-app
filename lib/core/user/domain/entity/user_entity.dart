@@ -3,11 +3,15 @@ class UserEntity {
   final String firstName;
   final String? lastName;
   final String phoneNumber;
+  final int points;
+  final String level;
 
   const UserEntity({
     required this.id,
     required this.firstName,
     required this.phoneNumber,
+    required this.points,
+    required this.level,
     this.lastName,
   });
 

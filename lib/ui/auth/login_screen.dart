@@ -69,7 +69,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     inputFormatters: [UzPhoneFormatter()],
                     validator: (value) {
                       final digits = (value ?? '').replaceAll(' ', '');
-                      if (digits.length != 9) return 'Enter a valid phone number';
+                      if (digits.length != 9)
+                        return 'Enter a valid phone number';
                       return null;
                     },
                   ),
@@ -79,7 +80,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscureText: true,
                     decoration: const InputDecoration(labelText: 'Password'),
                     validator: (value) {
-                      if ((value ?? '').length < 8) return 'Password must be at least 8 characters';
+                      if ((value ?? '').length < 8)
+                        return 'Password must be at least 8 characters';
                       return null;
                     },
                   ),
@@ -113,12 +115,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           const TextSpan(text: "Don't have account? "),
                           TextSpan(
                             text: 'Register',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium!.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.w900,
-                            ),
+                            style: Theme.of(context).textTheme.bodyMedium!
+                                .copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w900,
+                                ),
                           ),
                         ],
                       ),
@@ -139,10 +140,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final digits = _phoneController.text.replaceAll(' ', '');
     final phoneNumber = '998$digits';
 
-    ref.read(loginControllerProvider.notifier).signIn(
-      phoneNumber: phoneNumber,
-      password: _passwordController.text,
-    );
+    ref
+        .read(loginControllerProvider.notifier)
+        .signIn(phoneNumber: phoneNumber, password: _passwordController.text);
   }
 
   @override

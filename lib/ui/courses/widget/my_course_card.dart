@@ -46,7 +46,9 @@ class MyCourseCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFEF2F2),
                             borderRadius: BorderRadius.circular(6),
@@ -77,7 +79,10 @@ class MyCourseCard extends StatelessWidget {
                     children: [
                       const Text(
                         'Progress',
-                        style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+                        style: TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 12,
+                        ),
                       ),
                       Text(
                         '$pct%',
@@ -121,16 +126,33 @@ class _CourseImage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (imageUrl == null) return _placeholder();
 
-    final url =
-        imageUrl!.startsWith('http') ? imageUrl! : '$baseCdnUrl/$imageUrl';
+    final url = imageUrl!.startsWith('http')
+        ? imageUrl!
+        : '$baseCdnUrl/$imageUrl';
 
     return ColorFiltered(
       colorFilter: isExpired
           ? const ColorFilter.matrix([
-              0.2126, 0.7152, 0.0722, 0, 0,
-              0.2126, 0.7152, 0.0722, 0, 0,
-              0.2126, 0.7152, 0.0722, 0, 0,
-              0,      0,      0,      1, 0,
+              0.2126,
+              0.7152,
+              0.0722,
+              0,
+              0,
+              0.2126,
+              0.7152,
+              0.0722,
+              0,
+              0,
+              0.2126,
+              0.7152,
+              0.0722,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
             ])
           : const ColorFilter.mode(Colors.transparent, BlendMode.color),
       child: Image.network(

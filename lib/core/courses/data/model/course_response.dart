@@ -20,8 +20,7 @@ class CourseResponse {
   factory CourseResponse.fromJson(Map<String, dynamic> json) => CourseResponse(
     id: json['id'] as String,
     title: json['title'] as String,
-    lessonsCount:
-        (json['lessonsCount'] ?? json['lessons_count'] ?? 0) as int,
+    lessonsCount: (json['lessonsCount'] ?? json['lessons_count'] ?? 0) as int,
     level: (json['level'] ?? '') as String,
     imageUrl: (json['imageUrl'] ?? json['image']) as String?,
     price: (json['price'] ?? 0) as int,

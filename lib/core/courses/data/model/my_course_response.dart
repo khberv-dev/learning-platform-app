@@ -25,7 +25,9 @@ class MyCourseResponse {
     final progress = rawProgress > 1 ? rawProgress / 100 : rawProgress;
 
     final statusStr = json['status'] as String? ?? 'active';
-    final status = statusStr == 'expired' ? CourseStatus.expired : CourseStatus.active;
+    final status = statusStr == 'expired'
+        ? CourseStatus.expired
+        : CourseStatus.active;
 
     return MyCourseResponse(
       enrollmentId: json['id'].toString(),
@@ -39,12 +41,12 @@ class MyCourseResponse {
   }
 
   MyCourseEntity toEntity() => MyCourseEntity(
-        enrollmentId: enrollmentId,
-        courseId: courseId,
-        title: title,
-        lessonsCount: lessonsCount,
-        imageUrl: imageUrl,
-        progress: progress,
-        status: status,
-      );
+    enrollmentId: enrollmentId,
+    courseId: courseId,
+    title: title,
+    lessonsCount: lessonsCount,
+    imageUrl: imageUrl,
+    progress: progress,
+    status: status,
+  );
 }

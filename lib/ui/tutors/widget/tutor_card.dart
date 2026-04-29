@@ -69,24 +69,15 @@ class TutorCard extends StatelessWidget {
                 color: const Color(0xFFF0FDF4),
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.calendar_today_outlined,
+              child: const Center(
+                child: Text(
+                  'View Profile',
+                  style: TextStyle(
                     color: Color(0xFF18C96A),
-                    size: 16,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
-                  SizedBox(width: 6),
-                  Text(
-                    'Book a Session',
-                    style: TextStyle(
-                      color: Color(0xFF18C96A),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ],

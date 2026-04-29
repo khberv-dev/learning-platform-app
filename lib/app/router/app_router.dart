@@ -11,6 +11,7 @@ import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 import 'package:student/ui/startup/splash_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 import 'package:student/ui/startup/welcome_screen.dart';
+import 'package:student/ui/tutors/tutor_profile_screen.dart';
 
 final appRouterProvider = Provider((ref) => _appRouter);
 
@@ -35,6 +36,11 @@ final _appRouter = GoRouter(
         courseId: state.pathParameters['id']!,
         isOwned: state.uri.queryParameters['owned'] == 'true',
       ),
+    ),
+    GoRoute(
+      path: TutorProfileScreen.path,
+      builder: (_, state) =>
+          TutorProfileScreen(tutorId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: LessonScreen.path,

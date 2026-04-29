@@ -17,9 +17,9 @@ class AuthInterceptor extends Interceptor {
     required Dio dio,
     required TokenStorage tokenStorage,
     required GoRouter router,
-  })  : _dio = dio,
-        _tokenStorage = tokenStorage,
-        _router = router;
+  }) : _dio = dio,
+       _tokenStorage = tokenStorage,
+       _router = router;
 
   // ── Attach access token to every outgoing request ────────────────────────
 

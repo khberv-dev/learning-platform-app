@@ -13,11 +13,14 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(
-      padding: EdgeInsets.only(top: AppSpacing.xxl, bottom: AppSpacing.xl),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(
+        top: AppSpacing.xxl,
+        bottom: AppSpacing.xl,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: const [
           HomeTopbar(),
           SizedBox(height: AppSpacing.lg),
           StatsRow(),

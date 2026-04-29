@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:student/utils/uz_phone_formatter.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/utils/uz_phone_formatter.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const path = '/register';
