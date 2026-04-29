@@ -71,9 +71,9 @@ Every feature is split across three layers — **no layer may import from a laye
 
 | Layer | Path | Rule |
 |---|---|---|
-| Domain | `lib/core/domain/<feature>/` | Pure Dart only. No Flutter, no Dio, no Riverpod. |
-| Data | `lib/core/data/<feature>/` | Implements domain interfaces. Imports Dio, SharedPreferences, etc. |
-| Presentation | `lib/core/presentation/<feature>/` | Riverpod controllers only. Imports use cases, never repositories directly. |
+| Domain | `lib/core/<feature>/domain/` | Pure Dart only. No Flutter, no Dio, no Riverpod. |
+| Data | `lib/core/<feature>/data/` | Implements domain interfaces. Imports Dio, SharedPreferences, etc. |
+| Presentation | `lib/core/<feature>/presentation/` | Riverpod controllers only. Imports use cases, never repositories directly. |
 
 **Usecase naming convention:**
 - Class: `UseFeatureName` — e.g. `UseSignIn`, `UseLoadSkillQuiz`
@@ -92,7 +92,18 @@ Every feature is split across three layers — **no layer may import from a laye
 **Presentation** contains:
 - `AsyncNotifier` (async operations) or `Notifier` (sync state)
 - Exposes `xxxControllerProvider`
-- Error messages extracted via a static helper on the controller, not in the UI
+- Error messages extracted via a static `errorMessage(Object error)` helper on the controller class, not in the UI
+
+**Auth controller pattern:** after a successful sign-in or sign-up, always fetch the current user and hydrate `currentUserProvider`:
+```dart
+await ref.read(useSignInProvider).call(...);
+final user = await ref.read(useGetMeProvider).call();
+ref.read(currentUserProvider.notifier).state = user;
+```
+
+**Riverpod gotchas:**
+- `FamilyAsyncNotifier` is not available in this version — use `FutureProvider.family` for parameterized async data instead.
+- `StateProvider` requires `import 'package:flutter_riverpod/legacy.dart'`.
 
 ### Navigation rule
 
@@ -110,6 +121,11 @@ Dio client lives at `lib/app/data/network/dio_client.dart` (provider: `dioClient
 - `TokenStorage` (`token_storage.dart`) persists access/refresh tokens in `SharedPreferences`.
 - Replace `_baseUrl` in `dio_client.dart` with the real API base URL (e.g. via `--dart-define`).
 
+### Lint rules to keep in mind
+
+- `curly_braces_in_flow_control_structures` — always wrap `if`/`else` bodies in braces, even single-line returns.
+- `unnecessary_underscores` — use named params (`e, st`) instead of `_, __` in `.when()` / `.whenOrNull()` callbacks.
+
 ### Key dependencies
 
 | Package | Purpose |
@@ -121,3 +137,5 @@ Dio client lives at `lib/app/data/network/dio_client.dart` (provider: `dioClient
 | `dio` + `talker_dio_logger` | HTTP client + logging |
 | `pinput` | OTP input field |
 | `shared_preferences` | Local key-value storage |
+| `chewie` + `video_player` | Video playback (tutor intro videos) |
+| `package_info_plus` | App version string |
