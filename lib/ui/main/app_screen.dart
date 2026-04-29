@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/main/presentation/navbar_controller.dart';
+import 'package:student/ui/courses/courses_page.dart';
 import 'package:student/ui/home/home_page.dart';
 import 'package:student/ui/main/widget/app_navbar.dart';
 
@@ -22,7 +23,17 @@ class AppScreen extends ConsumerWidget {
         current: navbarIndex,
         onItemClick: onNavItemClick,
       ),
-      body: SafeArea(child: HomePage()),
+      body: SafeArea(
+        child: IndexedStack(
+          index: navbarIndex,
+          children: const [
+            HomePage(),
+            CoursesPage(),
+            SizedBox(), // Mentor tab placeholder
+            SizedBox(), // Profile tab placeholder
+          ],
+        ),
+      ),
     );
   }
 }
