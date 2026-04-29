@@ -49,16 +49,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Text(
                     'Create Account',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     'Join thousands of learners today',
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.xxl),
                   TextFormField(
@@ -126,22 +125,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                          style:
-                              Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
+                          style: Theme.of(context).textTheme.bodyMedium!
+                              .copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                           children: [
                             const TextSpan(text: 'Already have an account? '),
                             TextSpan(
                               text: 'Sign In',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
+                              style: Theme.of(context).textTheme.bodyMedium!
                                   .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontWeight: FontWeight.w900,
                                   ),
                             ),
@@ -164,7 +162,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     final digits = _phoneController.text.replaceAll(' ', '');
 
-    ref.read(registerControllerProvider.notifier).signUp(
+    ref
+        .read(registerControllerProvider.notifier)
+        .signUp(
           firstName: _firstNameController.text.trim(),
           phoneNumber: '998$digits',
           password: _passwordController.text,

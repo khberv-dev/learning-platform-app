@@ -6,9 +6,8 @@ import 'package:student/core/auth/domain/usecase/use_sign_up.dart';
 import 'package:student/core/user/domain/usecase/use_get_me.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 
-final registerControllerProvider = AsyncNotifierProvider<RegisterController, void>(
-  RegisterController.new,
-);
+final registerControllerProvider =
+    AsyncNotifierProvider<RegisterController, void>(RegisterController.new);
 
 class RegisterController extends AsyncNotifier<void> {
   @override
@@ -21,7 +20,9 @@ class RegisterController extends AsyncNotifier<void> {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      await ref.read(useSignUpProvider).call(
+      await ref
+          .read(useSignUpProvider)
+          .call(
             firstName: firstName,
             phoneNumber: phoneNumber,
             password: password,

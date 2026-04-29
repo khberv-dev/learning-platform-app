@@ -112,18 +112,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         text: TextSpan(
                           style: Theme.of(context).textTheme.bodyMedium!
                               .copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
                           children: [
                             const TextSpan(text: "Don't have account? "),
                             TextSpan(
                               text: 'Register',
                               style: Theme.of(context).textTheme.bodyMedium!
                                   .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontWeight: FontWeight.w900,
                                   ),
                             ),

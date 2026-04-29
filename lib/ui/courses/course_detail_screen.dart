@@ -165,6 +165,8 @@ class _Banner extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   course.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -240,6 +242,8 @@ class _UnitCard extends StatelessWidget {
                 children: [
                   Text(
                     unit.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: Color(0xFF111827),
                       fontSize: 14,

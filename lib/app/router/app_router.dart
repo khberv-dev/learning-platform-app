@@ -6,6 +6,7 @@ import 'package:student/ui/auth/register_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
+import 'package:student/ui/startup/no_connection_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 import 'package:student/ui/startup/splash_screen.dart';
@@ -19,6 +20,10 @@ final _appRouter = GoRouter(
   // initialLocation: AppScreen.path,
   routes: [
     GoRoute(path: SplashScreen.path, builder: (_, _) => SplashScreen()),
+    GoRoute(
+      path: NoConnectionScreen.path,
+      builder: (_, _) => NoConnectionScreen(),
+    ),
     GoRoute(path: OnboardingScreen.path, builder: (_, _) => OnboardingScreen()),
     GoRoute(path: WelcomeScreen.path, builder: (_, _) => WelcomeScreen()),
     GoRoute(path: SurveyScreen.path, builder: (_, _) => SurveyScreen()),

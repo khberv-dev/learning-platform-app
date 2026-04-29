@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:student/core/user/domain/usecase/use_get_me.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
+import 'package:student/ui/startup/no_connection_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -86,6 +88,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (!mounted) return;
       ref.read(currentUserProvider.notifier).state = user;
       context.go(AppScreen.path);
+    } on DioException catch (e) {
+      if (!mounted) return;
+      final status = e.response?.statusCode;
+      final isServerError = status != null && status >= 500;
+      final isNetworkError =
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout;
+      if (isServerError || isNetworkError) {
+        context.go(NoConnectionScreen.path);
+      }
     } catch (_) {
       if (!mounted) return;
       context.go(LoginScreen.path);
