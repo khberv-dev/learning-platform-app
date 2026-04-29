@@ -1,101 +1,153 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/auth/presentation/register_controller.dart';
+import 'package:student/ui/main/app_screen.dart';
+import 'package:student/utils/messenger.dart';
 import 'package:student/utils/uz_phone_formatter.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   static const path = '/register';
 
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
-  bool hasReferral = false;
-
-  final formKey = GlobalKey<FormState>();
-  final firstNameInputController = TextEditingController();
-  final phoneNumberInputController = TextEditingController();
-  final passwordInputController = TextEditingController();
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _firstNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    void onHasReferralClick() {
-      setState(() {
-        hasReferral = !hasReferral;
-      });
-    }
+    ref.listen<AsyncValue<void>>(registerControllerProvider, (prev, next) {
+      if (prev?.isLoading != true) return;
+      next.whenOrNull(
+        data: (_) => context.go(AppScreen.path),
+        error: (e, _) =>
+            showErrorMessage(context, RegisterController.errorMessage(e)),
+      );
+    });
+
+    final isLoading = ref.watch(registerControllerProvider).isLoading;
 
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Form(
-              key: formKey,
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.xl),
                   Text(
-                    "Create Account",
+                    'Create Account',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+                          fontWeight: FontWeight.w900,
+                        ),
                   ),
-                  SizedBox(height: AppSpacing.sm),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
-                    "Join thousands of learners today",
+                    'Join thousands of learners today',
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
-                  SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.xxl),
                   TextFormField(
-                    decoration: InputDecoration(labelText: "First name"),
+                    controller: _firstNameController,
+                    decoration: const InputDecoration(labelText: 'First name'),
                     textCapitalization: TextCapitalization.sentences,
+                    validator: (value) {
+                      if ((value ?? '').trim().isEmpty) {
+                        return 'Enter your first name';
+                      }
+                      return null;
+                    },
                   ),
-                  SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
                   TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Phone number",
+                    controller: _phoneController,
+                    decoration: const InputDecoration(
+                      labelText: 'Phone number',
                       prefixText: '+998 ',
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [UzPhoneFormatter()],
+                    validator: (value) {
+                      final digits = (value ?? '').replaceAll(' ', '');
+                      if (digits.length != 9) {
+                        return 'Enter a valid phone number';
+                      }
+                      return null;
+                    },
                   ),
-                  SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
                   TextFormField(
+                    controller: _passwordController,
                     obscureText: true,
-                    decoration: InputDecoration(labelText: "Password"),
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    validator: (value) {
+                      if ((value ?? '').length < 8) {
+                        return 'Password must be at least 8 characters';
+                      }
+                      return null;
+                    },
                   ),
-                  GestureDetector(
-                    onTap: onHasReferralClick,
-                    child: Row(
-                      children: [
-                        Checkbox(
-                          value: hasReferral,
-                          onChanged: (_) => onHasReferralClick(),
-                        ),
-                        Text("I have referral code"),
-                      ],
-                    ),
-                  ),
-                  hasReferral
-                      ? TextFormField(
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            labelText: "Referral code",
-                          ),
-                        )
-                      : SizedBox.shrink(),
-                  SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.xxl),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      onPressed: () {},
-                      child: Text("Create Account"),
+                      onPressed: isLoading ? null : _submit,
+                      child: isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Create Account'),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  SizedBox(
+                    width: double.infinity,
+                    child: GestureDetector(
+                      onTap: () => context.go('/login'),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style:
+                              Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                          children: [
+                            const TextSpan(text: 'Already have an account? '),
+                            TextSpan(
+                              text: 'Sign In',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -107,12 +159,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+
+    final digits = _phoneController.text.replaceAll(' ', '');
+
+    ref.read(registerControllerProvider.notifier).signUp(
+          firstName: _firstNameController.text.trim(),
+          phoneNumber: '998$digits',
+          password: _passwordController.text,
+        );
+  }
+
   @override
   void dispose() {
-    firstNameInputController.dispose();
-    phoneNumberInputController.dispose();
-    passwordInputController.dispose();
-
+    _firstNameController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 }

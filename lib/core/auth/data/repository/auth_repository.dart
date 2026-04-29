@@ -40,4 +40,29 @@ class AuthRepository implements IAuthRepository {
 
     return auth.toEntity();
   }
+
+  @override
+  Future<AuthEntity> signUp({
+    required String firstName,
+    required String phoneNumber,
+    required String password,
+  }) async {
+    final response = await _dio.post(
+      'auth/sign-up',
+      data: {
+        'firstName': firstName,
+        'phoneNumber': phoneNumber,
+        'password': password,
+      },
+    );
+
+    final auth = AuthResponse.fromJson(response.data as Map<String, dynamic>);
+
+    await _tokenStorage.saveTokens(
+      accessToken: auth.accessToken,
+      refreshToken: auth.refreshToken,
+    );
+
+    return auth.toEntity();
+  }
 }
