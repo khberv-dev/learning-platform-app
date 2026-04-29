@@ -16,10 +16,20 @@ class TutorsRepository implements ITutorsRepository {
 
   @override
   Future<List<TutorEntity>> getTutors() async {
-    final response = await _dio.get('tutors');
+    final response = await _dio.get('teachers');
     final list = response.data as List<dynamic>;
     return list
-        .map((e) => TutorResponse.fromJson(e as Map<String, dynamic>).toEntity())
+        .map(
+          (e) => TutorResponse.fromJson(e as Map<String, dynamic>).toEntity(),
+        )
         .toList();
+  }
+
+  @override
+  Future<TutorEntity> getTutor(String id) async {
+    final response = await _dio.get('teachers/$id');
+    return TutorResponse.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
   }
 }

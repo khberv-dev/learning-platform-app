@@ -2,20 +2,18 @@ class TutorEntity {
   final String id;
   final String name;
   final String? avatarUrl;
-  final String subject;
   final double rating;
-  final int studentCount;
-  final int pricePerHour;
-  final bool isFeatured;
+  final int feedbackCount;
+  final String status;
 
   const TutorEntity({
     required this.id,
     required this.name,
-    required this.subject,
     required this.rating,
-    required this.studentCount,
-    required this.pricePerHour,
-    required this.isFeatured,
+    required this.feedbackCount,
+    required this.status,
     this.avatarUrl,
   });
+
+  bool get isActive => status == 'active';
 }

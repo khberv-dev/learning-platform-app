@@ -4,48 +4,42 @@ class TutorResponse {
   final String id;
   final String name;
   final String? avatarUrl;
-  final String subject;
   final double rating;
-  final int studentCount;
-  final int pricePerHour;
-  final bool isFeatured;
+  final int feedbackCount;
+  final String status;
 
   const TutorResponse({
     required this.id,
     required this.name,
-    required this.subject,
     required this.rating,
-    required this.studentCount,
-    required this.pricePerHour,
-    required this.isFeatured,
+    required this.feedbackCount,
+    required this.status,
     this.avatarUrl,
   });
 
-  factory TutorResponse.fromJson(Map<String, dynamic> json) => TutorResponse(
-        id: json['id'].toString(),
-        name: json['name'] as String,
-        avatarUrl: json['avatarUrl'] as String? ??
-            json['avatar_url'] as String? ??
-            json['avatar'] as String?,
-        subject: json['subject'] as String? ?? '',
-        rating: (json['rating'] ?? 0).toDouble(),
-        studentCount:
-            (json['studentCount'] ?? json['student_count'] ?? 0) as int,
-        pricePerHour:
-            (json['pricePerHour'] ?? json['price_per_hour'] ?? json['price'] ?? 0)
-                as int,
-        isFeatured:
-            json['isFeatured'] as bool? ?? json['is_featured'] as bool? ?? false,
-      );
+  factory TutorResponse.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] as Map<String, dynamic>? ?? {};
+    final firstName = user['firstName'] as String? ?? '';
+    final lastName = user['lastName'] as String? ?? '';
+    final name = [firstName, lastName].where((s) => s.isNotEmpty).join(' ');
+    final feedbacks = json['feedbacks'] as List<dynamic>? ?? [];
+
+    return TutorResponse(
+      id: json['id'].toString(),
+      name: name.isEmpty ? 'Unknown' : name,
+      avatarUrl: user['avatar'] as String?,
+      rating: (json['summaryRating'] ?? 0).toDouble(),
+      feedbackCount: feedbacks.length,
+      status: json['status'] as String? ?? 'active',
+    );
+  }
 
   TutorEntity toEntity() => TutorEntity(
         id: id,
         name: name,
         avatarUrl: avatarUrl,
-        subject: subject,
         rating: rating,
-        studentCount: studentCount,
-        pricePerHour: pricePerHour,
-        isFeatured: isFeatured,
+        feedbackCount: feedbackCount,
+        status: status,
       );
 }
