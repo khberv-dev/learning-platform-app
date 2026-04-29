@@ -21,8 +21,10 @@ class LiveLessonResponse {
     return LiveLessonResponse(
       id: json['id'].toString(),
       title: json['title'] as String,
-      thumbnailUrl: json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String?,
-      instructorName: json['instructorName'] as String? ??
+      thumbnailUrl:
+          json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String?,
+      instructorName:
+          json['instructorName'] as String? ??
           json['instructor_name'] as String? ??
           '',
       duration: json['duration'] as String? ?? '',
@@ -31,11 +33,11 @@ class LiveLessonResponse {
   }
 
   LiveLessonEntity toEntity() => LiveLessonEntity(
-        id: id,
-        title: title,
-        thumbnailUrl: thumbnailUrl,
-        instructorName: instructorName,
-        duration: duration,
-        date: date,
-      );
+    id: id,
+    title: title,
+    thumbnailUrl: thumbnailUrl,
+    instructorName: instructorName,
+    duration: duration,
+    date: date,
+  );
 }

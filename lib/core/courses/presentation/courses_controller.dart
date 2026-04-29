@@ -10,11 +10,10 @@ import 'package:student/core/courses/domain/usecase/use_get_my_courses.dart';
 
 final availableCoursesControllerProvider =
     AsyncNotifierProvider<AvailableCoursesController, List<CourseEntity>>(
-  AvailableCoursesController.new,
-);
+      AvailableCoursesController.new,
+    );
 
-class AvailableCoursesController
-    extends AsyncNotifier<List<CourseEntity>> {
+class AvailableCoursesController extends AsyncNotifier<List<CourseEntity>> {
   @override
   FutureOr<List<CourseEntity>> build() =>
       ref.read(useGetAvailableCoursesProvider).call();
@@ -22,8 +21,8 @@ class AvailableCoursesController
 
 final myCoursesControllerProvider =
     AsyncNotifierProvider<MyCoursesController, List<MyCourseEntity>>(
-  MyCoursesController.new,
-);
+      MyCoursesController.new,
+    );
 
 class MyCoursesController extends AsyncNotifier<List<MyCourseEntity>> {
   @override
@@ -33,8 +32,8 @@ class MyCoursesController extends AsyncNotifier<List<MyCourseEntity>> {
 
 final liveLessonsControllerProvider =
     AsyncNotifierProvider<LiveLessonsController, List<LiveLessonEntity>>(
-  LiveLessonsController.new,
-);
+      LiveLessonsController.new,
+    );
 
 class LiveLessonsController extends AsyncNotifier<List<LiveLessonEntity>> {
   @override

@@ -18,7 +18,10 @@ class LiveSessionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Thumbnail(thumbnailUrl: lesson.thumbnailUrl, duration: lesson.duration),
+          _Thumbnail(
+            thumbnailUrl: lesson.thumbnailUrl,
+            duration: lesson.duration,
+          ),
           Padding(
             padding: const EdgeInsets.all(14),
             child: Column(
@@ -68,8 +71,8 @@ class _Thumbnail extends StatelessWidget {
     final url = thumbnailUrl == null
         ? null
         : thumbnailUrl!.startsWith('http')
-            ? thumbnailUrl!
-            : '$baseCdnUrl/$thumbnailUrl';
+        ? thumbnailUrl!
+        : '$baseCdnUrl/$thumbnailUrl';
 
     return SizedBox(
       height: 168,
