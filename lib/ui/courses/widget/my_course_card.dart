@@ -11,9 +11,10 @@ class MyCourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pct = (course.progress * 100).round();
+    final isExpired = course.status == CourseStatus.expired;
 
     return GestureDetector(
-      onTap: () => context.push('/course/${course.id}?owned=true'),
+      onTap: () => context.push('/course/${course.courseId}?owned=true'),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -23,23 +24,48 @@ class MyCourseCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _CourseImage(imageUrl: course.imageUrl),
+            _CourseImage(imageUrl: course.imageUrl, isExpired: isExpired),
             Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    course.title,
-                    style: const TextStyle(
-                      color: Color(0xFF111827),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          course.title,
+                          style: const TextStyle(
+                            color: Color(0xFF111827),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      if (isExpired) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF2F2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            'Expired',
+                            style: TextStyle(
+                              color: Color(0xFFEF4444),
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${course.lessonsCount} lessons  ·  ${course.level}',
+                    '${course.lessonsCount} lessons',
                     style: const TextStyle(
                       color: Color(0xFF6B7280),
                       fontSize: 12,
@@ -51,10 +77,7 @@ class MyCourseCard extends StatelessWidget {
                     children: [
                       const Text(
                         'Progress',
-                        style: TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
                       ),
                       Text(
                         '$pct%',
@@ -71,7 +94,9 @@ class MyCourseCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(3),
                     child: LinearProgressIndicator(
                       value: course.progress,
-                      color: const Color(0xFF18C96A),
+                      color: isExpired
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF18C96A),
                       backgroundColor: const Color(0xFFE5E7EB),
                       minHeight: 6,
                     ),
@@ -88,23 +113,33 @@ class MyCourseCard extends StatelessWidget {
 
 class _CourseImage extends StatelessWidget {
   final String? imageUrl;
+  final bool isExpired;
 
-  const _CourseImage({this.imageUrl});
+  const _CourseImage({this.imageUrl, required this.isExpired});
 
   @override
   Widget build(BuildContext context) {
     if (imageUrl == null) return _placeholder();
 
-    final url = imageUrl!.startsWith('http')
-        ? imageUrl!
-        : '$baseCdnUrl/$imageUrl';
+    final url =
+        imageUrl!.startsWith('http') ? imageUrl! : '$baseCdnUrl/$imageUrl';
 
-    return Image.network(
-      url,
-      height: 120,
-      width: double.infinity,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stack) => _placeholder(),
+    return ColorFiltered(
+      colorFilter: isExpired
+          ? const ColorFilter.matrix([
+              0.2126, 0.7152, 0.0722, 0, 0,
+              0.2126, 0.7152, 0.0722, 0, 0,
+              0.2126, 0.7152, 0.0722, 0, 0,
+              0,      0,      0,      1, 0,
+            ])
+          : const ColorFilter.mode(Colors.transparent, BlendMode.color),
+      child: Image.network(
+        url,
+        height: 120,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => _placeholder(),
+      ),
     );
   }
 
