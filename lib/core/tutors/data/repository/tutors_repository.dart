@@ -1,0 +1,25 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/app/data/network/dio_client.dart';
+import 'package:student/core/tutors/data/model/tutor_response.dart';
+import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
+import 'package:student/core/tutors/domain/repository/i_tutors_repository.dart';
+
+final tutorsRepositoryProvider = Provider<ITutorsRepository>(
+  (ref) => TutorsRepository(dio: ref.read(dioClientProvider)),
+);
+
+class TutorsRepository implements ITutorsRepository {
+  final Dio _dio;
+
+  const TutorsRepository({required Dio dio}) : _dio = dio;
+
+  @override
+  Future<List<TutorEntity>> getTutors() async {
+    final response = await _dio.get('tutors');
+    final list = response.data as List<dynamic>;
+    return list
+        .map((e) => TutorResponse.fromJson(e as Map<String, dynamic>).toEntity())
+        .toList();
+  }
+}
