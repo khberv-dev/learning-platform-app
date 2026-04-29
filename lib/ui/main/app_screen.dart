@@ -4,6 +4,7 @@ import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/ui/courses/courses_page.dart';
 import 'package:student/ui/home/home_page.dart';
 import 'package:student/ui/main/widget/app_navbar.dart';
+import 'package:student/ui/profile/profile_page.dart';
 import 'package:student/ui/tutors/tutors_page.dart';
 
 class AppScreen extends ConsumerWidget {
@@ -31,7 +32,7 @@ class AppScreen extends ConsumerWidget {
             HomePage(),
             CoursesPage(),
             TutorsPage(),
-            SizedBox(), // Profile tab placeholder
+            ProfilePage(),
           ],
         ),
       ),

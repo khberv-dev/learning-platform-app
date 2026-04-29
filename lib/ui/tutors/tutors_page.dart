@@ -24,9 +24,9 @@ class TutorsPage extends ConsumerWidget {
           child: Text(
             'Find a Tutor',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: const Color(0xFF111827),
-                  fontWeight: FontWeight.w700,
-                ),
+              color: const Color(0xFF111827),
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         const Divider(height: 1, color: Color(0xFFE5E7EB)),

@@ -4,6 +4,8 @@ class TutorResponse {
   final String id;
   final String name;
   final String? avatarUrl;
+  final String? introVideo;
+  final String? profession;
   final double rating;
   final int feedbackCount;
   final String status;
@@ -15,6 +17,8 @@ class TutorResponse {
     required this.feedbackCount,
     required this.status,
     this.avatarUrl,
+    this.introVideo,
+    this.profession,
   });
 
   factory TutorResponse.fromJson(Map<String, dynamic> json) {
@@ -28,6 +32,9 @@ class TutorResponse {
       id: json['id'].toString(),
       name: name.isEmpty ? 'Unknown' : name,
       avatarUrl: user['avatar'] as String?,
+      introVideo: json['introVideo'] as String?,
+      profession:
+          json['profession'] as String? ?? json['specialization'] as String?,
       rating: (json['summaryRating'] ?? 0).toDouble(),
       feedbackCount: feedbacks.length,
       status: json['status'] as String? ?? 'active',
@@ -35,11 +42,13 @@ class TutorResponse {
   }
 
   TutorEntity toEntity() => TutorEntity(
-        id: id,
-        name: name,
-        avatarUrl: avatarUrl,
-        rating: rating,
-        feedbackCount: feedbackCount,
-        status: status,
-      );
+    id: id,
+    name: name,
+    avatarUrl: avatarUrl,
+    introVideo: introVideo,
+    profession: profession,
+    rating: rating,
+    feedbackCount: feedbackCount,
+    status: status,
+  );
 }

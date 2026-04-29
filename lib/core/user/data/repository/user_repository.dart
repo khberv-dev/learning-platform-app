@@ -17,7 +17,8 @@ class UserRepository implements IUserRepository {
   @override
   Future<UserEntity> getMe() async {
     final response = await _dio.get('user/me');
-    return UserResponse.fromJson(response.data as Map<String, dynamic>)
-        .toEntity();
+    return UserResponse.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
   }
 }

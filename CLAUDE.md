@@ -36,6 +36,11 @@ This is a Flutter mobile app (package name `student`) using **Riverpod** for sta
 | Presentation (controllers) | `lib/core/presentation/` | Riverpod `Notifier`/`StateProvider` controllers |
 | UI | `lib/ui/` | Screens and widgets |
 
+### UI conventions
+
+- **Widget folder:** Every non-trivial widget used by a screen lives in a `widget/` subfolder next to the screen file (e.g. `lib/ui/profile/widget/avatar_card.dart`). Keep screen files thin — they compose widgets, not define them.
+- **Shared utilities:** Reusable pure-Dart helpers (`formatNumber`, `formatPhone`, etc.) go in `lib/utils/lib.dart`. Never define them locally inside a screen or widget file.
+
 ### Data flow
 
 `UI screen` → watches a **controller provider** → controller calls a **use case provider** → use case calls a **repository provider** → repository reads from asset/API.
