@@ -7,6 +7,7 @@ environment:
   sdk: ^3.11.4
 
 dependencies:
+  chewie: ^1.8.5
   dio: ^5.9.2
   flutter:
     sdk: flutter
@@ -18,6 +19,7 @@ dependencies:
   pinput: ^6.0.2
   shared_preferences: ^2.5.5
   talker_dio_logger: ^5.1.16
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:

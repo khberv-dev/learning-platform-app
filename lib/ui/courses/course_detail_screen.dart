@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
@@ -73,6 +74,7 @@ class _CourseDetailBody extends StatelessWidget {
                   unit: course.units[i],
                   index: i,
                   isOwned: isOwned,
+                  courseId: course.id,
                 ),
               ),
             ),
@@ -187,11 +189,13 @@ class _UnitCard extends StatelessWidget {
   final UnitEntity unit;
   final int index;
   final bool isOwned;
+  final String courseId;
 
   const _UnitCard({
     required this.unit,
     required this.index,
     required this.isOwned,
+    required this.courseId,
   });
 
   @override
@@ -254,19 +258,26 @@ class _UnitCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: isOwned
-                    ? const Color(0xFF18C96A)
-                    : const Color(0xFFE5E7EB),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isOwned ? Icons.play_arrow_rounded : Icons.lock_outline,
-                color: isOwned ? Colors.white : const Color(0xFF9CA3AF),
-                size: 20,
+            GestureDetector(
+              onTap: isOwned
+                  ? () => context.push(
+                      '/lesson?courseId=$courseId&unitIndex=$index&lessonIndex=0',
+                    )
+                  : null,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isOwned
+                      ? const Color(0xFF18C96A)
+                      : const Color(0xFFE5E7EB),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isOwned ? Icons.play_arrow_rounded : Icons.lock_outline,
+                  color: isOwned ? Colors.white : const Color(0xFF9CA3AF),
+                  size: 20,
+                ),
               ),
             ),
           ],

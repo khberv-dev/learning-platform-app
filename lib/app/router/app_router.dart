@@ -4,6 +4,7 @@ import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/ui/auth/register_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
+import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
@@ -33,6 +34,16 @@ final _appRouter = GoRouter(
       builder: (_, state) => CourseDetailScreen(
         courseId: state.pathParameters['id']!,
         isOwned: state.uri.queryParameters['owned'] == 'true',
+      ),
+    ),
+    GoRoute(
+      path: LessonScreen.path,
+      builder: (_, state) => LessonScreen(
+        courseId: state.uri.queryParameters['courseId']!,
+        unitIndex:
+            int.tryParse(state.uri.queryParameters['unitIndex'] ?? '0') ?? 0,
+        initialLessonIndex:
+            int.tryParse(state.uri.queryParameters['lessonIndex'] ?? '0') ?? 0,
       ),
     ),
   ],
