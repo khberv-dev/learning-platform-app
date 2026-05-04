@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
 
 class SpeakingPartnerCard extends StatelessWidget {
   const SpeakingPartnerCard({super.key});
@@ -39,21 +41,24 @@ class SpeakingPartnerCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 11,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: const Text(
-                    'Find Partner',
-                    style: TextStyle(
-                      color: Color(0xFF0C4A6E),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                GestureDetector(
+                  onTap: () => context.push(P2pMatchmakingScreen.path),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 11,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: const Text(
+                      'Find Partner',
+                      style: TextStyle(
+                        color: Color(0xFF0C4A6E),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),

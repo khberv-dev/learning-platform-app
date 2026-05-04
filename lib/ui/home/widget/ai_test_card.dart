@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/ui/ai_assessment/ai_assessment_screen.dart';
 
 class AiTestCard extends StatelessWidget {
   const AiTestCard({super.key});
@@ -39,21 +41,24 @@ class AiTestCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 11,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: const Text(
-                    'Start Test',
-                    style: TextStyle(
-                      color: Color(0xFF1E1B4B),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                GestureDetector(
+                  onTap: () => context.push(AiAssessmentScreen.path),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 11,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: const Text(
+                      'Start Test',
+                      style: TextStyle(
+                        color: Color(0xFF1E1B4B),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
