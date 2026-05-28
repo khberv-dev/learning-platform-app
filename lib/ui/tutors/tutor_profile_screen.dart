@@ -2,8 +2,10 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/data/network/config.dart';
+import 'package:student/core/assignments/presentation/create_assignment_controller.dart';
 import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
 import 'package:student/core/tutors/presentation/tutor_detail_controller.dart';
+import 'package:student/utils/messenger.dart';
 import 'package:video_player/video_player.dart';
 
 class TutorProfileScreen extends ConsumerStatefulWidget {
@@ -58,6 +60,27 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(tutorDetailControllerProvider(widget.tutorId));
 
+    ref.listen<AsyncValue<Object?>>(createAssignmentControllerProvider, (
+      prev,
+      next,
+    ) {
+      if (prev?.isLoading != true) return;
+      next.whenOrNull(
+        data: (assignment) {
+          if (assignment == null) return;
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(
+              const SnackBar(content: Text('Booking request sent')),
+            );
+        },
+        error: (e, _) => showErrorMessage(
+          context,
+          CreateAssignmentController.errorMessage(e),
+        ),
+      );
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       body: state.when(
@@ -97,7 +120,7 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
                   ),
                 ),
               ),
-              _BottomBar(),
+              _BottomBar(tutorId: widget.tutorId),
             ],
           );
         },
@@ -341,9 +364,35 @@ class _ReviewsSection extends StatelessWidget {
 
 // ── Bottom Bar ────────────────────────────────────────────────────────────────
 
-class _BottomBar extends StatelessWidget {
+class _BottomBar extends ConsumerWidget {
+  final String tutorId;
+
+  const _BottomBar({required this.tutorId});
+
+  Future<void> _onBook(BuildContext context, WidgetRef ref) async {
+    final months = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => const _DurationSheet(),
+    );
+    if (months == null) return;
+    if (!context.mounted) return;
+
+    final now = DateTime.now();
+    final start = DateTime(now.year, now.month, now.day);
+    final end = DateTime(now.year, now.month + months, now.day);
+
+    await ref
+        .read(createAssignmentControllerProvider.notifier)
+        .book(teacherId: tutorId, startDate: start, endDate: end);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(createAssignmentControllerProvider).isLoading;
     final bottom = MediaQuery.of(context).padding.bottom;
     return Container(
       color: Colors.white,
@@ -351,20 +400,121 @@ class _BottomBar extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         height: 56,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: const Color(0xFF18C96A),
+        child: Material(
+          color: const Color(0xFF18C96A),
+          borderRadius: BorderRadius.circular(28),
+          child: InkWell(
+            onTap: isLoading ? null : () => _onBook(context, ref),
             borderRadius: BorderRadius.circular(28),
+            child: Center(
+              child: isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    )
+                  : const Text(
+                      'Book Tutor',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+            ),
           ),
-          child: const Center(
-            child: Text(
-              'Book Tutor',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+// ── Duration Sheet ────────────────────────────────────────────────────────────
+
+class _DurationSheet extends StatelessWidget {
+  const _DurationSheet();
+
+  static const _options = [
+    (months: 1, label: '1 Month'),
+    (months: 3, label: '3 Months'),
+    (months: 6, label: '6 Months'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.of(context).padding.bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Select duration',
+            style: TextStyle(
+              color: Color(0xFF111827),
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 16),
+          for (final option in _options) ...[
+            _DurationOption(
+              label: option.label,
+              onTap: () => Navigator.of(context).pop(option.months),
+            ),
+            if (option != _options.last) const SizedBox(height: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _DurationOption extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _DurationOption({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFFF9FAFB),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: Color(0xFF111827),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: Color(0xFF9CA3AF)),
+            ],
           ),
         ),
       ),

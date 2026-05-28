@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:student/app/data/network/config.dart';
-import 'package:student/core/assessments/domain/usecase/use_submit_assessment.dart';
+import 'package:student/core/assessments/domain/usecase/use_create_conversation.dart';
+import 'package:student/core/assessments/domain/usecase/use_send_assessment_turn.dart';
 import 'package:student/ui/ai_assessment/widget/ai_avatar.dart';
 import 'package:student/ui/ai_assessment/widget/listening_indicator.dart';
 import 'package:student/ui/ai_assessment/widget/mic_button.dart';
@@ -27,6 +28,7 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
   final AudioRecorder _recorder = AudioRecorder();
   final AudioPlayer _player = AudioPlayer();
   _RecordState _state = _RecordState.idle;
+  String? _conversationId;
   String? _feedbackText;
   String? _error;
 
@@ -83,14 +85,17 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
     }
 
     try {
-      final feedback = await ref
-          .read(useSubmitAssessmentProvider)
-          .call(audioFilePath: path);
+      final conversationId = _conversationId ??=
+          (await ref.read(useCreateConversationProvider).call()).id;
+
+      final turn = await ref
+          .read(useSendAssessmentTurnProvider)
+          .call(conversationId: conversationId, audioFilePath: path);
 
       if (!mounted) return;
-      setState(() => _feedbackText = feedback.feedbackText);
+      setState(() => _feedbackText = turn.assistantMessage.text);
 
-      final audio = feedback.feedbackAudio;
+      final audio = turn.assistantMessage.audioPath;
       if (audio != null && audio.isNotEmpty) {
         await _playFeedback(audio);
         if (!mounted) return;

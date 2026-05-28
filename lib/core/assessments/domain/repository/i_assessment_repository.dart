@@ -1,5 +1,11 @@
-import 'package:student/core/assessments/domain/entity/assessment_feedback_entity.dart';
+import 'package:student/core/assessments/domain/entity/assessment_turn_entity.dart';
+import 'package:student/core/assessments/domain/entity/conversation_entity.dart';
 
 abstract class IAssessmentRepository {
-  Future<AssessmentFeedbackEntity> submit({required String audioFilePath});
+  Future<ConversationEntity> createConversation();
+
+  Future<AssessmentTurnEntity> sendTurn({
+    required String conversationId,
+    required String audioFilePath,
+  });
 }

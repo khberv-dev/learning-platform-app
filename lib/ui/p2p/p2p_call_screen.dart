@@ -121,10 +121,7 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
               const SizedBox(height: 6),
               Text(
                 p2pState is P2pConnected ? 'Connected' : 'Anonymous match',
-                style: const TextStyle(
-                  color: Color(0xFF18C96A),
-                  fontSize: 14,
-                ),
+                style: const TextStyle(color: Color(0xFF18C96A), fontSize: 14),
               ),
               const SizedBox(height: 8),
               Text(
