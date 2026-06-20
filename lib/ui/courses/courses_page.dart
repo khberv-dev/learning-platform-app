@@ -70,7 +70,17 @@ class _CoursesTab extends ConsumerWidget {
     final myCourses = ref.watch(myCoursesControllerProvider);
     final available = ref.watch(availableCoursesControllerProvider);
 
-    return CustomScrollView(
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(myCoursesControllerProvider);
+        ref.invalidate(availableCoursesControllerProvider);
+        await Future.wait([
+          ref.read(myCoursesControllerProvider.future),
+          ref.read(availableCoursesControllerProvider.future),
+        ]);
+      },
+      child: CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
         SliverToBoxAdapter(
           child: Padding(
@@ -181,6 +191,7 @@ class _CoursesTab extends ConsumerWidget {
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 96)),
       ],
+    ),
     );
   }
 }
@@ -192,59 +203,92 @@ class _LiveSessionsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(liveLessonsControllerProvider);
 
-    return state.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
-        child: Text(
-          e.toString(),
-          style: const TextStyle(color: Color(0xFF6B7280)),
-        ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(liveLessonsControllerProvider);
+        await ref.read(liveLessonsControllerProvider.future);
+      },
+      child: state.when(
+      loading: () => const CustomScrollView(
+        physics: AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverFillViewport(
+            delegate: SliverChildListDelegate.fixed([
+              Center(child: CircularProgressIndicator()),
+            ]),
+          ),
+        ],
+      ),
+      error: (e, _) => CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverFillViewport(
+            delegate: SliverChildListDelegate.fixed([
+              Center(
+                child: Text(
+                  e.toString(),
+                  style: const TextStyle(color: Color(0xFF6B7280)),
+                ),
+              ),
+            ]),
+          ),
+        ],
       ),
       data: (lessons) {
         if (lessons.isEmpty) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF0FDF4),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.videocam_off_outlined,
-                  color: Color(0xFF18C96A),
-                  size: 32,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'No Recorded Sessions',
-                style: TextStyle(
-                  color: Color(0xFF111827),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const SizedBox(
-                width: 260,
-                child: Text(
-                  'Recorded live sessions will appear here once available.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF9CA3AF),
-                    fontSize: 14,
-                    height: 1.5,
+          return CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverFillViewport(
+                delegate: SliverChildListDelegate.fixed([
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFF0FDF4),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.videocam_off_outlined,
+                          color: Color(0xFF18C96A),
+                          size: 32,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'No Recorded Sessions',
+                        style: TextStyle(
+                          color: Color(0xFF111827),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const SizedBox(
+                        width: 260,
+                        child: Text(
+                          'Recorded live sessions will appear here once available.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF9CA3AF),
+                            fontSize: 14,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ]),
               ),
             ],
           );
         }
 
         return CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
@@ -291,6 +335,7 @@ class _LiveSessionsTab extends ConsumerWidget {
           ],
         );
       },
+    ),
     );
   }
 }

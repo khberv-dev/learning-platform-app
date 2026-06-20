@@ -16,9 +16,11 @@ class UseSignUp {
     required String firstName,
     required String phoneNumber,
     required String password,
+    required String code,
   }) => _repository.signUp(
     firstName: firstName,
     phoneNumber: phoneNumber,
     password: password,
+    code: code,
   );
 }

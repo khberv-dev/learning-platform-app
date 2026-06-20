@@ -5,10 +5,14 @@ import 'package:student/core/courses/data/model/course_detail_response.dart';
 import 'package:student/core/courses/data/model/course_response.dart';
 import 'package:student/core/courses/data/model/live_lesson_response.dart';
 import 'package:student/core/courses/data/model/my_course_response.dart';
+import 'package:student/core/courses/data/model/task_response.dart';
+import 'package:student/core/courses/data/model/task_result_response.dart';
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
 import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
+import 'package:student/core/courses/domain/entity/task_entity.dart';
+import 'package:student/core/courses/domain/entity/task_result_entity.dart';
 import 'package:student/core/courses/domain/repository/i_courses_repository.dart';
 
 final coursesRepositoryProvider = Provider<ICoursesRepository>(
@@ -61,5 +65,37 @@ class CoursesRepository implements ICoursesRepository {
     return CourseDetailResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();
+  }
+
+  @override
+  Future<List<TaskEntity>> getTasks({
+    required String courseId,
+    required String unitId,
+    required String lessonId,
+  }) async {
+    final response = await _dio.get(
+      'courses/$courseId/units/$unitId/lessons/$lessonId/tasks',
+    );
+    final list = response.data as List<dynamic>;
+    return list
+        .map((e) => TaskResponse.fromJson(e as Map<String, dynamic>).toEntity())
+        .toList();
+  }
+
+  @override
+  Future<void> submitTasks(Map<String, String> answers) async {
+    await _dio.post('task-submissions', data: answers);
+  }
+
+  @override
+  Future<List<TaskResultEntity>> getLessonResults(String lessonId) async {
+    final response = await _dio.get('task-submissions/lessons/$lessonId');
+    final list = response.data as List<dynamic>;
+    return list
+        .map(
+          (e) =>
+              TaskResultResponse.fromJson(e as Map<String, dynamic>).toEntity(),
+        )
+        .toList();
   }
 }

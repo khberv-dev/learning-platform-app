@@ -1,3 +1,24 @@
+class P2pPeer {
+  final String id;
+  final String firstName;
+  final String? lastName;
+  final String? avatarUrl;
+
+  const P2pPeer({
+    required this.id,
+    required this.firstName,
+    this.lastName,
+    this.avatarUrl,
+  });
+
+  String get displayName => lastName != null && lastName!.isNotEmpty
+      ? '$firstName $lastName'
+      : firstName;
+
+  String get initials =>
+      firstName.isNotEmpty ? firstName[0].toUpperCase() : '?';
+}
+
 sealed class P2pState {
   const P2pState();
 }
@@ -13,18 +34,26 @@ class P2pSearching extends P2pState {
 class P2pMatched extends P2pState {
   final String sessionId;
   final P2pRole role;
+  final P2pPeer peer;
 
-  const P2pMatched({required this.sessionId, required this.role});
+  const P2pMatched({
+    required this.sessionId,
+    required this.role,
+    required this.peer,
+  });
 }
 
 class P2pConnecting extends P2pState {
   final P2pRole role;
+  final P2pPeer peer;
 
-  const P2pConnecting({required this.role});
+  const P2pConnecting({required this.role, required this.peer});
 }
 
 class P2pConnected extends P2pState {
-  const P2pConnected();
+  final P2pPeer peer;
+
+  const P2pConnected({required this.peer});
 }
 
 class P2pEnded extends P2pState {

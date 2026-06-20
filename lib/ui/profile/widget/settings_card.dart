@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:student/app/data/network/token_storage.dart';
+import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/ui/auth/login_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 final selectedLanguageProvider = StateProvider<String>((ref) => 'English');
 
@@ -12,11 +17,10 @@ class SettingsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final language = ref.watch(selectedLanguageProvider);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
           _SettingsRow(
@@ -42,13 +46,17 @@ class SettingsCard extends ConsumerWidget {
             onTap: () => _showLanguagePicker(context, ref),
           ),
           _divider(),
-          const _SettingsRow(
-            icon: Icons.article_outlined,
-            label: 'Terms of Use',
-            trailing: Icon(
+          _SettingsRow(
+            icon: Icons.privacy_tip_outlined,
+            label: 'Privacy Policy',
+            trailing: const Icon(
               Icons.chevron_right_rounded,
               size: 18,
               color: Color(0xFFD1D5DB),
+            ),
+            onTap: () => launchUrl(
+              Uri.parse('https://i-teach.uz/web/privacy_policy.html'),
+              mode: LaunchMode.inAppBrowserView,
             ),
           ),
           _divider(),
@@ -72,29 +80,74 @@ class SettingsCard extends ConsumerWidget {
             },
           ),
           _divider(),
-          const _SettingsRow(
+          _SettingsRow(
             icon: Icons.logout_rounded,
             label: 'Log Out',
             danger: true,
-            trailing: Icon(
+            trailing: const Icon(
               Icons.chevron_right_rounded,
               size: 18,
               color: Color(0xFFEF4444),
             ),
+            onTap: () => _confirmLogout(context, ref),
           ),
           _divider(),
-          const _SettingsRow(
+          _SettingsRow(
             icon: Icons.delete_outline_rounded,
             label: 'Delete Account',
             danger: true,
-            trailing: Icon(
+            trailing: const Icon(
               Icons.chevron_right_rounded,
               size: 18,
               color: Color(0xFFEF4444),
+            ),
+            onTap: _openDeleteAccount,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmLogout(BuildContext context, WidgetRef ref) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Log Out',
+          style: TextStyle(
+            color: Color(0xFF111827),
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: Navigator.of(ctx).pop,
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              await ref.read(tokenStorageProvider).clearAll();
+              ref.read(currentUserProvider.notifier).state = null;
+              if (context.mounted) context.go(LoginScreen.path);
+            },
+            child: const Text(
+              'Log Out',
+              style: TextStyle(color: Color(0xFFEF4444)),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _openDeleteAccount() {
+    launchUrl(
+      Uri.parse('https://i-teach.uz/web/delete_account.html'),
+      mode: LaunchMode.inAppBrowserView,
     );
   }
 

@@ -1,46 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/auth/presentation/register_controller.dart';
+import 'package:student/core/auth/presentation/recover_password_controller.dart';
 import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/utils/messenger.dart';
 import 'package:student/utils/uz_phone_formatter.dart';
 
-class RegisterScreen extends ConsumerStatefulWidget {
-  static const path = '/register';
+class ForgotPasswordScreen extends ConsumerStatefulWidget {
+  static const path = '/forgot-password';
 
-  const RegisterScreen({super.key});
+  const ForgotPasswordScreen({super.key});
 
   @override
-  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
-class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _otpSent = false;
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<void>>(registerControllerProvider, (prev, next) {
+    ref.listen<AsyncValue<void>>(recoverPasswordControllerProvider, (
+      prev,
+      next,
+    ) {
       if (prev?.isLoading != true) return;
       next.whenOrNull(
         data: (_) {
           if (!_otpSent) {
             _otpSent = true;
             final digits = _phoneController.text.replaceAll(' ', '');
-            context.push('${OtpScreen.path}?phone=998$digits&mode=register');
+            context.push('${OtpScreen.path}?phone=998$digits&mode=recover');
           }
         },
-        error: (e, _) =>
-            showErrorMessage(context, RegisterController.errorMessage(e)),
+        error: (e, _) => showErrorMessage(
+          context,
+          RecoverPasswordController.errorMessage(e),
+        ),
       );
     });
 
-    final isLoading = ref.watch(registerControllerProvider).isLoading;
+    final isLoading = ref.watch(recoverPasswordControllerProvider).isLoading;
 
     return Scaffold(
       body: SafeArea(
@@ -53,32 +60,25 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: AppSpacing.xl),
+                  IconButton(
+                    onPressed: context.pop,
+                    icon: SvgPicture.asset('assets/icons/arrow_left.svg'),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Create Account',
+                    'Reset Password',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Join thousands of learners today',
+                    'Enter your phone number and a new password',
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xxl),
-                  TextFormField(
-                    controller: _firstNameController,
-                    decoration: const InputDecoration(labelText: 'First name'),
-                    textCapitalization: TextCapitalization.sentences,
-                    validator: (value) {
-                      if ((value ?? '').trim().isEmpty) {
-                        return 'Enter your first name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
                   TextFormField(
                     controller: _phoneController,
                     decoration: const InputDecoration(
@@ -97,12 +97,28 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   TextFormField(
-                    controller: _passwordController,
+                    controller: _newPasswordController,
                     obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(
+                      labelText: 'New password',
+                    ),
                     validator: (value) {
                       if ((value ?? '').length < 8) {
                         return 'Password must be at least 8 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm password',
+                    ),
+                    validator: (value) {
+                      if (value != _newPasswordController.text) {
+                        return 'Passwords do not match';
                       }
                       return null;
                     },
@@ -121,38 +137,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Continue'),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  SizedBox(
-                    width: double.infinity,
-                    child: GestureDetector(
-                      onTap: () => context.go('/login'),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.bodyMedium!
-                              .copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                          children: [
-                            const TextSpan(text: 'Already have an account? '),
-                            TextSpan(
-                              text: 'Sign In',
-                              style: Theme.of(context).textTheme.bodyMedium!
-                                  .copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
+                          : const Text('Send Code'),
                     ),
                   ),
                 ],
@@ -169,19 +154,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _otpSent = false;
     final digits = _phoneController.text.replaceAll(' ', '');
     ref
-        .read(registerControllerProvider.notifier)
+        .read(recoverPasswordControllerProvider.notifier)
         .prepareAndSendOtp(
-          firstName: _firstNameController.text.trim(),
           phoneNumber: '998$digits',
-          password: _passwordController.text,
+          newPassword: _newPasswordController.text,
         );
   }
 
   @override
   void dispose() {
-    _firstNameController.dispose();
     _phoneController.dispose();
-    _passwordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 }

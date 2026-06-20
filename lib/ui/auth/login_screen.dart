@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/login_controller.dart';
+import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/utils/messenger.dart';
 import 'package:student/utils/uz_phone_formatter.dart';
@@ -69,8 +70,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     inputFormatters: [UzPhoneFormatter()],
                     validator: (value) {
                       final digits = (value ?? '').replaceAll(' ', '');
-                      if (digits.length != 9)
+                      if (digits.length != 9) {
                         return 'Enter a valid phone number';
+                      }
                       return null;
                     },
                   ),
@@ -80,12 +82,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscureText: true,
                     decoration: const InputDecoration(labelText: 'Password'),
                     validator: (value) {
-                      if ((value ?? '').length < 8)
+                      if ((value ?? '').length < 8) {
                         return 'Password must be at least 8 characters';
+                      }
                       return null;
                     },
                   ),
-                  const SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.sm),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () => context.push(ForgotPasswordScreen.path),
+                      child: const Text('Forgot Password?'),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
@@ -106,7 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: GestureDetector(
-                      onTap: () => context.go('/register'),
+                      onTap: () => context.go('/survey'),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -144,13 +155,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-
     final digits = _phoneController.text.replaceAll(' ', '');
-    final phoneNumber = '998$digits';
-
     ref
         .read(loginControllerProvider.notifier)
-        .signIn(phoneNumber: phoneNumber, password: _passwordController.text);
+        .signIn(phoneNumber: '998$digits', password: _passwordController.text);
   }
 
   @override

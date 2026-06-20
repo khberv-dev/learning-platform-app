@@ -2,11 +2,16 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/lesson_entity.dart';
+import 'package:student/core/courses/domain/entity/task_result_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
+import 'package:student/core/courses/presentation/tasks_controller.dart'
+    show lessonTaskResultsProvider;
+import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:video_player/video_player.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
@@ -111,6 +116,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
         final unitNumber = (widget.unitIndex + 1).toString().padLeft(2, '0');
 
+        final taskResults = lesson != null
+            ? ref.watch(lessonTaskResultsProvider(lesson.id)).value ?? []
+            : <TaskResultEntity>[];
+
         return Scaffold(
           backgroundColor: const Color(0xFFF5F7FA),
           body: SafeArea(
@@ -130,6 +139,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                         unitNumber: unitNumber,
                         lessonIndex: _lessonIndex,
                         totalLessons: unit.lessons.length,
+                        courseId: widget.courseId,
+                        unitId: unit.id,
+                        taskResults: taskResults,
                       ),
                       _UnitLessonList(
                         unit: unit,
@@ -242,12 +254,18 @@ class _LessonInfo extends StatelessWidget {
   final String unitNumber;
   final int lessonIndex;
   final int totalLessons;
+  final String courseId;
+  final String unitId;
+  final List<TaskResultEntity> taskResults;
 
   const _LessonInfo({
     this.lesson,
     required this.unitNumber,
     required this.lessonIndex,
     required this.totalLessons,
+    required this.courseId,
+    required this.unitId,
+    required this.taskResults,
   });
 
   @override
@@ -306,6 +324,162 @@ class _LessonInfo extends StatelessWidget {
               ),
             ),
           ],
+          if (lesson != null) ...[
+            const SizedBox(height: 16),
+            _TasksSection(
+              lesson: lesson!,
+              courseId: courseId,
+              unitId: unitId,
+              taskResults: taskResults,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ── Tasks section ─────────────────────────────────────────────────────────────
+
+class _TasksSection extends StatelessWidget {
+  final LessonEntity lesson;
+  final String courseId;
+  final String unitId;
+  final List<TaskResultEntity> taskResults;
+
+  const _TasksSection({
+    required this.lesson,
+    required this.courseId,
+    required this.unitId,
+    required this.taskResults,
+  });
+
+  void _goToTasks(BuildContext context) {
+    context.push(
+      '${TasksScreen.path}'
+      '?courseId=$courseId'
+      '&unitId=$unitId'
+      '&lessonId=${lesson.id}'
+      '&lessonTitle=${Uri.encodeComponent(lesson.title)}',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final answered = taskResults.where((r) => r.isAnswered).length;
+
+    if (answered == 0) {
+      return SizedBox(
+        width: double.infinity,
+        child: FilledButton.icon(
+          onPressed: () => _goToTasks(context),
+          icon: const Icon(Icons.task_alt_rounded, size: 18),
+          label: const Text('View Tasks'),
+          style: FilledButton.styleFrom(
+            backgroundColor: const Color(0xFF18C96A),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 14),
+          ),
+        ),
+      );
+    }
+
+    final total = taskResults.length;
+    final correct = taskResults.where((r) => r.submission?.isCorrect ?? false).length;
+    final pct = total > 0 ? (correct / total * 100).round() : 0;
+    final allDone = answered == total;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: pct >= 70
+                      ? const Color(0xFFF0FDF4)
+                      : const Color(0xFFFEF2F2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  allDone
+                      ? Icons.task_alt_rounded
+                      : Icons.pending_outlined,
+                  color: pct >= 70
+                      ? const Color(0xFF18C96A)
+                      : const Color(0xFFEF4444),
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      allDone ? 'Tasks Completed' : 'Tasks In Progress',
+                      style: const TextStyle(
+                        color: Color(0xFF111827),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      '$correct of $total correct · $pct%',
+                      style: const TextStyle(
+                        color: Color(0xFF6B7280),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: total > 0 ? correct / total : 0,
+              minHeight: 5,
+              backgroundColor: const Color(0xFFE5E7EB),
+              valueColor: AlwaysStoppedAnimation(
+                pct >= 70
+                    ? const Color(0xFF18C96A)
+                    : const Color(0xFFEF4444),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () => _goToTasks(context),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF18C96A),
+                side: const BorderSide(color: Color(0xFF18C96A)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 11),
+              ),
+              child: const Text(
+                'Retake',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
         ],
       ),
     );

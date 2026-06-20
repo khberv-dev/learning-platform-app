@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/app/data/network/config.dart';
 import 'package:student/core/p2p/domain/entity/p2p_state.dart';
 import 'package:student/core/p2p/presentation/p2p_controller.dart';
 import 'package:student/ui/main/app_screen.dart';
@@ -56,6 +57,13 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
     setState(() => _muted = next);
   }
 
+  P2pPeer? _peerFrom(P2pState s) {
+    if (s is P2pMatched) return s.peer;
+    if (s is P2pConnecting) return s.peer;
+    if (s is P2pConnected) return s.peer;
+    return null;
+  }
+
   String _statusLabel(P2pState s) {
     if (s is P2pConnected) return _timeLabel;
     if (s is P2pConnecting) return 'Connecting…';
@@ -66,6 +74,7 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
   @override
   Widget build(BuildContext context) {
     final p2pState = ref.watch(p2pControllerProvider);
+    final peer = _peerFrom(p2pState);
 
     ref.listen<P2pState>(p2pControllerProvider, (prev, next) {
       if (next is P2pConnected) {
@@ -92,27 +101,11 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
           child: Column(
             children: [
               const SizedBox(height: 110),
-              Container(
-                width: 110,
-                height: 110,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF18C96A),
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: const Text(
-                  '?',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 38,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
+              _PeerAvatar(peer: peer),
               const SizedBox(height: 20),
-              const Text(
-                'Speaking Partner',
-                style: TextStyle(
+              Text(
+                peer?.displayName ?? 'Speaking Partner',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 26,
                   fontWeight: FontWeight.w700,
@@ -120,7 +113,7 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                p2pState is P2pConnected ? 'Connected' : 'Anonymous match',
+                p2pState is P2pConnected ? 'Connected' : 'Connecting…',
                 style: const TextStyle(color: Color(0xFF18C96A), fontSize: 14),
               ),
               const SizedBox(height: 8),
@@ -194,5 +187,54 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
       case P2pEndReason.error:
         return 'Call error';
     }
+  }
+}
+
+class _PeerAvatar extends StatelessWidget {
+  final P2pPeer? peer;
+
+  const _PeerAvatar({this.peer});
+
+  @override
+  Widget build(BuildContext context) {
+    final avatarUrl = peer?.avatarUrl;
+    final imageUrl = avatarUrl == null
+        ? null
+        : avatarUrl.startsWith('http')
+        ? avatarUrl
+        : '$baseCdnUrl/$avatarUrl';
+
+    if (imageUrl != null) {
+      return ClipOval(
+        child: Image.network(
+          imageUrl,
+          width: 110,
+          height: 110,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => _initialsCircle(peer),
+        ),
+      );
+    }
+    return _initialsCircle(peer);
+  }
+
+  Widget _initialsCircle(P2pPeer? peer) {
+    return Container(
+      width: 110,
+      height: 110,
+      decoration: const BoxDecoration(
+        color: Color(0xFF18C96A),
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        peer?.initials ?? '?',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 38,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }

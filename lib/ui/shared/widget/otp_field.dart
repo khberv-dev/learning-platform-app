@@ -47,7 +47,7 @@ class OtpField extends StatelessWidget {
 
     return Pinput(
       enabled: enabled,
-      length: 5,
+      length: 6,
       autofocus: true,
       defaultPinTheme: defaultPinTheme,
       submittedPinTheme: submittedPinTheme,

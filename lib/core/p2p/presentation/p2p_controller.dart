@@ -16,6 +16,7 @@ class P2pController extends Notifier<P2pState> {
   RTCPeerConnection? _peer;
   MediaStream? _localStream;
   P2pRole? _role;
+  P2pPeer? _matchedPeer;
   bool _remoteDescriptionSet = false;
   final List<RTCIceCandidate> _pendingCandidates = [];
 
@@ -59,7 +60,24 @@ class P2pController extends Notifier<P2pState> {
         final sessionId = m['sessionId'] as String;
         final role = m['role'] == 'caller' ? P2pRole.caller : P2pRole.callee;
         _role = role;
-        state = P2pMatched(sessionId: sessionId, role: role);
+        final peerData = (m['peer'] as Map?)?.cast<String, dynamic>();
+        if (peerData != null) {
+          final userData =
+              (peerData['user'] as Map?)?.cast<String, dynamic>() ?? peerData;
+          _matchedPeer = P2pPeer(
+            id: peerData['id'] as String? ?? '',
+            firstName: userData['firstName'] as String? ?? 'Partner',
+            lastName: userData['lastName'] as String?,
+            avatarUrl: userData['avatar'] as String?,
+          );
+        } else {
+          _matchedPeer = const P2pPeer(id: '', firstName: 'Partner');
+        }
+        state = P2pMatched(
+          sessionId: sessionId,
+          role: role,
+          peer: _matchedPeer!,
+        );
         await _setupPeer();
       })
       ..on('signal', (data) async {
@@ -120,7 +138,7 @@ class P2pController extends Notifier<P2pState> {
   }
 
   Future<void> _setupPeer() async {
-    state = P2pConnecting(role: _role!);
+    state = P2pConnecting(role: _role!, peer: _matchedPeer!);
 
     final peer = await createPeerConnection(_iceServers);
     _peer = peer;
@@ -151,7 +169,7 @@ class P2pController extends Notifier<P2pState> {
 
     peer.onConnectionState = (connState) {
       if (connState == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
-        state = const P2pConnected();
+        state = P2pConnected(peer: _matchedPeer!);
       } else if (connState ==
               RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
           connState == RTCPeerConnectionState.RTCPeerConnectionStateClosed) {
@@ -221,6 +239,7 @@ class P2pController extends Notifier<P2pState> {
     _remoteDescriptionSet = false;
     _pendingCandidates.clear();
     _role = null;
+    _matchedPeer = null;
 
     final peer = _peer;
     _peer = null;

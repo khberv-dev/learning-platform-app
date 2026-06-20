@@ -34,4 +34,6 @@ class TokenStorage {
     await prefs.remove(_accessKey);
     await prefs.remove(_refreshKey);
   }
+
+  Future<void> clearAll() async => (await _storage).clear();
 }

@@ -30,15 +30,7 @@ class AuthRepository implements IAuthRepository {
       'auth/sign-in',
       data: {'phoneNumber': phoneNumber, 'password': password},
     );
-
-    final auth = AuthResponse.fromJson(response.data as Map<String, dynamic>);
-
-    await _tokenStorage.saveTokens(
-      accessToken: auth.accessToken,
-      refreshToken: auth.refreshToken,
-    );
-
-    return auth.toEntity();
+    return _saveAndReturn(response.data as Map<String, dynamic>);
   }
 
   @override
@@ -46,6 +38,7 @@ class AuthRepository implements IAuthRepository {
     required String firstName,
     required String phoneNumber,
     required String password,
+    required String code,
   }) async {
     final response = await _dio.post(
       'auth/sign-up',
@@ -53,16 +46,39 @@ class AuthRepository implements IAuthRepository {
         'firstName': firstName,
         'phoneNumber': phoneNumber,
         'password': password,
+        'code': code,
       },
     );
+    return _saveAndReturn(response.data as Map<String, dynamic>);
+  }
 
-    final auth = AuthResponse.fromJson(response.data as Map<String, dynamic>);
+  @override
+  Future<void> sendOtp({required String phoneNumber}) async {
+    await _dio.post('auth/otp/send', data: {'phoneNumber': phoneNumber});
+  }
 
+  @override
+  Future<void> recoverPassword({
+    required String phoneNumber,
+    required String code,
+    required String newPassword,
+  }) async {
+    await _dio.post(
+      'auth/recover-password',
+      data: {
+        'phoneNumber': phoneNumber,
+        'code': code,
+        'newPassword': newPassword,
+      },
+    );
+  }
+
+  Future<AuthEntity> _saveAndReturn(Map<String, dynamic> json) async {
+    final auth = AuthResponse.fromJson(json);
     await _tokenStorage.saveTokens(
       accessToken: auth.accessToken,
       refreshToken: auth.refreshToken,
     );
-
     return auth.toEntity();
   }
 }

@@ -10,5 +10,14 @@ abstract class IAuthRepository {
     required String firstName,
     required String phoneNumber,
     required String password,
+    required String code,
+  });
+
+  Future<void> sendOtp({required String phoneNumber});
+
+  Future<void> recoverPassword({
+    required String phoneNumber,
+    required String code,
+    required String newPassword,
   });
 }

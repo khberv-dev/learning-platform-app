@@ -2,11 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/ui/ai_assessment/ai_assessment_screen.dart';
 import 'package:student/ui/ai_assessment/ai_results_screen.dart';
+import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/ui/auth/register_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
+import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
@@ -36,7 +38,19 @@ final _appRouter = GoRouter(
       builder: (_, _) => SkillLevelQuizScreen(),
     ),
     GoRoute(path: RegisterScreen.path, builder: (_, _) => RegisterScreen()),
-    GoRoute(path: OtpScreen.path, builder: (_, _) => OtpScreen()),
+    GoRoute(
+      path: OtpScreen.path,
+      builder: (_, state) => OtpScreen(
+        phoneNumber: state.uri.queryParameters['phone'] ?? '',
+        mode: state.uri.queryParameters['mode'] == 'recover'
+            ? OtpMode.recoverPassword
+            : OtpMode.register,
+      ),
+    ),
+    GoRoute(
+      path: ForgotPasswordScreen.path,
+      builder: (_, _) => const ForgotPasswordScreen(),
+    ),
     GoRoute(path: LoginScreen.path, builder: (_, _) => LoginScreen()),
     GoRoute(path: AppScreen.path, builder: (_, _) => AppScreen()),
     GoRoute(
@@ -60,6 +74,15 @@ final _appRouter = GoRouter(
       path: TutorProfileScreen.path,
       builder: (_, state) =>
           TutorProfileScreen(tutorId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: TasksScreen.path,
+      builder: (_, state) => TasksScreen(
+        courseId: state.uri.queryParameters['courseId']!,
+        unitId: state.uri.queryParameters['unitId']!,
+        lessonId: state.uri.queryParameters['lessonId']!,
+        lessonTitle: state.uri.queryParameters['lessonTitle'] ?? '',
+      ),
     ),
     GoRoute(
       path: LessonScreen.path,
