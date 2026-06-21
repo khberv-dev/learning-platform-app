@@ -10,10 +10,7 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 
   final String roomId;
 
-  const ChatRoomScreen({
-    super.key,
-    required this.roomId,
-  });
+  const ChatRoomScreen({super.key, required this.roomId});
 
   @override
   ConsumerState<ChatRoomScreen> createState() => _ChatRoomScreenState();
@@ -32,9 +29,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final text = _textController.text.trim();
     if (text.isEmpty) return;
     _textController.clear();
-    ref
-        .read(chatMessagesProvider(widget.roomId).notifier)
-        .sendMessage(text);
+    ref.read(chatMessagesProvider(widget.roomId).notifier).sendMessage(text);
   }
 
   @override
@@ -45,7 +40,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final mentor = roomDetail?.mentor;
     final mentorId = mentor?.id;
     final mentorName = mentor?.fullName ?? 'Mentor';
-    final mentorInitial = mentorName.isNotEmpty ? mentorName[0].toUpperCase() : '?';
+    final mentorInitial = mentorName.isNotEmpty
+        ? mentorName[0].toUpperCase()
+        : '?';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
@@ -143,10 +140,7 @@ class _Header extends StatelessWidget {
                 ),
                 const Text(
                   'Mentor',
-                  style: TextStyle(
-                    color: Color(0xFF9CA3AF),
-                    fontSize: 11,
-                  ),
+                  style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 11),
                 ),
               ],
             ),
@@ -203,8 +197,9 @@ class _MessageBubble extends StatelessWidget {
             maxWidth: MediaQuery.of(context).size.width * 0.72,
           ),
           child: Column(
-            crossAxisAlignment:
-                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: isMe
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -327,10 +322,7 @@ class _InputBarState extends State<_InputBar> {
           Expanded(
             child: TextField(
               controller: widget.controller,
-              style: const TextStyle(
-                color: Color(0xFF111827),
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Color(0xFF111827), fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Type a message…',
                 hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
@@ -365,8 +357,9 @@ class _InputBarState extends State<_InputBar> {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color:
-                  _hasText ? const Color(0xFF18C96A) : const Color(0xFFE5E7EB),
+              color: _hasText
+                  ? const Color(0xFF18C96A)
+                  : const Color(0xFFE5E7EB),
               shape: BoxShape.circle,
             ),
             child: Material(

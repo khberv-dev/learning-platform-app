@@ -55,10 +55,14 @@ class AppNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _SvgNavItem(label: 'Home', iconPath: 'assets/icons/home.svg')
-          .build(context),
-      _SvgNavItem(label: 'Course', iconPath: 'assets/icons/grid.svg')
-          .build(context),
+      _SvgNavItem(
+        label: 'Home',
+        iconPath: 'assets/icons/home.svg',
+      ).build(context),
+      _SvgNavItem(
+        label: 'Course',
+        iconPath: 'assets/icons/grid.svg',
+      ).build(context),
       if (showChat)
         _iconNavItem(
           context: context,
@@ -66,10 +70,14 @@ class AppNavbar extends StatelessWidget {
           icon: Icons.chat_bubble_outline_rounded,
         )
       else
-        _SvgNavItem(label: 'Mentor', iconPath: 'assets/icons/student.svg')
-            .build(context),
-      _SvgNavItem(label: 'Profile', iconPath: 'assets/icons/profile.svg')
-          .build(context),
+        _SvgNavItem(
+          label: 'Mentor',
+          iconPath: 'assets/icons/student.svg',
+        ).build(context),
+      _SvgNavItem(
+        label: 'Profile',
+        iconPath: 'assets/icons/profile.svg',
+      ).build(context),
     ];
 
     return BottomNavigationBar(

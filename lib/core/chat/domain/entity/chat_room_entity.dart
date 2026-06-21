@@ -11,8 +11,9 @@ class ChatUserEntity {
     this.avatar,
   });
 
-  String get fullName =>
-      (lastName != null && lastName!.isNotEmpty) ? '$firstName $lastName' : firstName;
+  String get fullName => (lastName != null && lastName!.isNotEmpty)
+      ? '$firstName $lastName'
+      : firstName;
 
   String get initials {
     final parts = fullName.trim().split(' ');

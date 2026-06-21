@@ -8,11 +8,13 @@ typedef TasksParams = ({String courseId, String unitId, String lessonId});
 
 final tasksControllerProvider =
     FutureProvider.family<List<TaskEntity>, TasksParams>(
-      (ref, params) => ref.read(useGetTasksProvider).call(
-        courseId: params.courseId,
-        unitId: params.unitId,
-        lessonId: params.lessonId,
-      ),
+      (ref, params) => ref
+          .read(useGetTasksProvider)
+          .call(
+            courseId: params.courseId,
+            unitId: params.unitId,
+            lessonId: params.lessonId,
+          ),
     );
 
 final lessonTaskResultsProvider =

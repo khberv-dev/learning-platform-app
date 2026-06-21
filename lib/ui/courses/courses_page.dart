@@ -80,118 +80,119 @@ class _CoursesTab extends ConsumerWidget {
         ]);
       },
       child: CustomScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              20,
-              AppSpacing.xl,
-              12,
-            ),
-            child: Text(
-              'My Courses',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: const Color(0xFF111827),
-                fontWeight: FontWeight.w700,
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl,
+                20,
+                AppSpacing.xl,
+                12,
               ),
-            ),
-          ),
-        ),
-        myCourses.when(
-          loading: () => const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
-          error: (e, _) => SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Text(
-                e.toString(),
-                style: const TextStyle(color: Color(0xFF6B7280)),
-              ),
-            ),
-          ),
-          data: (courses) {
-            if (courses.isEmpty) {
-              return const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                  child: _NoMyCoursesCard(),
+                'My Courses',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: const Color(0xFF111827),
+                  fontWeight: FontWeight.w700,
                 ),
-              );
-            }
-            return SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              sliver: SliverList.separated(
-                itemCount: courses.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (_, i) => MyCourseCard(course: courses[i]),
-              ),
-            );
-          },
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              24,
-              AppSpacing.xl,
-              12,
-            ),
-            child: Text(
-              'Available to Purchase',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: const Color(0xFF111827),
-                fontWeight: FontWeight.w700,
               ),
             ),
           ),
-        ),
-        available.when(
-          loading: () => const SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
-          error: (e, _) => SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              child: Text(
-                e.toString(),
-                style: const TextStyle(color: Color(0xFF6B7280)),
+          myCourses.when(
+            loading: () => const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
               ),
             ),
-          ),
-          data: (courses) {
-            if (courses.isEmpty) {
-              return const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                  child: Text(
-                    'No courses available.',
-                    style: TextStyle(color: Color(0xFF6B7280)),
+            error: (e, _) => SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Text(
+                  e.toString(),
+                  style: const TextStyle(color: Color(0xFF6B7280)),
+                ),
+              ),
+            ),
+            data: (courses) {
+              if (courses.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    child: _NoMyCoursesCard(),
                   ),
+                );
+              }
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                sliver: SliverList.separated(
+                  itemCount: courses.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (_, i) => MyCourseCard(course: courses[i]),
                 ),
               );
-            }
-            return SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              sliver: SliverList.separated(
-                itemCount: courses.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (_, i) => AvailableCourseCard(course: courses[i]),
+            },
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl,
+                24,
+                AppSpacing.xl,
+                12,
               ),
-            );
-          },
-        ),
-        const SliverToBoxAdapter(child: SizedBox(height: 96)),
-      ],
-    ),
+              child: Text(
+                'Available to Purchase',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: const Color(0xFF111827),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+          available.when(
+            loading: () => const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
+            error: (e, _) => SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: Text(
+                  e.toString(),
+                  style: const TextStyle(color: Color(0xFF6B7280)),
+                ),
+              ),
+            ),
+            data: (courses) {
+              if (courses.isEmpty) {
+                return const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    child: Text(
+                      'No courses available.',
+                      style: TextStyle(color: Color(0xFF6B7280)),
+                    ),
+                  ),
+                );
+              }
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                sliver: SliverList.separated(
+                  itemCount: courses.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (_, i) =>
+                      AvailableCourseCard(course: courses[i]),
+                ),
+              );
+            },
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 96)),
+        ],
+      ),
     );
   }
 }
@@ -209,133 +210,134 @@ class _LiveSessionsTab extends ConsumerWidget {
         await ref.read(liveLessonsControllerProvider.future);
       },
       child: state.when(
-      loading: () => const CustomScrollView(
-        physics: AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverFillViewport(
-            delegate: SliverChildListDelegate.fixed([
-              Center(child: CircularProgressIndicator()),
-            ]),
-          ),
-        ],
-      ),
-      error: (e, _) => CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverFillViewport(
-            delegate: SliverChildListDelegate.fixed([
-              Center(
-                child: Text(
-                  e.toString(),
-                  style: const TextStyle(color: Color(0xFF6B7280)),
+        loading: () => const CustomScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverFillViewport(
+              delegate: SliverChildListDelegate.fixed([
+                Center(child: CircularProgressIndicator()),
+              ]),
+            ),
+          ],
+        ),
+        error: (e, _) => CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverFillViewport(
+              delegate: SliverChildListDelegate.fixed([
+                Center(
+                  child: Text(
+                    e.toString(),
+                    style: const TextStyle(color: Color(0xFF6B7280)),
+                  ),
                 ),
-              ),
-            ]),
-          ),
-        ],
-      ),
-      data: (lessons) {
-        if (lessons.isEmpty) {
+              ]),
+            ),
+          ],
+        ),
+        data: (lessons) {
+          if (lessons.isEmpty) {
+            return CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverFillViewport(
+                  delegate: SliverChildListDelegate.fixed([
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF0FDF4),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.videocam_off_outlined,
+                            color: Color(0xFF18C96A),
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'No Recorded Sessions',
+                          style: TextStyle(
+                            color: Color(0xFF111827),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const SizedBox(
+                          width: 260,
+                          child: Text(
+                            'Recorded live sessions will appear here once available.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF9CA3AF),
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]),
+                ),
+              ],
+            );
+          }
+
           return CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverFillViewport(
-                delegate: SliverChildListDelegate.fixed([
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    20,
+                    AppSpacing.xl,
+                    12,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 80,
-                        height: 80,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF0FDF4),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.videocam_off_outlined,
-                          color: Color(0xFF18C96A),
-                          size: 32,
-                        ),
+                      Text(
+                        'Recorded Sessions',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: const Color(0xFF111827),
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'No Recorded Sessions',
-                        style: TextStyle(
-                          color: Color(0xFF111827),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const SizedBox(
-                        width: 260,
-                        child: Text(
-                          'Recorded live sessions will appear here once available.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF9CA3AF),
-                            fontSize: 14,
-                            height: 1.5,
-                          ),
+                      Text(
+                        '${lessons.length} sessions',
+                        style: const TextStyle(
+                          color: Color(0xFF9CA3AF),
+                          fontSize: 13,
                         ),
                       ),
                     ],
                   ),
-                ]),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  96,
+                ),
+                sliver: SliverList.separated(
+                  itemCount: lessons.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 16),
+                  itemBuilder: (_, i) => LiveSessionCard(lesson: lessons[i]),
+                ),
               ),
             ],
           );
-        }
-
-        return CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl,
-                  20,
-                  AppSpacing.xl,
-                  12,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Recorded Sessions',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: const Color(0xFF111827),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      '${lessons.length} sessions',
-                      style: const TextStyle(
-                        color: Color(0xFF9CA3AF),
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                0,
-                AppSpacing.xl,
-                96,
-              ),
-              sliver: SliverList.separated(
-                itemCount: lessons.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 16),
-                itemBuilder: (_, i) => LiveSessionCard(lesson: lessons[i]),
-              ),
-            ),
-          ],
-        );
-      },
-    ),
+        },
+      ),
     );
   }
 }

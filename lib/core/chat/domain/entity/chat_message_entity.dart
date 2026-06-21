@@ -20,5 +20,6 @@ class ChatMessageEntity {
   });
 
   bool get isText => type == 'text';
+
   bool get isFile => type == 'file';
 }

@@ -99,8 +99,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
             _Header(lessonTitle: widget.lessonTitle),
             Expanded(
               child: state.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(
                   child: Padding(
                     padding: const EdgeInsets.all(24),
@@ -118,10 +117,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                   final isLast = idx == tasks.length - 1;
                   return Column(
                     children: [
-                      _QueueProgress(
-                        current: idx + 1,
-                        total: tasks.length,
-                      ),
+                      _QueueProgress(current: idx + 1, total: tasks.length),
                       Expanded(
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -233,10 +229,7 @@ class _QueueProgress extends StatelessWidget {
             children: [
               Text(
                 'Task $current of $total',
-                style: const TextStyle(
-                  color: Color(0xFF6B7280),
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12),
               ),
               Text(
                 '${(progress * 100).round()}%',
@@ -342,9 +335,7 @@ class _OptionTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFF0FDF4)
-              : const Color(0xFFF9FAFB),
+          color: isSelected ? const Color(0xFFF0FDF4) : const Color(0xFFF9FAFB),
           border: Border.all(
             color: isSelected
                 ? const Color(0xFF18C96A)
@@ -426,10 +417,7 @@ class _OpenAnswerFieldState extends State<_OpenAnswerField> {
     return TextField(
       controller: widget.controller,
       autofocus: true,
-      style: const TextStyle(
-        color: Color(0xFF111827),
-        fontSize: 14,
-      ),
+      style: const TextStyle(color: Color(0xFF111827), fontSize: 14),
       decoration: InputDecoration(
         hintText: 'Type your answer…',
         hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
@@ -479,9 +467,7 @@ class _BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF5F7FA),
-      ),
+      decoration: const BoxDecoration(color: Color(0xFFF5F7FA)),
       child: SizedBox(
         width: double.infinity,
         child: isLast

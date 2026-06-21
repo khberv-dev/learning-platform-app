@@ -26,7 +26,8 @@ class ChatRepository implements IChatRepository {
     final list = data['data'] as List<dynamic>;
     return list
         .map(
-          (e) => ChatRoomResponse.fromJson(e as Map<String, dynamic>).toEntity(),
+          (e) =>
+              ChatRoomResponse.fromJson(e as Map<String, dynamic>).toEntity(),
         )
         .toList();
   }
@@ -49,8 +50,9 @@ class ChatRepository implements IChatRepository {
     final list = data['data'] as List<dynamic>;
     return list
         .map(
-          (e) =>
-              ChatMessageResponse.fromJson(e as Map<String, dynamic>).toEntity(),
+          (e) => ChatMessageResponse.fromJson(
+            e as Map<String, dynamic>,
+          ).toEntity(),
         )
         .toList();
   }

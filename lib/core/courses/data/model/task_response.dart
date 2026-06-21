@@ -20,10 +20,6 @@ class TaskResponse {
     answer: json['answer'] as String,
   );
 
-  TaskEntity toEntity() => TaskEntity(
-    id: id,
-    question: task,
-    options: options,
-    answer: answer,
-  );
+  TaskEntity toEntity() =>
+      TaskEntity(id: id, question: task, options: options, answer: answer);
 }

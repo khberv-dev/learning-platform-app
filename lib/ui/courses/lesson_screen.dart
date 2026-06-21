@@ -388,7 +388,9 @@ class _TasksSection extends StatelessWidget {
     }
 
     final total = taskResults.length;
-    final correct = taskResults.where((r) => r.submission?.isCorrect ?? false).length;
+    final correct = taskResults
+        .where((r) => r.submission?.isCorrect ?? false)
+        .length;
     final pct = total > 0 ? (correct / total * 100).round() : 0;
     final allDone = answered == total;
 
@@ -413,9 +415,7 @@ class _TasksSection extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  allDone
-                      ? Icons.task_alt_rounded
-                      : Icons.pending_outlined,
+                  allDone ? Icons.task_alt_rounded : Icons.pending_outlined,
                   color: pct >= 70
                       ? const Color(0xFF18C96A)
                       : const Color(0xFFEF4444),
@@ -455,9 +455,7 @@ class _TasksSection extends StatelessWidget {
               minHeight: 5,
               backgroundColor: const Color(0xFFE5E7EB),
               valueColor: AlwaysStoppedAnimation(
-                pct >= 70
-                    ? const Color(0xFF18C96A)
-                    : const Color(0xFFEF4444),
+                pct >= 70 ? const Color(0xFF18C96A) : const Color(0xFFEF4444),
               ),
             ),
           ),

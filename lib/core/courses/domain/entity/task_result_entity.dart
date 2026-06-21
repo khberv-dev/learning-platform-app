@@ -21,5 +21,6 @@ class TaskResultEntity {
   });
 
   bool get isAnswered => submission != null;
+
   bool get isMultipleChoice => options != null && options!.isNotEmpty;
 }

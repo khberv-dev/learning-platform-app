@@ -78,9 +78,8 @@ final _appRouter = GoRouter(
     ),
     GoRoute(
       path: ChatRoomScreen.path,
-      builder: (_, state) => ChatRoomScreen(
-        roomId: state.uri.queryParameters['roomId']!,
-      ),
+      builder: (_, state) =>
+          ChatRoomScreen(roomId: state.uri.queryParameters['roomId']!),
     ),
     GoRoute(
       path: TasksScreen.path,
