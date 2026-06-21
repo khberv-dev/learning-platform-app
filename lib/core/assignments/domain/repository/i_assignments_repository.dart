@@ -4,5 +4,6 @@ abstract class IAssignmentsRepository {
   Future<AssignmentEntity> createAssignment({
     required String teacherId,
     required DateTime startDate,
+    Map<String, List<String>>? selectedSchedule,
   });
 }

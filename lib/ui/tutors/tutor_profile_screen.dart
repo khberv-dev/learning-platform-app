@@ -5,7 +5,7 @@ import 'package:student/app/data/network/config.dart';
 import 'package:student/core/assignments/presentation/create_assignment_controller.dart';
 import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
 import 'package:student/core/tutors/presentation/tutor_detail_controller.dart';
-import 'package:student/utils/messenger.dart';
+import 'package:student/ui/tutors/book_tutor_sheet.dart';
 import 'package:video_player/video_player.dart';
 
 class TutorProfileScreen extends ConsumerStatefulWidget {
@@ -74,10 +74,6 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
               const SnackBar(content: Text('Booking request sent')),
             );
         },
-        error: (e, _) => showErrorMessage(
-          context,
-          CreateAssignmentController.errorMessage(e),
-        ),
       );
     });
 
@@ -120,7 +116,7 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
                   ),
                 ),
               ),
-              _BottomBar(tutorId: widget.tutorId),
+              _BottomBar(tutorId: widget.tutorId, tutorName: tutor.name),
             ],
           );
         },
@@ -366,18 +362,12 @@ class _ReviewsSection extends StatelessWidget {
 
 class _BottomBar extends ConsumerWidget {
   final String tutorId;
+  final String tutorName;
 
-  const _BottomBar({required this.tutorId});
-
-  Future<void> _onBook(BuildContext context, WidgetRef ref) async {
-    await ref
-        .read(createAssignmentControllerProvider.notifier)
-        .book(teacherId: tutorId);
-  }
+  const _BottomBar({required this.tutorId, required this.tutorName});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoading = ref.watch(createAssignmentControllerProvider).isLoading;
     final bottom = MediaQuery.of(context).padding.bottom;
     return Container(
       color: Colors.white,
@@ -389,26 +379,22 @@ class _BottomBar extends ConsumerWidget {
           color: const Color(0xFF18C96A),
           borderRadius: BorderRadius.circular(28),
           child: InkWell(
-            onTap: isLoading ? null : () => _onBook(context, ref),
+            onTap: () => showBookTutorSheet(
+              context,
+              ref,
+              tutorId: tutorId,
+              tutorName: tutorName,
+            ),
             borderRadius: BorderRadius.circular(28),
-            child: Center(
-              child: isLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    )
-                  : const Text(
-                      'Book Tutor',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+            child: const Center(
+              child: Text(
+                'Book Tutor',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
         ),

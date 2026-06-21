@@ -14,12 +14,17 @@ class CreateAssignmentController extends AsyncNotifier<AssignmentEntity?> {
   @override
   FutureOr<AssignmentEntity?> build() => null;
 
-  Future<void> book({required String teacherId}) async {
+  Future<void> book({
+    required String teacherId,
+    Map<String, List<String>>? selectedSchedule,
+  }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref
-          .read(useCreateAssignmentProvider)
-          .call(teacherId: teacherId, startDate: DateTime.now()),
+      () => ref.read(useCreateAssignmentProvider).call(
+        teacherId: teacherId,
+        startDate: DateTime.now(),
+        selectedSchedule: selectedSchedule,
+      ),
     );
   }
 

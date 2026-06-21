@@ -15,6 +15,11 @@ class UseCreateAssignment {
   Future<AssignmentEntity> call({
     required String teacherId,
     required DateTime startDate,
+    Map<String, List<String>>? selectedSchedule,
   }) =>
-      _repository.createAssignment(teacherId: teacherId, startDate: startDate);
+      _repository.createAssignment(
+        teacherId: teacherId,
+        startDate: startDate,
+        selectedSchedule: selectedSchedule,
+      );
 }

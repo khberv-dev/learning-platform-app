@@ -32,4 +32,13 @@ class TutorsRepository implements ITutorsRepository {
       response.data as Map<String, dynamic>,
     ).toEntity();
   }
+
+  @override
+  Future<Map<String, List<String>>> getTeacherSchedule(String teacherId) async {
+    final response = await _dio.get('teachers/$teacherId/schedule');
+    final data = response.data as Map<String, dynamic>? ?? {};
+    return data.map(
+      (day, slots) => MapEntry(day, List<String>.from(slots as List)),
+    );
+  }
 }
