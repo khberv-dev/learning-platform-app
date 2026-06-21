@@ -56,19 +56,19 @@ class LiveSessionCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (lesson.courseTitle.isNotEmpty) ...[
+                if (lesson.mentorName.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Row(
                     children: [
                       const Icon(
-                        Icons.menu_book_outlined,
+                        Icons.person_outline_rounded,
                         size: 13,
                         color: Color(0xFF18C96A),
                       ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          lesson.courseTitle,
+                          lesson.mentorName,
                           style: const TextStyle(
                             color: Color(0xFF6B7280),
                             fontSize: 12,

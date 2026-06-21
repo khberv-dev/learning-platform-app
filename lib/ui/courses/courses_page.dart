@@ -236,61 +236,10 @@ class _LiveSessionsTab extends ConsumerWidget {
           ],
         ),
         data: (lessons) {
-          if (lessons.isEmpty) {
-            return CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                SliverFillViewport(
-                  delegate: SliverChildListDelegate.fixed([
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFF0FDF4),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.videocam_off_outlined,
-                            color: Color(0xFF18C96A),
-                            size: 32,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'No Recorded Sessions',
-                          style: TextStyle(
-                            color: Color(0xFF111827),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const SizedBox(
-                          width: 260,
-                          child: Text(
-                            'Recorded live sessions will appear here once available.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFF9CA3AF),
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ]),
-                ),
-              ],
-            );
-          }
-
           return CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
+              // Upcoming section (no student API — shown as empty state)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(
@@ -299,44 +248,152 @@ class _LiveSessionsTab extends ConsumerWidget {
                     AppSpacing.xl,
                     12,
                   ),
+                  child: Text(
+                    'Current & Upcoming',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: const Color(0xFF111827),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(child: _NoUpcomingSessions()),
+              // Past / Recorded section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    24,
+                    AppSpacing.xl,
+                    12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Recorded Sessions',
+                        'Past Sessions',
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
                               color: const Color(0xFF111827),
                               fontWeight: FontWeight.w700,
                             ),
                       ),
-                      Text(
-                        '${lessons.length} sessions',
-                        style: const TextStyle(
-                          color: Color(0xFF9CA3AF),
-                          fontSize: 13,
+                      if (lessons.isNotEmpty)
+                        Text(
+                          '${lessons.length} recorded',
+                          style: const TextStyle(
+                            color: Color(0xFF9CA3AF),
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl,
-                  0,
-                  AppSpacing.xl,
-                  96,
+              if (lessons.isEmpty)
+                const SliverToBoxAdapter(child: _NoRecordedSessions())
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    0,
+                    AppSpacing.xl,
+                    96,
+                  ),
+                  sliver: SliverList.separated(
+                    itemCount: lessons.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 16),
+                    itemBuilder: (_, i) => LiveSessionCard(lesson: lessons[i]),
+                  ),
                 ),
-                sliver: SliverList.separated(
-                  itemCount: lessons.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 16),
-                  itemBuilder: (_, i) => LiveSessionCard(lesson: lessons[i]),
-                ),
-              ),
+              if (lessons.isNotEmpty)
+                const SliverToBoxAdapter(child: SizedBox(height: 96)),
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _NoUpcomingSessions extends StatelessWidget {
+  const _NoUpcomingSessions();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Row(
+          children: [
+            Icon(
+              Icons.event_available_outlined,
+              color: Color(0xFF9CA3AF),
+              size: 22,
+            ),
+            SizedBox(width: 12),
+            Text(
+              'No upcoming sessions scheduled',
+              style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NoRecordedSessions extends StatelessWidget {
+  const _NoRecordedSessions();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, 96),
+      child: Column(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF0FDF4),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.videocam_off_outlined,
+              color: Color(0xFF18C96A),
+              size: 32,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'No Recorded Sessions',
+            style: TextStyle(
+              color: Color(0xFF111827),
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const SizedBox(
+            width: 260,
+            child: Text(
+              'Recorded live sessions will appear here once available.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF9CA3AF),
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

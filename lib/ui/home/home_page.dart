@@ -18,9 +18,9 @@ class HomePage extends StatelessWidget {
         top: AppSpacing.xxl,
         bottom: AppSpacing.xl,
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           HomeTopbar(),
           SizedBox(height: AppSpacing.lg),
           StatsRow(),
