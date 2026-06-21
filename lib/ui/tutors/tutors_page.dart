@@ -43,40 +43,59 @@ class TutorsPage extends ConsumerWidget {
           ),
           data: (tutors) {
             if (tutors.isEmpty) {
-              return const Expanded(
-                child: Center(
-                  child: Text(
-                    'No tutors found.',
-                    style: TextStyle(color: Color(0xFF6B7280)),
+              return Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(tutorsControllerProvider);
+                    await ref.read(tutorsControllerProvider.future);
+                  },
+                  child: const SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: 400,
+                      child: Center(
+                        child: Text(
+                          'No tutors found.',
+                          style: TextStyle(color: Color(0xFF6B7280)),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               );
             }
             return Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl,
-                  16,
-                  AppSpacing.xl,
-                  96,
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(tutorsControllerProvider);
+                  await ref.read(tutorsControllerProvider.future);
+                },
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    16,
+                    AppSpacing.xl,
+                    96,
+                  ),
+                  children: [
+                    const Text(
+                      'Available Tutors',
+                      style: TextStyle(
+                        color: Color(0xFF111827),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ...tutors.map(
+                      (t) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: TutorCard(tutor: t),
+                      ),
+                    ),
+                  ],
                 ),
-                children: [
-                  const Text(
-                    'Available Tutors',
-                    style: TextStyle(
-                      color: Color(0xFF111827),
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ...tutors.map(
-                    (t) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: TutorCard(tutor: t),
-                    ),
-                  ),
-                ],
               ),
             );
           },
