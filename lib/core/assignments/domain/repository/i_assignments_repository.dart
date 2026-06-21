@@ -4,6 +4,5 @@ abstract class IAssignmentsRepository {
   Future<AssignmentEntity> createAssignment({
     required String teacherId,
     required DateTime startDate,
-    required DateTime endDate,
   });
 }

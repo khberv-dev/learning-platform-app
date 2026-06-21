@@ -15,10 +15,8 @@ class UseCreateAssignment {
   Future<AssignmentEntity> call({
     required String teacherId,
     required DateTime startDate,
-    required DateTime endDate,
   }) => _repository.createAssignment(
     teacherId: teacherId,
     startDate: startDate,
-    endDate: endDate,
   );
 }

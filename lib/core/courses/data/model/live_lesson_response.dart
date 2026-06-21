@@ -3,41 +3,36 @@ import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 class LiveLessonResponse {
   final String id;
   final String title;
-  final String? thumbnailUrl;
-  final String instructorName;
-  final String duration;
-  final String date;
+  final String videoPath;
+  final String courseTitle;
+  final String createdAt;
 
   const LiveLessonResponse({
     required this.id,
     required this.title,
-    this.thumbnailUrl,
-    required this.instructorName,
-    required this.duration,
-    required this.date,
+    required this.videoPath,
+    required this.courseTitle,
+    required this.createdAt,
   });
 
   factory LiveLessonResponse.fromJson(Map<String, dynamic> json) {
+    final enrollment = json['enrollment'] as Map<String, dynamic>?;
+    final course = enrollment?['course'] as Map<String, dynamic>?;
+
     return LiveLessonResponse(
-      id: json['id'].toString(),
-      title: json['title'] as String,
-      thumbnailUrl:
-          json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String?,
-      instructorName:
-          json['instructorName'] as String? ??
-          json['instructor_name'] as String? ??
-          '',
-      duration: json['duration'] as String? ?? '',
-      date: json['date'] as String? ?? json['recordedAt'] as String? ?? '',
+      id: json['id'] as String,
+      title: json['title'] as String? ?? '',
+      videoPath: json['videoPath'] as String? ?? '',
+      courseTitle: course?['title'] as String? ?? '',
+      createdAt: json['createdAt'] as String? ?? '',
     );
   }
 
   LiveLessonEntity toEntity() => LiveLessonEntity(
     id: id,
     title: title,
-    thumbnailUrl: thumbnailUrl,
-    instructorName: instructorName,
-    duration: duration,
-    date: date,
+    videoPath: videoPath,
+    courseTitle: courseTitle,
+    createdAt: createdAt,
   );
 }

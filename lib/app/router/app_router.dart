@@ -6,6 +6,7 @@ import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/ui/auth/register_screen.dart';
+import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
@@ -74,6 +75,12 @@ final _appRouter = GoRouter(
       path: TutorProfileScreen.path,
       builder: (_, state) =>
           TutorProfileScreen(tutorId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: ChatRoomScreen.path,
+      builder: (_, state) => ChatRoomScreen(
+        roomId: state.uri.queryParameters['roomId']!,
+      ),
     ),
     GoRoute(
       path: TasksScreen.path,

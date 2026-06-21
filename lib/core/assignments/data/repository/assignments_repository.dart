@@ -18,14 +18,12 @@ class AssignmentsRepository implements IAssignmentsRepository {
   Future<AssignmentEntity> createAssignment({
     required String teacherId,
     required DateTime startDate,
-    required DateTime endDate,
   }) async {
     final response = await _dio.post(
       'assignments',
       data: {
         'teacherId': teacherId,
         'startDate': startDate.toUtc().toIso8601String(),
-        'endDate': endDate.toUtc().toIso8601String(),
       },
     );
 

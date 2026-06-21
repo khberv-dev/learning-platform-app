@@ -5,7 +5,7 @@ import 'package:student/app/theme/app_spacing.dart';
 class _Dot extends StatelessWidget {
   final bool isSelected;
 
-  const _Dot({super.key, required this.isSelected});
+  const _Dot({required this.isSelected});
 
   @override
   Widget build(BuildContext context) {

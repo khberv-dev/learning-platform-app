@@ -370,24 +370,9 @@ class _BottomBar extends ConsumerWidget {
   const _BottomBar({required this.tutorId});
 
   Future<void> _onBook(BuildContext context, WidgetRef ref) async {
-    final months = await showModalBottomSheet<int>(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => const _DurationSheet(),
-    );
-    if (months == null) return;
-    if (!context.mounted) return;
-
-    final now = DateTime.now();
-    final start = DateTime(now.year, now.month, now.day);
-    final end = DateTime(now.year, now.month + months, now.day);
-
     await ref
         .read(createAssignmentControllerProvider.notifier)
-        .book(teacherId: tutorId, startDate: start, endDate: end);
+        .book(teacherId: tutorId);
   }
 
   @override
@@ -425,96 +410,6 @@ class _BottomBar extends ConsumerWidget {
                       ),
                     ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Duration Sheet ────────────────────────────────────────────────────────────
-
-class _DurationSheet extends StatelessWidget {
-  const _DurationSheet();
-
-  static const _options = [
-    (months: 1, label: '1 Month'),
-    (months: 3, label: '3 Months'),
-    (months: 6, label: '6 Months'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    final bottom = MediaQuery.of(context).padding.bottom;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + bottom),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE5E7EB),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Select duration',
-            style: TextStyle(
-              color: Color(0xFF111827),
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 16),
-          for (final option in _options) ...[
-            _DurationOption(
-              label: option.label,
-              onTap: () => Navigator.of(context).pop(option.months),
-            ),
-            if (option != _options.last) const SizedBox(height: 8),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _DurationOption extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _DurationOption({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFFF9FAFB),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Color(0xFF111827),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const Icon(Icons.chevron_right_rounded, color: Color(0xFF9CA3AF)),
-            ],
           ),
         ),
       ),

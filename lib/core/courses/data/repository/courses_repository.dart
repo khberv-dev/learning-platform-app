@@ -49,7 +49,7 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<List<LiveLessonEntity>> getLiveLessons() async {
-    final response = await _dio.get('live-sessions');
+    final response = await _dio.get('live-sessions/my');
     final list = response.data as List<dynamic>;
     return list
         .map(
