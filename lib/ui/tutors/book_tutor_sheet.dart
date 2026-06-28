@@ -70,7 +70,10 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
   Future<void> _confirm() async {
     await ref
         .read(createAssignmentControllerProvider.notifier)
-        .book(teacherId: widget.tutorId, selectedSchedule: _buildSchedulePayload());
+        .book(
+          teacherId: widget.tutorId,
+          selectedSchedule: _buildSchedulePayload(),
+        );
 
     final state = ref.read(createAssignmentControllerProvider);
     if (!mounted) return;
@@ -157,8 +160,9 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
               ),
               data: (schedule) {
                 final days = _dayOrder
-                    .where((d) =>
-                        schedule.containsKey(d) && schedule[d]!.isNotEmpty)
+                    .where(
+                      (d) => schedule.containsKey(d) && schedule[d]!.isNotEmpty,
+                    )
                     .toList();
 
                 if (days.isEmpty) {
@@ -219,8 +223,10 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
               child: Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF0FDF4),
                       borderRadius: BorderRadius.circular(20),
@@ -257,8 +263,7 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
                             height: 24,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
-                              valueColor:
-                                  AlwaysStoppedAnimation(Colors.white),
+                              valueColor: AlwaysStoppedAnimation(Colors.white),
                             ),
                           )
                         : const Text(
@@ -304,8 +309,8 @@ class _SlotChip extends StatelessWidget {
           color: isSelected
               ? const Color(0xFF18C96A)
               : isEnabled
-                  ? Colors.white
-                  : const Color(0xFFF3F4F6),
+              ? Colors.white
+              : const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
@@ -319,11 +324,10 @@ class _SlotChip extends StatelessWidget {
             color: isSelected
                 ? Colors.white
                 : isEnabled
-                    ? const Color(0xFF374151)
-                    : const Color(0xFF9CA3AF),
+                ? const Color(0xFF374151)
+                : const Color(0xFF9CA3AF),
             fontSize: 13,
-            fontWeight:
-                isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ),

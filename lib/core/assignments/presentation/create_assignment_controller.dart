@@ -20,11 +20,13 @@ class CreateAssignmentController extends AsyncNotifier<AssignmentEntity?> {
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(useCreateAssignmentProvider).call(
-        teacherId: teacherId,
-        startDate: DateTime.now(),
-        selectedSchedule: selectedSchedule,
-      ),
+      () => ref
+          .read(useCreateAssignmentProvider)
+          .call(
+            teacherId: teacherId,
+            startDate: DateTime.now(),
+            selectedSchedule: selectedSchedule,
+          ),
     );
   }
 
