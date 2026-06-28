@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/ui/home/widget/balance_card.dart';
+import 'package:student/ui/home/widget/skill_card.dart';
 import 'package:student/ui/home/widget/stat_card.dart';
 import 'package:student/utils/lib.dart';
 
@@ -14,34 +16,42 @@ class StatsRow extends ConsumerWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            child: StatCard(
-              icon: Icons.bolt,
-              iconColor: const Color(0xFFF59E0B),
-              value: '0',
-              label: 'Day Streak',
-            ),
+          BalanceCard(balance: user?.balance ?? 0),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: StatCard(
+                  icon: Icons.bolt,
+                  iconColor: const Color(0xFFF59E0B),
+                  value: '0',
+                  label: 'Day Streak',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: StatCard(
+                  icon: Icons.star,
+                  iconColor: const Color(0xFF18C96A),
+                  value: user != null ? formatNumber(user.points) : '—',
+                  label: 'Points',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: StatCard(
+                  icon: Icons.monetization_on,
+                  iconColor: const Color(0xFFF59E0B),
+                  value: user != null ? formatNumber(user.coins) : '—',
+                  label: 'Coins',
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: StatCard(
-              icon: Icons.star,
-              iconColor: const Color(0xFF18C96A),
-              value: user != null ? formatNumber(user.points) : '—',
-              label: 'Points',
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: StatCard(
-              icon: Icons.workspace_premium,
-              iconColor: const Color(0xFF2979FF),
-              value: user?.level ?? '—',
-              label: 'Level',
-            ),
-          ),
+          const SizedBox(height: 12),
+          SkillCard(level: user?.level ?? 'A1'),
         ],
       ),
     );

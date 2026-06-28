@@ -6,14 +6,18 @@ class UserResponse {
   final String? lastName;
   final String phoneNumber;
   final int points;
+  final int coins;
   final String level;
+  final int balance;
 
   const UserResponse({
     required this.id,
     required this.firstName,
     required this.phoneNumber,
     required this.points,
+    required this.coins,
     required this.level,
+    required this.balance,
     this.lastName,
   });
 
@@ -25,7 +29,9 @@ class UserResponse {
       lastName: user['lastName'] as String?,
       phoneNumber: user['phoneNumber'] as String? ?? '',
       points: (json['points'] ?? 0) as int,
+      coins: (json['coins'] ?? 0) as int,
       level: json['level'] as String? ?? '—',
+      balance: (json['balance'] ?? 0) as int,
     );
   }
 
@@ -35,6 +41,8 @@ class UserResponse {
     lastName: lastName,
     phoneNumber: phoneNumber,
     points: points,
+    coins: coins,
     level: level,
+    balance: balance,
   );
 }

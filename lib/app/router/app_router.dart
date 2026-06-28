@@ -11,8 +11,10 @@ import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
+import 'package:student/ui/notifications/notifications_screen.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
+import 'package:student/ui/roadmap/roadmap_screen.dart';
 import 'package:student/ui/startup/no_connection_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
@@ -54,6 +56,11 @@ final _appRouter = GoRouter(
     ),
     GoRoute(path: LoginScreen.path, builder: (_, _) => LoginScreen()),
     GoRoute(path: AppScreen.path, builder: (_, _) => AppScreen()),
+    GoRoute(
+      path: NotificationsScreen.path,
+      builder: (_, _) => const NotificationsScreen(),
+    ),
+    GoRoute(path: RoadmapScreen.path, builder: (_, _) => const RoadmapScreen()),
     GoRoute(
       path: AiAssessmentScreen.path,
       builder: (_, _) => AiAssessmentScreen(),

@@ -4,14 +4,18 @@ class UserEntity {
   final String? lastName;
   final String phoneNumber;
   final int points;
+  final int coins;
   final String level;
+  final int balance;
 
   const UserEntity({
     required this.id,
     required this.firstName,
     required this.phoneNumber,
     required this.points,
+    required this.coins,
     required this.level,
+    required this.balance,
     this.lastName,
   });
 

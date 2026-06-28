@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/ui/notifications/notifications_screen.dart';
 import 'package:student/ui/shared/widget/notification_icon_button.dart';
 
 class HomeTopbar extends ConsumerWidget {
@@ -39,7 +41,9 @@ class HomeTopbar extends ConsumerWidget {
               ),
             ],
           ),
-          const NotificationIconButton(),
+          NotificationIconButton(
+            onTap: () => context.push(NotificationsScreen.path),
+          ),
         ],
       ),
     );
