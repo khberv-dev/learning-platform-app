@@ -28,8 +28,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (prev?.isLoading != true) return;
       next.whenOrNull(
         data: (_) => context.go(AppScreen.path),
-        error: (e, _) =>
-            showErrorMessage(context, LoginController.errorMessage(e)),
+        error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
       );
     });
 

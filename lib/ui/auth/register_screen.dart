@@ -35,8 +35,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             context.push('${OtpScreen.path}?phone=998$digits&mode=register');
           }
         },
-        error: (e, _) =>
-            showErrorMessage(context, RegisterController.errorMessage(e)),
+        error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
       );
     });
 

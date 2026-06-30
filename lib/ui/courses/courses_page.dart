@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
+import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
 import 'package:student/ui/courses/widget/available_course_card.dart';
+import 'package:student/ui/courses/widget/live_lesson_card.dart';
 import 'package:student/ui/courses/widget/live_session_card.dart';
 import 'package:student/ui/courses/widget/my_course_card.dart';
 
@@ -202,115 +204,139 @@ class _LiveSessionsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(liveLessonsControllerProvider);
+    final recordedState = ref.watch(liveLessonsControllerProvider);
+    final scheduledState = ref.watch(myLiveLessonsProvider);
 
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(liveLessonsControllerProvider);
-        await ref.read(liveLessonsControllerProvider.future);
+        ref.invalidate(myLiveLessonsProvider);
+        await Future.wait([
+          ref.read(liveLessonsControllerProvider.future),
+          ref.read(myLiveLessonsProvider.future),
+        ]);
       },
-      child: state.when(
-        loading: () => const CustomScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverFillViewport(
-              delegate: SliverChildListDelegate.fixed([
-                Center(child: CircularProgressIndicator()),
-              ]),
-            ),
-          ],
-        ),
-        error: (e, _) => CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverFillViewport(
-              delegate: SliverChildListDelegate.fixed([
-                Center(
-                  child: Text(
-                    e.toString(),
-                    style: const TextStyle(color: Color(0xFF6B7280)),
-                  ),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          // Current & Upcoming section
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl,
+                20,
+                AppSpacing.xl,
+                12,
+              ),
+              child: Text(
+                'Current & Upcoming',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: const Color(0xFF111827),
+                  fontWeight: FontWeight.w700,
                 ),
-              ]),
+              ),
             ),
-          ],
-        ),
-        data: (lessons) {
-          return CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              // Upcoming section (no student API — shown as empty state)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.xl,
-                    20,
-                    AppSpacing.xl,
-                    12,
-                  ),
-                  child: Text(
-                    'Current & Upcoming',
+          ),
+          scheduledState.when(
+            loading: () => const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
+            error: (e, st) =>
+                const SliverToBoxAdapter(child: _NoUpcomingSessions()),
+            data: (lessons) {
+              final upcoming = lessons
+                  .where((l) => l.isUpcoming || l.isOngoing)
+                  .toList();
+              if (upcoming.isEmpty) {
+                return const SliverToBoxAdapter(child: _NoUpcomingSessions());
+              }
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                sliver: SliverList.separated(
+                  itemCount: upcoming.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (_, i) => LiveLessonCard(lesson: upcoming[i]),
+                ),
+              );
+            },
+          ),
+          // Past / Recorded section
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl,
+                24,
+                AppSpacing.xl,
+                12,
+              ),
+              child:
+                  recordedState
+                      .whenData(
+                        (lessons) => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Past Sessions',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: const Color(0xFF111827),
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                            ),
+                            if (lessons.isNotEmpty)
+                              Text(
+                                '${lessons.length} recorded',
+                                style: const TextStyle(
+                                  color: Color(0xFF9CA3AF),
+                                  fontSize: 13,
+                                ),
+                              ),
+                          ],
+                        ),
+                      )
+                      .value ??
+                  Text(
+                    'Past Sessions',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: const Color(0xFF111827),
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
+            ),
+          ),
+          recordedState.when(
+            loading: () => const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
               ),
-              const SliverToBoxAdapter(child: _NoUpcomingSessions()),
-              // Past / Recorded section
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.xl,
-                    24,
-                    AppSpacing.xl,
-                    12,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Past Sessions',
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: const Color(0xFF111827),
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                      if (lessons.isNotEmpty)
-                        Text(
-                          '${lessons.length} recorded',
-                          style: const TextStyle(
-                            color: Color(0xFF9CA3AF),
-                            fontSize: 13,
-                          ),
-                        ),
-                    ],
-                  ),
+            ),
+            error: (e, st) =>
+                const SliverToBoxAdapter(child: _NoRecordedSessions()),
+            data: (lessons) {
+              if (lessons.isEmpty) {
+                return const SliverToBoxAdapter(child: _NoRecordedSessions());
+              }
+              return SliverPadding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  96,
                 ),
-              ),
-              if (lessons.isEmpty)
-                const SliverToBoxAdapter(child: _NoRecordedSessions())
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.xl,
-                    0,
-                    AppSpacing.xl,
-                    96,
-                  ),
-                  sliver: SliverList.separated(
-                    itemCount: lessons.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 16),
-                    itemBuilder: (_, i) => LiveSessionCard(lesson: lessons[i]),
-                  ),
+                sliver: SliverList.separated(
+                  itemCount: lessons.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 16),
+                  itemBuilder: (_, i) => LiveSessionCard(lesson: lessons[i]),
                 ),
-              if (lessons.isNotEmpty)
-                const SliverToBoxAdapter(child: SizedBox(height: 96)),
-            ],
-          );
-        },
+              );
+            },
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 96)),
+        ],
       ),
     );
   }

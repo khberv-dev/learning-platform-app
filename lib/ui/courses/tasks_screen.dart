@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/usecase/use_submit_tasks.dart';
 import 'package:student/core/courses/presentation/tasks_controller.dart';
+import 'package:student/utils/messenger.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
   static const path = '/tasks';
@@ -80,9 +81,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
-        );
+        showErrorMessage(context, apiErrorMessage(e));
       }
     }
   }

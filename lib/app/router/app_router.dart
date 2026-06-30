@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/ui/ai_assessment/ai_assessment_screen.dart';
 import 'package:student/ui/ai_assessment/ai_results_screen.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
@@ -9,6 +10,7 @@ import 'package:student/ui/auth/register_screen.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
+import 'package:student/ui/courses/live_session_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
@@ -96,6 +98,11 @@ final _appRouter = GoRouter(
         lessonId: state.uri.queryParameters['lessonId']!,
         lessonTitle: state.uri.queryParameters['lessonTitle'] ?? '',
       ),
+    ),
+    GoRoute(
+      path: LiveSessionScreen.path,
+      builder: (_, state) =>
+          LiveSessionScreen(session: state.extra as LiveLessonEntity),
     ),
     GoRoute(
       path: LessonScreen.path,

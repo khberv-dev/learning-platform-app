@@ -93,8 +93,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         if (prev?.isLoading != true) return;
         next.whenOrNull(
           data: (_) => context.go(AppScreen.path),
-          error: (e, _) =>
-              showErrorMessage(context, RegisterController.errorMessage(e)),
+          error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
         );
       });
     } else {
@@ -110,10 +109,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             );
             context.go(LoginScreen.path);
           },
-          error: (e, _) => showErrorMessage(
-            context,
-            RecoverPasswordController.errorMessage(e),
-          ),
+          error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
         );
       });
     }

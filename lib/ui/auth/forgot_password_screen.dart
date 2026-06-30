@@ -40,10 +40,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             context.push('${OtpScreen.path}?phone=998$digits&mode=recover');
           }
         },
-        error: (e, _) => showErrorMessage(
-          context,
-          RecoverPasswordController.errorMessage(e),
-        ),
+        error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
       );
     });
 

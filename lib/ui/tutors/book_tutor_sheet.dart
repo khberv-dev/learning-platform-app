@@ -78,10 +78,7 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
     final state = ref.read(createAssignmentControllerProvider);
     if (!mounted) return;
     if (state.hasError) {
-      showErrorMessage(
-        context,
-        CreateAssignmentController.errorMessage(state.error!),
-      );
+      showErrorMessage(context, apiErrorMessage(state.error!));
     } else {
       Navigator.of(context).pop();
     }

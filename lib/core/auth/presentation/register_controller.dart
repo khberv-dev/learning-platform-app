@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/auth/domain/usecase/use_send_otp.dart';
 import 'package:student/core/auth/domain/usecase/use_sign_up.dart';
@@ -48,17 +47,5 @@ class RegisterController extends AsyncNotifier<void> {
       final user = await ref.read(useGetMeProvider).call();
       ref.read(currentUserProvider.notifier).state = user;
     });
-  }
-
-  static String errorMessage(Object error) {
-    if (error is DioException) {
-      final data = error.response?.data;
-      if (data is Map) {
-        final msg = data['message'];
-        if (msg is String) return msg;
-        if (msg is List && msg.isNotEmpty) return msg.first.toString();
-      }
-    }
-    return 'Something went wrong. Please try again.';
   }
 }

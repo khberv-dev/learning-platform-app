@@ -1,36 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
-import 'package:student/core/courses/presentation/courses_controller.dart';
+import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
+import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
 import 'package:student/ui/shared/widget/section_title.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UpcomingSection extends ConsumerWidget {
   const UpcomingSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(liveLessonsControllerProvider);
+    final state = ref.watch(myLiveLessonsProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(title: 'Past Sessions'),
+          const SectionTitle(title: 'More Upcoming Lessons'),
           const SizedBox(height: 12),
           state.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => const SizedBox.shrink(),
-            data: (sessions) {
-              if (sessions.isEmpty) return const _EmptyPastSessions();
-              final pastSessions = sessions.skip(1).take(3).toList();
-              if (pastSessions.isEmpty) return const SizedBox.shrink();
+            data: (lessons) {
+              final upcoming = lessons
+                  .where((l) => l.isUpcoming || l.isOngoing)
+                  .skip(1)
+                  .take(3)
+                  .toList();
+              if (upcoming.isEmpty) return const SizedBox.shrink();
               return Column(
                 children: [
-                  for (int i = 0; i < pastSessions.length; i++) ...[
-                    _SessionItem(session: pastSessions[i]),
-                    if (i < pastSessions.length - 1) const SizedBox(height: 12),
+                  for (int i = 0; i < upcoming.length; i++) ...[
+                    _LessonItem(lesson: upcoming[i]),
+                    if (i < upcoming.length - 1) const SizedBox(height: 12),
                   ],
                 ],
               );
@@ -42,48 +46,47 @@ class UpcomingSection extends ConsumerWidget {
   }
 }
 
-class _SessionItem extends StatelessWidget {
-  final LiveLessonEntity session;
+class _LessonItem extends StatelessWidget {
+  final LiveLessonScheduledEntity lesson;
 
-  const _SessionItem({required this.session});
+  const _LessonItem({required this.lesson});
 
-  String _formatDate(String raw) {
-    try {
-      final dt = DateTime.parse(raw).toLocal();
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-      return '${months[dt.month - 1]} ${dt.day}';
-    } catch (_) {
-      return '';
-    }
+  String _formatDate(DateTime dt) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '${months[dt.month - 1]} ${dt.day}';
   }
 
-  String _formatTime(String raw) {
-    try {
-      final dt = DateTime.parse(raw).toLocal();
-      final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
-      final minute = dt.minute.toString().padLeft(2, '0');
-      final period = dt.hour >= 12 ? 'PM' : 'AM';
-      return '$hour:$minute $period';
-    } catch (_) {
-      return '';
+  String _formatTime(DateTime dt) {
+    final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
+    final minute = dt.minute.toString().padLeft(2, '0');
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    return '$hour:$minute $period';
+  }
+
+  Future<void> _join() async {
+    final uri = Uri.tryParse(lesson.meetLink);
+    if (uri != null && await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final local = lesson.startTime.toLocal();
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -98,7 +101,7 @@ class _SessionItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _formatDate(session.createdAt),
+                  _formatDate(local),
                   style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 13,
@@ -107,7 +110,7 @@ class _SessionItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 1),
                 Text(
-                  _formatTime(session.createdAt),
+                  _formatTime(local),
                   style: const TextStyle(
                     color: Color(0xFF9CA3AF),
                     fontSize: 10,
@@ -124,7 +127,7 @@ class _SessionItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  session.title,
+                  lesson.name,
                   style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 14,
@@ -133,10 +136,10 @@ class _SessionItem extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (session.mentorName.isNotEmpty) ...[
+                if (lesson.teacherName.isNotEmpty) ...[
                   const SizedBox(height: 3),
                   Text(
-                    session.mentorName,
+                    lesson.teacherName,
                     style: const TextStyle(
                       color: Color(0xFF9CA3AF),
                       fontSize: 12,
@@ -146,28 +149,31 @@ class _SessionItem extends StatelessWidget {
               ],
             ),
           ),
+          if (lesson.meetLink.isNotEmpty) ...[
+            const SizedBox(width: 12),
+            GestureDetector(
+              onTap: _join,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'Join',
+                  style: TextStyle(
+                    color: Color(0xFF18C96A),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
-      ),
-    );
-  }
-}
-
-class _EmptyPastSessions extends StatelessWidget {
-  const _EmptyPastSessions();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Text(
-        'No past sessions yet',
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
       ),
     );
   }
