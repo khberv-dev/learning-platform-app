@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/startup/presentation/skill_quiz_controller.dart';
+import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
+import 'package:student/shared/widget/app_gradient_background.dart';
+import 'package:student/shared/widget/app_option_chip.dart';
+import 'package:student/shared/widget/app_progress_header.dart';
 import 'package:student/ui/auth/register_screen.dart';
-import 'package:student/ui/startup/widget/quiz_option_select.dart';
+import 'package:student/ui/startup/survey_screen.dart';
 
 class SkillLevelQuizScreen extends ConsumerStatefulWidget {
   static const path = '/skill_quiz';
@@ -18,24 +23,37 @@ class SkillLevelQuizScreen extends ConsumerStatefulWidget {
 }
 
 class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
-  int currentQuestionIndex = 0;
-  int? currentQuestionSelectedOptionIndex;
+  int _questionIndex = 0;
+  int? _selectedOption;
+
+  void _onClose() {
+    // The survey navigates here with `go`, so there may be nothing to pop.
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(SurveyScreen.path);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final skillQuestions = ref.watch(skillQuestionsController);
+    final questions = ref.watch(skillQuestionsController);
 
-    void onQuestionOptionClick(int index) {
-      setState(() {
-        currentQuestionSelectedOptionIndex = index;
-      });
+    if (questions.isEmpty) {
+      return const Scaffold(
+        body: AppGradientBackground(
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
     }
 
-    void onContinueClick() {
-      if (currentQuestionIndex < skillQuestions.length - 1) {
+    final question = questions[_questionIndex];
+
+    void onContinue() {
+      if (_questionIndex < questions.length - 1) {
         setState(() {
-          currentQuestionIndex++;
-          currentQuestionSelectedOptionIndex = null;
+          _questionIndex++;
+          _selectedOption = null;
         });
       } else {
         context.go(RegisterScreen.path);
@@ -43,62 +61,63 @@ class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
     }
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(AppSpacing.md),
-          child: skillQuestions.isNotEmpty
-              ? SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: LinearProgressIndicator(
-                              value:
-                                  (currentQuestionIndex + 1) /
-                                  skillQuestions.length,
-                            ),
-                          ),
-                          SizedBox(width: AppSpacing.md),
-                          Text(
-                            '$currentQuestionIndex/${skillQuestions.length}',
-                            style: Theme.of(context).textTheme.bodyMedium!
-                                .copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                          ),
-                        ],
+      body: AppGradientBackground(
+        child: Column(
+          children: [
+            AppProgressHeader(
+              progress: (_questionIndex + 1) / questions.length,
+              onClose: _onClose,
+              closeColor: AppColors.deepGreen,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  0,
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      question.question,
+                      style: const TextStyle(
+                        color: AppColors.deepGreen,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        height: 1.3,
+                        letterSpacing: -0.3,
                       ),
-                      SizedBox(height: AppSpacing.md),
-                      Text(
-                        skillQuestions[currentQuestionIndex].question,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      SizedBox(height: AppSpacing.xxl),
-                      QuizOptionSelect(
-                        options: skillQuestions[currentQuestionIndex].options,
-                        current: currentQuestionSelectedOptionIndex,
-                        onItemClick: onQuestionOptionClick,
-                      ),
-                      SizedBox(height: AppSpacing.xl),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    for (var i = 0; i < question.options.length; i++) ...[
+                      if (i > 0) const SizedBox(height: AppSpacing.md),
+                      // Full width rather than the survey's staggered pills —
+                      // answers vary in length and read better aligned.
                       SizedBox(
                         width: double.infinity,
-                        child: AppButton.filled(
-                          label: "Continue",
-                          onTap: currentQuestionSelectedOptionIndex != null
-                              ? onContinueClick
-                              : null,
+                        child: AppOptionChip(
+                          label: question.options[i],
+                          isSelected: _selectedOption == i,
+                          maxLines: 3,
+                          onTap: () => setState(() => _selectedOption = i),
                         ),
                       ),
                     ],
-                  ),
-                )
-              : CircularProgressIndicator(),
+                  ],
+                ),
+              ),
+            ),
+            AppBottomActionBar(
+              children: [
+                AppButton.filled(
+                  label: 'Continue',
+                  onTap: _selectedOption != null ? onContinue : null,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

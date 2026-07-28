@@ -14,4 +14,10 @@ abstract class AppColors {
   /// sits on this so the band above the bottom-aligned artwork reads as more
   /// sky rather than a separate surface.
   static const onboardingSky = Color(0xffc8e1f5);
+
+  /// Unfilled portion of [AppProgressBar].
+  static const progressTrack = Color(0xffb6c3cb);
+
+  /// Bottom of the survey's white-to-green page gradient.
+  static const surveyGradientEnd = Color(0xff7cc04a);
 }

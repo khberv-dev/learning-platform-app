@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/login_controller.dart';
+import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
+import 'package:student/shared/widget/app_gradient_background.dart';
+import 'package:student/shared/widget/app_text_field.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
+import 'package:student/ui/startup/survey_screen.dart';
 import 'package:student/utils/messenger.dart';
 import 'package:student/utils/uz_phone_formatter.dart';
 
@@ -36,110 +41,97 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = ref.watch(loginControllerProvider).isLoading;
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: AppSpacing.xl),
-                  Text(
-                    'Welcome Back',
-                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+      body: AppGradientBackground(
+        child: Column(
+          children: [
+            Expanded(
+              child: SafeArea(
+                bottom: false,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    0,
+                    AppSpacing.xl,
+                    AppSpacing.xl,
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Sign in to continue your learning journey',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  TextFormField(
-                    controller: _phoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone number',
-                      prefixText: '+998 ',
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [UzPhoneFormatter()],
-                    validator: (value) {
-                      final digits = (value ?? '').replaceAll(' ', '');
-                      if (digits.length != 9) {
-                        return 'Enter a valid phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    validator: (value) {
-                      if ((value ?? '').length < 8) {
-                        return 'Password must be at least 8 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () => context.push(ForgotPasswordScreen.path),
-                      child: const Text('Forgot Password?'),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  SizedBox(
-                    width: double.infinity,
-                    child: AppButton.filled(
-                      label: 'Sign In',
-                      isLoading: isLoading,
-                      onTap: _submit,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  SizedBox(
-                    width: double.infinity,
-                    child: GestureDetector(
-                      onTap: () => context.go('/survey'),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.bodyMedium!
-                              .copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                          children: [
-                            const TextSpan(text: "Don't have account? "),
-                            TextSpan(
-                              text: 'Register',
-                              style: Theme.of(context).textTheme.bodyMedium!
-                                  .copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                            ),
-                          ],
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: AppSpacing.xxl),
+                        const Text(
+                          'Welcome back',
+                          style: TextStyle(
+                            color: AppColors.deepGreen,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: AppSpacing.xxl),
+                        AppTextField(
+                          label: 'Phone number',
+                          controller: _phoneController,
+                          prefixText: '+998 ',
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [UzPhoneFormatter()],
+                          validator: (value) {
+                            final digits = (value ?? '').replaceAll(' ', '');
+                            if (digits.length != 9) {
+                              return 'Enter a valid phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        AppTextField(
+                          label: 'Password',
+                          controller: _passwordController,
+                          obscureText: true,
+                          validator: (value) {
+                            if ((value ?? '').length < 8) {
+                              return 'Password must be at least 8 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () =>
+                                context.push(ForgotPasswordScreen.path),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.ink,
+                              textStyle: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            child: const Text('Forgot password?'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            AppBottomActionBar(
+              children: [
+                AppButton.filled(
+                  label: 'Log in',
+                  isLoading: isLoading,
+                  onTap: _submit,
+                ),
+                AppButton.outlined(
+                  label: 'Create account',
+                  // Registration starts with the survey, not the form.
+                  onTap: () => context.go(SurveyScreen.path),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/register_controller.dart';
+import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
+import 'package:student/shared/widget/app_gradient_background.dart';
+import 'package:student/shared/widget/app_text_field.dart';
+import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/utils/messenger.dart';
 import 'package:student/utils/uz_phone_formatter.dart';
@@ -19,7 +24,7 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
+  final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _otpSent = false;
@@ -43,114 +48,95 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final isLoading = ref.watch(registerControllerProvider).isLoading;
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: AppSpacing.xl),
-                  Text(
-                    'Create Account',
-                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                      fontWeight: FontWeight.w900,
-                    ),
+      body: AppGradientBackground(
+        child: Column(
+          children: [
+            Expanded(
+              child: SafeArea(
+                bottom: false,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.xl,
+                    0,
+                    AppSpacing.xl,
+                    AppSpacing.xl,
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Join thousands of learners today',
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  TextFormField(
-                    controller: _firstNameController,
-                    decoration: const InputDecoration(labelText: 'First name'),
-                    textCapitalization: TextCapitalization.sentences,
-                    validator: (value) {
-                      if ((value ?? '').trim().isEmpty) {
-                        return 'Enter your first name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  TextFormField(
-                    controller: _phoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone number',
-                      prefixText: '+998 ',
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [UzPhoneFormatter()],
-                    validator: (value) {
-                      final digits = (value ?? '').replaceAll(' ', '');
-                      if (digits.length != 9) {
-                        return 'Enter a valid phone number';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    validator: (value) {
-                      if ((value ?? '').length < 8) {
-                        return 'Password must be at least 8 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  SizedBox(
-                    width: double.infinity,
-                    child: AppButton.filled(
-                      label: 'Continue',
-                      isLoading: isLoading,
-                      onTap: _submit,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  SizedBox(
-                    width: double.infinity,
-                    child: GestureDetector(
-                      onTap: () => context.go('/login'),
-                      child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.bodyMedium!
-                              .copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                          children: [
-                            const TextSpan(text: 'Already have an account? '),
-                            TextSpan(
-                              text: 'Sign In',
-                              style: Theme.of(context).textTheme.bodyMedium!
-                                  .copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                            ),
-                          ],
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: AppSpacing.xxl),
+                        const Text(
+                          'Create account',
+                          style: TextStyle(
+                            color: AppColors.deepGreen,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: AppSpacing.xxl),
+                        AppTextField(
+                          label: 'Full name',
+                          controller: _fullNameController,
+                          textCapitalization: TextCapitalization.words,
+                          validator: (value) {
+                            if ((value ?? '').trim().isEmpty) {
+                              return 'Enter your full name';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        AppTextField(
+                          label: 'Phone number',
+                          controller: _phoneController,
+                          prefixText: '+998 ',
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [UzPhoneFormatter()],
+                          validator: (value) {
+                            final digits = (value ?? '').replaceAll(' ', '');
+                            if (digits.length != 9) {
+                              return 'Enter a valid phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        AppTextField(
+                          label: 'Password',
+                          controller: _passwordController,
+                          obscureText: true,
+                          validator: (value) {
+                            if ((value ?? '').length < 8) {
+                              return 'Password must be at least 8 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        const _LegalNotice(),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            AppBottomActionBar(
+              children: [
+                AppButton.filled(
+                  label: 'Create account',
+                  isLoading: isLoading,
+                  onTap: _submit,
+                ),
+                AppButton.outlined(
+                  label: 'Log in',
+                  onTap: () => context.go(LoginScreen.path),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -163,7 +149,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ref
         .read(registerControllerProvider.notifier)
         .prepareAndSendOtp(
-          firstName: _firstNameController.text.trim(),
+          firstName: _fullNameController.text.trim(),
           phoneNumber: '998$digits',
           password: _passwordController.text,
         );
@@ -171,9 +157,40 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
+    _fullNameController.dispose();
     _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+}
+
+class _LegalNotice extends StatelessWidget {
+  const _LegalNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    const base = TextStyle(
+      color: AppColors.ink,
+      fontSize: 13,
+      fontWeight: FontWeight.w500,
+      height: 1.4,
+    );
+    const emphasis = TextStyle(fontWeight: FontWeight.w800);
+
+    return const SizedBox(
+      width: double.infinity,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(text: 'By creating an account you agree to our\n'),
+            TextSpan(text: 'Terms of Use', style: emphasis),
+            TextSpan(text: ' and '),
+            TextSpan(text: 'Privacy Policy', style: emphasis),
+          ],
+        ),
+        textAlign: TextAlign.center,
+        style: base,
+      ),
+    );
   }
 }

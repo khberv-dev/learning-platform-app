@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-const devHostUrl = 'http://169.254.38.122:8000';
+const devHostUrl = 'http://169.254.209.99:8000';
 const mainHostUrl = 'https://cp.i-teach.uz';
 
 const hostUrl = kDebugMode ? devHostUrl : mainHostUrl;

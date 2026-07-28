@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
-import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
@@ -161,33 +161,14 @@ class _ActionCard extends StatelessWidget {
     void onFreshStartClick() => context.push(SurveyScreen.path);
     void onResumeClick() => context.push(LoginScreen.path);
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppRadius.xl),
+    return AppBottomActionBar(
+      children: [
+        AppButton.filled(
+          label: "Let's Get a Fresh Start",
+          onTap: onFreshStartClick,
         ),
-      ),
-      // SafeArea inside the card so the white runs under the home indicator
-      // rather than leaving a strip of artwork below it.
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppButton.filled(
-                label: "Let's Get a Fresh Start",
-                onTap: onFreshStartClick,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              AppButton.outlined(label: 'Resume Journey', onTap: onResumeClick),
-            ],
-          ),
-        ),
-      ),
+        AppButton.outlined(label: 'Resume Journey', onTap: onResumeClick),
+      ],
     );
   }
 }
