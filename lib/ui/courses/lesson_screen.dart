@@ -11,6 +11,7 @@ import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
 import 'package:student/core/courses/presentation/tasks_controller.dart'
     show lessonTaskResultsProvider;
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:video_player/video_player.dart';
 
@@ -371,18 +372,12 @@ class _TasksSection extends StatelessWidget {
     if (answered == 0) {
       return SizedBox(
         width: double.infinity,
-        child: FilledButton.icon(
-          onPressed: () => _goToTasks(context),
-          icon: const Icon(Icons.task_alt_rounded, size: 18),
-          label: const Text('View Tasks'),
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF18C96A),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-          ),
+        child: AppButton.filled(
+          label: 'View Tasks',
+          icon: const Icon(Icons.task_alt_rounded),
+          fontSize: 15,
+          height: 48,
+          onTap: () => _goToTasks(context),
         ),
       );
     }
@@ -462,20 +457,13 @@ class _TasksSection extends StatelessWidget {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () => _goToTasks(context),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF18C96A),
-                side: const BorderSide(color: Color(0xFF18C96A)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 11),
-              ),
-              child: const Text(
-                'Retake',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-              ),
+            child: AppButton.outlined(
+              label: 'Retake',
+              color: const Color(0xFF18C96A),
+              fontSize: 13,
+              height: 42,
+              depth: 4,
+              onTap: () => _goToTasks(context),
             ),
           ),
         ],

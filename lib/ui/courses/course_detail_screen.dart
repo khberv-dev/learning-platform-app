@@ -6,6 +6,7 @@ import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/utils/lib.dart';
 
 class CourseDetailScreen extends ConsumerWidget {
@@ -306,25 +307,11 @@ class _PurchaseBar extends StatelessWidget {
         24,
         MediaQuery.of(context).padding.bottom + 16,
       ),
-      child: SizedBox(
-        height: 56,
-        child: ElevatedButton.icon(
-          onPressed: () {},
-          icon: const Icon(Icons.shopping_cart_outlined, size: 20),
-          label: Text("Purchase (${formatNumber(price)} so'm)"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF18C96A),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(28),
-            ),
-            textStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-            elevation: 0,
-          ),
-        ),
+      child: AppButton.filled(
+        label: "Purchase (${formatNumber(price)} so'm)",
+        icon: const Icon(Icons.shopping_cart_outlined),
+        fontSize: 16,
+        onTap: () {},
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/usecase/use_submit_tasks.dart';
 import 'package:student/core/courses/presentation/tasks_controller.dart';
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/utils/messenger.dart';
 
 class TasksScreen extends ConsumerStatefulWidget {
@@ -470,51 +471,17 @@ class _BottomBar extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: isLast
-            ? FilledButton(
-                onPressed: (canAdvance && !isSubmitting) ? onSubmit : null,
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF18C96A),
-                  disabledBackgroundColor: const Color(0xFFD1FAE5),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: isSubmitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Text(
-                        'Submit',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+            ? AppButton.filled(
+                label: 'Submit',
+                fontSize: 15,
+                isLoading: isSubmitting,
+                onTap: canAdvance ? onSubmit : null,
               )
-            : FilledButton.icon(
-                onPressed: canAdvance ? onNext : null,
-                icon: const Icon(Icons.arrow_forward_rounded, size: 18),
-                label: const Text(
-                  'Next',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                ),
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF18C96A),
-                  disabledBackgroundColor: const Color(0xFFD1FAE5),
-                  foregroundColor: Colors.white,
-                  iconColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
+            : AppButton.filled(
+                label: 'Next',
+                icon: const Icon(Icons.arrow_forward_rounded),
+                fontSize: 15,
+                onTap: canAdvance ? onNext : null,
               ),
       ),
     );

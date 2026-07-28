@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/startup/domain/model/survey_query.dart';
 import 'package:student/core/startup/domain/model/survey_query_option.dart';
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 import 'package:student/ui/startup/widget/survey_header.dart';
 import 'package:student/ui/startup/widget/survey_query_select.dart';
@@ -144,12 +145,11 @@ class _SurveyScreenState extends State<SurveyScreen> {
                       Spacer(),
                       SizedBox(
                         width: double.infinity,
-                        child: FilledButton(
-                          onPressed:
-                              surveySelectedOption[activeSurveyQuery] != null
+                        child: AppButton.filled(
+                          label: "Next",
+                          onTap: surveySelectedOption[activeSurveyQuery] != null
                               ? onNextClick
                               : null,
-                          child: Text("Next"),
                         ),
                       ),
                     ],

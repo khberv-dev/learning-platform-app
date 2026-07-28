@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
-import 'package:student/ui/shared/widget/section_title.dart';
+import 'package:student/shared/widget/section_title.dart';
 
 class ContinueLearningCard extends ConsumerWidget {
   const ContinueLearningCard({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/ui/shared/widget/app_header.dart';
+import 'package:student/shared/widget/app_header.dart';
 
 class SurveyHeader extends StatelessWidget {
   final VoidCallback onBackClick;

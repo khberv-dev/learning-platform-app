@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/user/domain/usecase/use_get_me.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 
@@ -83,18 +84,10 @@ class _NoConnectionScreenState extends ConsumerState<NoConnectionScreen> {
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
-                  child: FilledButton(
-                    onPressed: _isRetrying ? null : _retry,
-                    child: _isRetrying
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text('Try Again'),
+                  child: AppButton.filled(
+                    label: 'Try Again',
+                    isLoading: _isRetrying,
+                    onTap: _retry,
                   ),
                 ),
               ],

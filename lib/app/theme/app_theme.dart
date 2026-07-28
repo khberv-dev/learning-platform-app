@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:student/app/theme/app_radius.dart';
 
 final appThemeProvider = Provider((ref) => _baseTheme);
-
-final _baseTextTheme = GoogleFonts.interTextTheme();
 
 final _baseColorScheme =
     ColorScheme.fromSeed(
@@ -57,10 +54,15 @@ final _inputDecorationTheme = InputDecorationThemeData(
   ),
 );
 
+// No `textTheme` override on purpose — that's what gives us the platform
+// system font. ThemeData picks its Typography from defaultTargetPlatform:
+// iOS → CupertinoSystemText/CupertinoSystemDisplay, macOS → .AppleSystemUIFont
+// (both resolve to SF Pro, supplied by the OS — Apple's licence forbids
+// embedding the font in an app bundle), Android → Roboto.
+// Setting a fontFamily or textTheme here overrides that on every platform.
 final _baseTheme = ThemeData.light().copyWith(
   scaffoldBackgroundColor: Color(0xfff6f7fa),
   colorScheme: _baseColorScheme,
-  textTheme: _baseTextTheme,
   progressIndicatorTheme: _progressIndicatorTheme,
   iconButtonTheme: _iconButtonTheme,
   filledButtonTheme: _filledButtonTheme,

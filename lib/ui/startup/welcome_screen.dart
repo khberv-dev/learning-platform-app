@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 
@@ -55,16 +56,17 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   SizedBox(
                     width: double.infinity,
-                    child: FilledButton(
-                      onPressed: onGotoSurveyClick,
-                      child: Text("Get Started"),
+                    child: AppButton.filled(
+                      label: "Get Started",
+                      onTap: onGotoSurveyClick,
                     ),
                   ),
+                  SizedBox(height: AppSpacing.md),
                   SizedBox(
                     width: double.infinity,
-                    child: TextButton(
-                      onPressed: onGotoLoginClick,
-                      child: Text("Sign In"),
+                    child: AppButton.white(
+                      label: "Sign In",
+                      onTap: onGotoLoginClick,
                     ),
                   ),
                 ],

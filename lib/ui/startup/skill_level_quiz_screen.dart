@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/startup/presentation/skill_quiz_controller.dart';
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/auth/register_screen.dart';
 import 'package:student/ui/startup/widget/quiz_option_select.dart';
 
@@ -87,11 +88,11 @@ class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
                       SizedBox(height: AppSpacing.xl),
                       SizedBox(
                         width: double.infinity,
-                        child: FilledButton(
-                          onPressed: currentQuestionSelectedOptionIndex != null
+                        child: AppButton.filled(
+                          label: "Continue",
+                          onTap: currentQuestionSelectedOptionIndex != null
                               ? onContinueClick
                               : null,
-                          child: Text("Continue"),
                         ),
                       ),
                     ],

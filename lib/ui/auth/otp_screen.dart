@@ -10,8 +10,9 @@ import 'package:student/core/auth/presentation/recover_password_controller.dart'
 import 'package:student/core/auth/presentation/register_controller.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
-import 'package:student/ui/shared/widget/otp_field.dart';
 import 'package:student/utils/messenger.dart';
+
+import '../../shared/widget/otp_field.dart';
 
 enum OtpMode { register, recoverPassword }
 

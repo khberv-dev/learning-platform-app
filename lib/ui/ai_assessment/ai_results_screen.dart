@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/ai_assessment/widget/assessment_summary_card.dart';
 import 'package:student/ui/ai_assessment/widget/level_card.dart';
 import 'package:student/ui/ai_assessment/widget/skill_breakdown_card.dart';
@@ -55,23 +56,10 @@ class AiResultsScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
-                      height: 52,
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFF18C96A),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () => context.go(AppScreen.path),
-                        child: const Text(
-                          'Start Personalized Learning',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      child: AppButton.filled(
+                        label: 'Start Personalized Learning',
+                        fontSize: 16,
+                        onTap: () => context.go(AppScreen.path),
                       ),
                     ),
                   ],

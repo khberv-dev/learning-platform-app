@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/login_controller.dart';
+import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/utils/messenger.dart';
@@ -98,18 +99,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   SizedBox(
                     width: double.infinity,
-                    child: FilledButton(
-                      onPressed: isLoading ? null : _submit,
-                      child: isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text('Sign In'),
+                    child: AppButton.filled(
+                      label: 'Sign In',
+                      isLoading: isLoading,
+                      onTap: _submit,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
