@@ -6,41 +6,70 @@ import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/shared/widget/notification_icon_button.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
 
+/// Plain-language name for a CEFR level, which is what the design shows under
+/// the user's name rather than the raw "B1".
+String levelLabel(String cefr) => switch (cefr.toUpperCase()) {
+  'A1' || 'A2' => 'Beginner',
+  'B1' || 'B2' => 'Intermediate',
+  'C1' || 'C2' => 'Advanced',
+  _ => cefr,
+};
+
 class HomeTopbar extends ConsumerWidget {
   const HomeTopbar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final firstName = ref.watch(currentUserProvider)?.firstName ?? '';
+    final user = ref.watch(currentUserProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Good morning 👋',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: const Color(0xFF6B7280),
-                  fontWeight: FontWeight.w500,
-                  fontSize: 13,
-                ),
+          // UserEntity carries no avatar URL, so fall back to initials.
+          CircleAvatar(
+            radius: 27,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: Text(
+              user?.initials ?? '?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
               ),
-              const SizedBox(height: 2),
-              Text(
-                firstName,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: const Color(0xFF111827),
-                  fontWeight: FontWeight.w700,
-                  fontSize: 20,
-                ),
-              ),
-            ],
+            ),
           ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  user?.fullName ?? '',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                Text(
+                  levelLabel(user?.level ?? ''),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Color(0xff9aa5ad),
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
           NotificationIconButton(
             onTap: () => context.push(NotificationsScreen.path),
           ),

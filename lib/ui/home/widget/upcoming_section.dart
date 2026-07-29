@@ -18,7 +18,11 @@ class UpcomingSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(title: 'More Upcoming Lessons'),
+          const SectionTitle(
+            title: 'More upcoming lessons',
+            color: Colors.white,
+            fontSize: 22,
+          ),
           const SizedBox(height: 12),
           state.when(
             loading: () => const Center(child: CircularProgressIndicator()),

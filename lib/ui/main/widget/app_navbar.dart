@@ -1,46 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:student/app/theme/app_radius.dart';
+import 'package:student/app/theme/app_spacing.dart';
 
-class _SvgNavItem {
+/// One destination. Either [imagePath] (a black silhouette PNG, tinted at
+/// paint time) or [icon] is used.
+class _NavDestination {
   final String label;
-  final String iconPath;
+  final String? imagePath;
+  final IconData? icon;
 
-  const _SvgNavItem({required this.label, required this.iconPath});
-
-  BottomNavigationBarItem build(BuildContext context) {
-    return BottomNavigationBarItem(
-      label: label,
-      icon: SvgPicture.asset(
-        iconPath,
-        colorFilter: ColorFilter.mode(
-          Theme.of(context).colorScheme.onSurfaceVariant,
-          BlendMode.srcIn,
-        ),
-      ),
-      activeIcon: SvgPicture.asset(
-        iconPath,
-        colorFilter: ColorFilter.mode(
-          Theme.of(context).colorScheme.primary,
-          BlendMode.srcIn,
-        ),
-      ),
-    );
-  }
+  const _NavDestination({required this.label, this.imagePath, this.icon});
 }
 
-BottomNavigationBarItem _iconNavItem({
-  required BuildContext context,
-  required String label,
-  required IconData icon,
-}) {
-  return BottomNavigationBarItem(
-    label: label,
-    icon: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
-    activeIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
-  );
-}
-
+/// Floating pill navigation bar. Detached from the screen edges and elevated,
+/// rather than a full-width Material [BottomNavigationBar].
 class AppNavbar extends StatelessWidget {
+  static const double height = 64;
+
   final int current;
   final bool showChat;
   final Function(int) onItemClick;
@@ -54,37 +30,125 @@ class AppNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      _SvgNavItem(
+    final destinations = <_NavDestination>[
+      const _NavDestination(
         label: 'Home',
-        iconPath: 'assets/icons/home.svg',
-      ).build(context),
-      _SvgNavItem(
+        imagePath: 'assets/images/nav_home.png',
+      ),
+      const _NavDestination(
         label: 'Course',
-        iconPath: 'assets/icons/grid.svg',
-      ).build(context),
+        imagePath: 'assets/images/nav_course.png',
+      ),
+      // No nav_chat.png ships yet, so this one stays a Material icon.
       if (showChat)
-        _iconNavItem(
-          context: context,
-          label: 'Chat',
-          icon: Icons.chat_bubble_outline_rounded,
-        )
+        const _NavDestination(label: 'Chat', icon: Icons.chat_bubble_rounded)
       else
-        _SvgNavItem(
+        const _NavDestination(
           label: 'Mentor',
-          iconPath: 'assets/icons/student.svg',
-        ).build(context),
-      _SvgNavItem(
+          imagePath: 'assets/images/nav_mentor.png',
+        ),
+      const _NavDestination(
         label: 'Profile',
-        iconPath: 'assets/icons/profile.svg',
-      ).build(context),
+        imagePath: 'assets/images/nav_profile.png',
+      ),
     ];
 
-    return BottomNavigationBar(
-      items: items,
-      currentIndex: current,
-      selectedItemColor: Theme.of(context).colorScheme.primary,
-      onTap: onItemClick,
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          0,
+          AppSpacing.lg,
+          AppSpacing.md,
+        ),
+        child: Container(
+          height: height,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppRadius.round),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(28),
+                blurRadius: 24,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              for (var i = 0; i < destinations.length; i++)
+                Expanded(
+                  child: _NavButton(
+                    destination: destinations[i],
+                    isSelected: i == current,
+                    onTap: () => onItemClick(i),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavButton extends StatelessWidget {
+  final _NavDestination destination;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavButton({
+    required this.destination,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final tint = isSelected ? scheme.primary : scheme.onSurfaceVariant;
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: destination.label,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: ExcludeSemantics(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // The artwork's aspect ratios differ, so contain them in a
+              // square box to keep the row optically even.
+              SizedBox.square(
+                dimension: 24,
+                child: destination.imagePath != null
+                    ? Image.asset(
+                        destination.imagePath!,
+                        fit: BoxFit.contain,
+                        color: tint,
+                        colorBlendMode: BlendMode.srcIn,
+                      )
+                    : Icon(destination.icon, size: 22, color: tint),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                destination.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: tint,
+                  fontSize: 11,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

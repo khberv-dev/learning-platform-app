@@ -28,8 +28,9 @@ typedef _Style = ({
 /// AppButton.white(label: 'Skip', onTap: _skip)
 /// ```
 ///
-/// Width is taken from the parent, so wrap in a `SizedBox(width: ...)` to
-/// constrain it. Pass `onTap: null` to disable.
+/// Width is taken from the parent by default, so wrap in a
+/// `SizedBox(width: ...)` to constrain it — or pass `shrinkWrap: true` to size
+/// it to the label. Pass `onTap: null` to disable.
 class AppButton extends StatefulWidget {
   static const double defaultHeight = 56;
   static const double defaultDepth = 6;
@@ -60,6 +61,10 @@ class AppButton extends StatefulWidget {
   /// Thickness of the bottom edge, i.e. how far the face travels when pressed.
   final double depth;
 
+  /// Size to the label instead of filling the parent. Use inside a [Row] or
+  /// an [Align] for a compact, inline button.
+  final bool shrinkWrap;
+
   final _AppButtonVariant _variant;
 
   const AppButton.filled({
@@ -73,6 +78,7 @@ class AppButton extends StatefulWidget {
     this.isLoading = false,
     this.height = defaultHeight,
     this.depth = defaultDepth,
+    this.shrinkWrap = false,
   }) : _variant = _AppButtonVariant.filled;
 
   const AppButton.outlined({
@@ -86,6 +92,7 @@ class AppButton extends StatefulWidget {
     this.isLoading = false,
     this.height = defaultHeight,
     this.depth = defaultDepth,
+    this.shrinkWrap = false,
   }) : _variant = _AppButtonVariant.outlined;
 
   /// Neutral secondary button — white face, dark label, grey edge. Use it for
@@ -101,6 +108,7 @@ class AppButton extends StatefulWidget {
     this.isLoading = false,
     this.height = defaultHeight,
     this.depth = defaultDepth,
+    this.shrinkWrap = false,
   }) : _variant = _AppButtonVariant.white;
 
   bool get _isEnabled => onTap != null && !isLoading;
@@ -143,12 +151,16 @@ class _AppButtonState extends State<AppButton> {
           child: SizedBox(
             height: widget.height + widget.depth,
             child: Stack(
+              // The face is the only non-positioned child, so the fit decides
+              // the button's width: expand stretches it to the parent (the
+              // default), passthrough lets it shrink to its label.
+              fit: widget.shrinkWrap ? StackFit.passthrough : StackFit.expand,
               children: [
                 Positioned(
                   left: 0,
                   right: 0,
+                  top: widget.depth,
                   bottom: 0,
-                  height: widget.height,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: style.edge,
@@ -157,13 +169,13 @@ class _AppButtonState extends State<AppButton> {
                   ),
                 ),
                 // Sinks by exactly `depth` when pressed, covering the edge.
-                AnimatedPositioned(
+                AnimatedPadding(
                   duration: const Duration(milliseconds: 70),
                   curve: Curves.easeOut,
-                  left: 0,
-                  right: 0,
-                  top: _isPressed ? widget.depth : 0,
-                  height: widget.height,
+                  padding: EdgeInsets.only(
+                    top: _isPressed ? widget.depth : 0,
+                    bottom: _isPressed ? 0 : widget.depth,
+                  ),
                   child: ClipRRect(
                     borderRadius: radius,
                     child: DecoratedBox(

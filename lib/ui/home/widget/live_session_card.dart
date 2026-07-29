@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
 import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
@@ -18,7 +19,11 @@ class LiveSessionCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(title: 'Live Lessons'),
+          const SectionTitle(
+            title: 'Live lessons',
+            color: Colors.white,
+            fontSize: 22,
+          ),
           const SizedBox(height: 12),
           state.when(
             loading: () => const _LoadingCard(),
@@ -208,23 +213,31 @@ class _EmptyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Column(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: Stack(
         children: [
-          Icon(Icons.video_call_outlined, color: Color(0xFF9CA3AF), size: 32),
-          SizedBox(height: 8),
-          Text(
-            'No upcoming lessons',
-            style: TextStyle(
-              color: Color(0xFF6B7280),
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+          Image.asset(
+            'assets/images/no_upcoming_lessons_background.png',
+            width: double.infinity,
+            height: 190,
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+          ),
+          // Sits over the artwork's darkest area, so white reads cleanly.
+          const Positioned(
+            top: AppSpacing.lg,
+            left: AppSpacing.lg,
+            right: AppSpacing.lg,
+            child: Text(
+              'No upcoming lessons',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
             ),
           ),
         ],

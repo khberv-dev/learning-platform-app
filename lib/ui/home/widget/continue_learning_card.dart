@@ -4,7 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
+import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/shared/widget/section_title.dart';
+import 'package:student/ui/home/widget/home_promo_card.dart';
+
+/// Index of the Courses tab in [AppScreen]'s IndexedStack.
+const _coursesTabIndex = 1;
 
 class ContinueLearningCard extends ConsumerWidget {
   const ContinueLearningCard({super.key});
@@ -18,16 +23,21 @@ class ContinueLearningCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(title: 'Continue Learning'),
-          const SizedBox(height: 10),
+          const SectionTitle(
+            title: 'Library',
+            color: Colors.white,
+            fontSize: 22,
+          ),
+          const SizedBox(height: AppSpacing.md),
           state.when(
             loading: () => const SizedBox(
               height: 120,
               child: Center(child: CircularProgressIndicator()),
             ),
             error: (e, st) => const SizedBox.shrink(),
-            data: (courses) =>
-                courses.isEmpty ? _EmptyState() : _CourseList(courses: courses),
+            data: (courses) => courses.isEmpty
+                ? const _EmptyState()
+                : _CourseList(courses: courses),
           ),
         ],
       ),
@@ -37,52 +47,21 @@ class ContinueLearningCard extends ConsumerWidget {
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
-class _EmptyState extends StatelessWidget {
+class _EmptyState extends ConsumerWidget {
+  const _EmptyState();
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF0FDF4),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.menu_book_rounded,
-              color: Color(0xFF18C96A),
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 14),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'No active courses yet',
-                style: TextStyle(
-                  color: Color(0xFF111827),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 3),
-              Text(
-                'Browse and start learning today',
-                style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
-              ),
-            ],
-          ),
-        ],
-      ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return HomePromoCard(
+      background: Theme.of(context).colorScheme.surface,
+      title: 'No active courses yet',
+      subtitle: 'Browse and start learning today',
+      buttonLabel: 'Start practice',
+      imagePath: 'assets/images/no_course_puppet.png',
+      // Courses is a tab in the shell, not a route, so switch the navbar
+      // rather than pushing.
+      onTap: () =>
+          ref.read(navbarControllerProvider.notifier).state = _coursesTabIndex,
     );
   }
 }

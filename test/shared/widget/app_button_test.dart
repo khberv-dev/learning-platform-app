@@ -130,6 +130,60 @@ void main() {
     expect(find.byIcon(Icons.play_arrow), findsOneWidget);
   });
 
+  testWidgets('shrinkWrap sizes to the label, default fills the parent', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppButton.filled(label: 'Go', onTap: () {}),
+            AppButton.filled(label: 'Go', onTap: () {}, shrinkWrap: true),
+          ],
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+
+    final sizes = tester
+        .widgetList<AppButton>(find.byType(AppButton))
+        .toList()
+        .asMap()
+        .keys
+        .map((i) => tester.getSize(find.byType(AppButton).at(i)))
+        .toList();
+
+    // A Column hands down loose width, so the default must still stretch.
+    expect(sizes[0].width, 340);
+    expect(sizes[1].width, lessThan(340));
+    expect(sizes[0].height, sizes[1].height);
+  });
+
+  testWidgets('shrinkWrap still sinks on press', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        Align(
+          alignment: Alignment.centerLeft,
+          child: AppButton.filled(label: 'Go', onTap: () {}, shrinkWrap: true),
+        ),
+      ),
+    );
+
+    final face = find.byType(ClipRRect);
+    final resting = tester.getTopLeft(face).dy;
+
+    final gesture = await tester.startGesture(
+      tester.getCenter(find.byType(AppButton)),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(face).dy - resting, AppButton.defaultDepth);
+
+    await gesture.up();
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('long label ellipsizes instead of overflowing', (tester) async {
     await tester.pumpWidget(
       _host(

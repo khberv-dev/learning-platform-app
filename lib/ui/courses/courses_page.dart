@@ -192,7 +192,11 @@ class _CoursesTab extends ConsumerWidget {
               );
             },
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 96)),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+            ),
+          ),
         ],
       ),
     );
@@ -335,7 +339,11 @@ class _LiveSessionsTab extends ConsumerWidget {
               );
             },
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 96)),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+            ),
+          ),
         ],
       ),
     );

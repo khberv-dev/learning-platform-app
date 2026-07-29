@@ -18,6 +18,20 @@ abstract class AppColors {
   /// Unfilled portion of [AppProgressBar].
   static const progressTrack = Color(0xffb6c3cb);
 
+  /// Fill and outline of [AppPanel] — the home page's blue stat cards.
+  static const panelFill = Color(0xffd4ebf9);
+  static const panelBorder = Color(0xff4b9fd1);
+
+  /// Amber track behind the streak week, and the ticks drawn on it.
+  static const streakTrack = Color(0xfff2c14e);
+  static const streakTick = Color(0xffb07d1a);
+
+  /// Dark teal panel the home page's library and live-lesson sections sit on.
+  static const librarySurface = Color(0xff084f62);
+
+  /// Blue promo card, and the button colour used on the green one.
+  static const promoBlue = Color(0xff3d9ac8);
+
   /// Bottom of the survey's white-to-green page gradient.
   static const surveyGradientEnd = Color(0xff7cc04a);
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/ui/profile/widget/avatar_card.dart';
 import 'package:student/ui/profile/widget/personal_info_card.dart';
@@ -32,7 +33,12 @@ class ProfilePage extends ConsumerWidget {
         ),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            padding: EdgeInsets.fromLTRB(
+              20,
+              16,
+              20,
+              AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+            ),
             child: Column(
               children: [
                 AvatarCard(user: user),

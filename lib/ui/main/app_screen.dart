@@ -32,12 +32,18 @@ class AppScreen extends ConsumerWidget {
     }
 
     return Scaffold(
+      // Pages run to the bottom of the screen so the pill floats over their
+      // content rather than over a strip of scaffold background. Scaffold
+      // reports the navbar's height as MediaQuery bottom padding inside the
+      // body, which each page adds to its scroll padding.
+      extendBody: true,
       bottomNavigationBar: AppNavbar(
         current: navbarIndex,
         showChat: showChat,
         onItemClick: onNavItemClick,
       ),
       body: SafeArea(
+        bottom: false,
         child: IndexedStack(
           index: navbarIndex,
           children: const [

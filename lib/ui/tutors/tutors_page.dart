@@ -72,11 +72,11 @@ class TutorsPage extends ConsumerWidget {
                 },
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.fromLTRB(
+                  padding: EdgeInsets.fromLTRB(
                     AppSpacing.xl,
                     16,
                     AppSpacing.xl,
-                    96,
+                    AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
                   ),
                   children: [
                     const Text(
