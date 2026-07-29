@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
 import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
+import 'package:student/shared/widget/no_upcoming_lessons_card.dart';
 import 'package:student/shared/widget/section_title.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,12 +27,12 @@ class LiveSessionCard extends ConsumerWidget {
           const SizedBox(height: 12),
           state.when(
             loading: () => const _LoadingCard(),
-            error: (e, _) => const _EmptyCard(),
+            error: (e, _) => const NoUpcomingLessonsCard(),
             data: (lessons) {
               final next = lessons
                   .where((l) => l.isUpcoming || l.isOngoing)
                   .toList();
-              if (next.isEmpty) return const _EmptyCard();
+              if (next.isEmpty) return const NoUpcomingLessonsCard();
               return _NextLessonCard(lesson: next.first);
             },
           ),
@@ -199,44 +199,6 @@ class _NextLessonCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptyCard extends StatelessWidget {
-  const _EmptyCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadius.xl),
-      child: Stack(
-        children: [
-          Image.asset(
-            'assets/images/no_upcoming_lessons_background.png',
-            width: double.infinity,
-            height: 190,
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-          ),
-          // Sits over the artwork's darkest area, so white reads cleanly.
-          const Positioned(
-            top: AppSpacing.lg,
-            left: AppSpacing.lg,
-            right: AppSpacing.lg,
-            child: Text(
-              'No upcoming lessons',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
               ),
             ),
           ),

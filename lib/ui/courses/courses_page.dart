@@ -1,74 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
+import 'package:student/shared/widget/app_empty_state.dart';
+import 'package:student/shared/widget/no_upcoming_lessons_card.dart';
+import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/courses/widget/available_course_card.dart';
+import 'package:student/ui/courses/widget/courses_tab_bar.dart';
 import 'package:student/ui/courses/widget/live_lesson_card.dart';
 import 'package:student/ui/courses/widget/live_session_card.dart';
 import 'package:student/ui/courses/widget/my_course_card.dart';
+import 'package:student/ui/home/widget/home_promo_card.dart';
+import 'package:student/ui/roadmap/roadmap_screen.dart';
 
-class CoursesPage extends StatelessWidget {
+class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
 
   @override
+  State<CoursesPage> createState() => _CoursesPageState();
+}
+
+class _CoursesPageState extends State<CoursesPage> {
+  int _tab = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              AppSpacing.xl,
-              AppSpacing.xl,
-              0,
-            ),
-            child: Text(
-              'Courses',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: const Color(0xFF111827),
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.lg,
+            AppSpacing.xl,
+            AppSpacing.lg,
           ),
-          const SizedBox(height: AppSpacing.md),
-          TabBar(
-            tabs: const [
-              Tab(text: 'Courses'),
-              Tab(text: 'Live Sessions'),
-            ],
-            labelColor: const Color(0xFF111827),
-            unselectedLabelColor: const Color(0xFF9CA3AF),
-            labelStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            indicatorColor: const Color(0xFF18C96A),
-            indicatorWeight: 3,
-            indicatorSize: TabBarIndicatorSize.label,
-            dividerColor: const Color(0xFFE5E7EB),
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+          child: SectionTitle(title: 'Courses', fontSize: 30),
+        ),
+        CoursesTabBar(
+          labels: const ['Courses', 'Live sessions'],
+          current: _tab,
+          onSelected: (i) => setState(() => _tab = i),
+          // Roadmap is its own screen, not a tab, so it never reads as active.
+          actionLabel: 'Roadmap',
+          onAction: () => context.push(RoadmapScreen.path),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Expanded(
+          child: IndexedStack(
+            index: _tab,
+            children: const [_CoursesTab(), _LiveSessionsTab()],
           ),
-          const Expanded(
-            child: TabBarView(children: [_CoursesTab(), _LiveSessionsTab()]),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-class _CoursesTab extends ConsumerWidget {
+class _CoursesTab extends ConsumerStatefulWidget {
   const _CoursesTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_CoursesTab> createState() => _CoursesTabState();
+}
+
+class _CoursesTabState extends ConsumerState<_CoursesTab> {
+  /// Anchors the "Available to purchase" heading so the empty state's button
+  /// can scroll straight to it.
+  final _availableKey = GlobalKey();
+
+  void _scrollToAvailable() {
+    final target = _availableKey.currentContext;
+    if (target == null) return;
+    Scrollable.ensureVisible(
+      target,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final myCourses = ref.watch(myCoursesControllerProvider);
     final available = ref.watch(availableCoursesControllerProvider);
 
@@ -92,13 +106,7 @@ class _CoursesTab extends ConsumerWidget {
                 AppSpacing.xl,
                 12,
               ),
-              child: Text(
-                'My Courses',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFF111827),
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              child: const SectionTitle(title: 'My courses', fontSize: 22),
             ),
           ),
           myCourses.when(
@@ -119,10 +127,12 @@ class _CoursesTab extends ConsumerWidget {
             ),
             data: (courses) {
               if (courses.isEmpty) {
-                return const SliverToBoxAdapter(
+                return SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                    child: _NoMyCoursesCard(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                    ),
+                    child: _NoMyCourses(onBrowse: _scrollToAvailable),
                   ),
                 );
               }
@@ -138,18 +148,16 @@ class _CoursesTab extends ConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
+              key: _availableKey,
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.xl,
                 24,
                 AppSpacing.xl,
                 12,
               ),
-              child: Text(
-                'Available to Purchase',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFF111827),
-                  fontWeight: FontWeight.w700,
-                ),
+              child: const SectionTitle(
+                title: 'Available to purchase',
+                fontSize: 22,
               ),
             ),
           ),
@@ -183,9 +191,14 @@ class _CoursesTab extends ConsumerWidget {
               }
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                sliver: SliverList.separated(
+                sliver: SliverGrid.builder(
                   itemCount: courses.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: AppSpacing.lg,
+                    crossAxisSpacing: AppSpacing.lg,
+                    childAspectRatio: 0.62,
+                  ),
                   itemBuilder: (_, i) =>
                       AvailableCourseCard(course: courses[i]),
                 ),
@@ -232,12 +245,9 @@ class _LiveSessionsTab extends ConsumerWidget {
                 AppSpacing.xl,
                 12,
               ),
-              child: Text(
-                'Current & Upcoming',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: const Color(0xFF111827),
-                  fontWeight: FontWeight.w700,
-                ),
+              child: const SectionTitle(
+                title: 'Current & Upcoming',
+                fontSize: 22,
               ),
             ),
           ),
@@ -276,39 +286,22 @@ class _LiveSessionsTab extends ConsumerWidget {
                 AppSpacing.xl,
                 12,
               ),
-              child:
-                  recordedState
-                      .whenData(
-                        (lessons) => Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Past Sessions',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: const Color(0xFF111827),
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                            ),
-                            if (lessons.isNotEmpty)
-                              Text(
-                                '${lessons.length} recorded',
-                                style: const TextStyle(
-                                  color: Color(0xFF9CA3AF),
-                                  fontSize: 13,
-                                ),
-                              ),
-                          ],
-                        ),
-                      )
-                      .value ??
-                  Text(
-                    'Past Sessions',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: const Color(0xFF111827),
-                      fontWeight: FontWeight.w700,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SectionTitle(title: 'Past sessions', fontSize: 22),
+                  // Only meaningful once something has been recorded.
+                  if ((recordedState.value?.length ?? 0) > 0)
+                    Text(
+                      '${recordedState.value!.length} recorded',
+                      style: const TextStyle(
+                        color: Color(0xff9aa5ad),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
+                ],
+              ),
             ),
           ),
           recordedState.when(
@@ -355,30 +348,9 @@ class _NoUpcomingSessions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Row(
-          children: [
-            Icon(
-              Icons.event_available_outlined,
-              color: Color(0xFF9CA3AF),
-              size: 22,
-            ),
-            SizedBox(width: 12),
-            Text(
-              'No upcoming sessions scheduled',
-              style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
-            ),
-          ],
-        ),
-      ),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      child: NoUpcomingLessonsCard(),
     );
   }
 }
@@ -388,100 +360,32 @@ class _NoRecordedSessions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 0, AppSpacing.xl, 96),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF0FDF4),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.videocam_off_outlined,
-              color: Color(0xFF18C96A),
-              size: 32,
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'No Recorded Sessions',
-            style: TextStyle(
-              color: Color(0xFF111827),
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const SizedBox(
-            width: 260,
-            child: Text(
-              'Recorded live sessions will appear here once available.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFF9CA3AF),
-                fontSize: 14,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      child: AppEmptyState(
+        imagePath: 'assets/images/no_recorded_sessions_puppet.png',
+        title: 'No recorded sessions',
+        subtitle: 'Recorded live sessions will appear\nhere once available',
       ),
     );
   }
 }
 
-class _NoMyCoursesCard extends StatelessWidget {
-  const _NoMyCoursesCard();
+class _NoMyCourses extends StatelessWidget {
+  final VoidCallback onBrowse;
+
+  const _NoMyCourses({required this.onBrowse});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF0FDF4),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.menu_book_outlined,
-              color: Color(0xFF18C96A),
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 14),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'No active courses yet',
-                  style: TextStyle(
-                    color: Color(0xFF111827),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 3),
-                Text(
-                  'Browse and start learning today',
-                  style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return HomePromoCard(
+      background: Theme.of(context).colorScheme.surface,
+      title: 'No active courses yet',
+      subtitle: 'Browse and start learning today',
+      buttonLabel: 'Start practice',
+      imagePath: 'assets/images/no_course_puppet.png',
+      // Already on the courses tab, so browsing means the list below.
+      onTap: onBrowse,
     );
   }
 }

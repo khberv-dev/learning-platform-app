@@ -32,6 +32,12 @@ abstract class AppColors {
   /// Blue promo card, and the button colour used on the green one.
   static const promoBlue = Color(0xff3d9ac8);
 
+  /// Dark card behind a purchasable course's cover art.
+  static const courseCard = Color(0xff2b1c14);
+
+  /// Neutral surface for [AppEmptyState].
+  static const emptySurface = Color(0xffefefef);
+
   /// Bottom of the survey's white-to-green page gradient.
   static const surveyGradientEnd = Color(0xff7cc04a);
 }

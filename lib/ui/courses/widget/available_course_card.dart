@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/data/network/config.dart';
+import 'package:student/app/theme/app_colors.dart';
+import 'package:student/app/theme/app_radius.dart';
+import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
-import 'package:student/utils/lib.dart';
+import 'package:student/shared/widget/app_button.dart';
 
+/// Grid tile for a purchasable course: cover art on a dark card, with the
+/// title, lesson count and a call to action beneath it.
 class AvailableCourseCard extends StatelessWidget {
   final CourseEntity course;
 
@@ -11,71 +16,57 @@ class AvailableCourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void open() => context.push('/course/${course.id}?owned=false');
+
     return GestureDetector(
-      onTap: () => context.push('/course/${course.id}?owned=false'),
+      onTap: open,
       child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.courseCard,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
-        clipBehavior: Clip.hardEdge,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _CourseImage(imageUrl: course.imageUrl),
-            Padding(
-              padding: const EdgeInsets.all(14),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          course.title,
-                          style: const TextStyle(
-                            color: Color(0xFF111827),
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          '${course.lessonsCount} lessons · ${course.level}',
-                          style: const TextStyle(
-                            color: Color(0xFF6B7280),
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          "${formatNumber(course.price)} so'm",
-                          style: const TextStyle(
-                            color: Color(0xFF18C96A),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF18C96A),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.shopping_cart_outlined,
-                      color: Colors.white,
-                      size: 18,
-                    ),
-                  ),
-                ],
+            // Takes whatever height the tile has left, so titles of differing
+            // lengths don't push the button out of the card.
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                child: _CourseImage(imageUrl: course.imageUrl),
               ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              course.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              '${course.lessonsCount} lessons',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xffa79a92),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            AppButton.filled(
+              label: 'Learn more',
+              onTap: open,
+              height: 40,
+              depth: 4,
+              fontSize: 14,
             ),
           ],
         ),
@@ -91,7 +82,7 @@ class _CourseImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl == null) return _placeholder();
+    if (imageUrl == null) return const _Placeholder();
 
     final url = imageUrl!.startsWith('http')
         ? imageUrl!
@@ -99,13 +90,27 @@ class _CourseImage extends StatelessWidget {
 
     return Image.network(
       url,
-      height: 120,
       width: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stack) => _placeholder(),
+      errorBuilder: (_, _, _) => const _Placeholder(),
     );
   }
+}
 
-  Widget _placeholder() =>
-      Container(height: 120, color: const Color(0xFFE5E7EB));
+class _Placeholder extends StatelessWidget {
+  const _Placeholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Colors.white.withAlpha(20),
+      child: const Center(
+        child: Icon(
+          Icons.menu_book_rounded,
+          color: Color(0xffa79a92),
+          size: 32,
+        ),
+      ),
+    );
+  }
 }
