@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/tutors/presentation/tutors_controller.dart';
+import 'package:student/shared/widget/app_empty_state.dart';
+import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/tutors/widget/tutor_card.dart';
 
 class TutorsPage extends ConsumerWidget {
@@ -11,96 +13,91 @@ class TutorsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(tutorsControllerProvider);
 
+    Future<void> refresh() async {
+      ref.invalidate(tutorsControllerProvider);
+      await ref.read(tutorsControllerProvider.future);
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
+        const Padding(
+          padding: EdgeInsets.fromLTRB(
             AppSpacing.xl,
+            AppSpacing.lg,
             AppSpacing.xl,
-            AppSpacing.xl,
-            16,
+            AppSpacing.lg,
           ),
-          child: Text(
-            'Find a Tutor',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: const Color(0xFF111827),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: SectionTitle(title: 'Find a tutor', fontSize: 30),
         ),
-        const Divider(height: 1, color: Color(0xFFE5E7EB)),
-        state.when(
-          loading: () =>
-              const Expanded(child: Center(child: CircularProgressIndicator())),
-          error: (e, _) => Expanded(
-            child: Center(
-              child: Text(
-                e.toString(),
-                style: const TextStyle(color: Color(0xFF6B7280)),
-              ),
-            ),
-          ),
-          data: (tutors) {
-            if (tutors.isEmpty) {
-              return Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    ref.invalidate(tutorsControllerProvider);
-                    await ref.read(tutorsControllerProvider.future);
-                  },
-                  child: const SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    child: SizedBox(
-                      height: 400,
-                      child: Center(
-                        child: Text(
-                          'No tutors found.',
-                          style: TextStyle(color: Color(0xFF6B7280)),
-                        ),
-                      ),
-                    ),
-                  ),
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: refresh,
+            child: state.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => _Scrollable(
+                child: AppEmptyState(
+                  imagePath: 'assets/images/no_recorded_sessions_puppet.png',
+                  title: "Couldn't load tutors",
+                  subtitle: 'Pull down to try again',
                 ),
-              );
-            }
-            return Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  ref.invalidate(tutorsControllerProvider);
-                  await ref.read(tutorsControllerProvider.future);
-                },
-                child: ListView(
+              ),
+              data: (tutors) {
+                if (tutors.isEmpty) {
+                  return const _Scrollable(
+                    child: AppEmptyState(
+                      imagePath:
+                          'assets/images/no_recorded_sessions_puppet.png',
+                      title: 'No tutors yet',
+                      subtitle: 'Tutors will appear here once they join',
+                    ),
+                  );
+                }
+                return ListView.separated(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: EdgeInsets.fromLTRB(
                     AppSpacing.xl,
-                    16,
+                    0,
                     AppSpacing.xl,
                     AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
                   ),
-                  children: [
-                    const Text(
-                      'Available Tutors',
-                      style: TextStyle(
-                        color: Color(0xFF111827),
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    ...tutors.map(
-                      (t) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: TutorCard(tutor: t),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  // One extra leading item for the section heading.
+                  itemCount: tutors.length + 1,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.lg),
+                  itemBuilder: (_, i) => i == 0
+                      ? const SectionTitle(
+                          title: 'Available tutors',
+                          fontSize: 22,
+                        )
+                      : TutorCard(tutor: tutors[i - 1]),
+                );
+              },
+            ),
+          ),
         ),
       ],
+    );
+  }
+}
+
+/// Keeps an empty state pull-to-refreshable.
+class _Scrollable extends StatelessWidget {
+  final Widget child;
+
+  const _Scrollable({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        AppSpacing.xxl,
+        AppSpacing.xl,
+        AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+      ),
+      children: [child],
     );
   }
 }

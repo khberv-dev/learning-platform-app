@@ -2,9 +2,17 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/data/network/config.dart';
+import 'package:student/app/theme/app_colors.dart';
+import 'package:student/app/theme/app_radius.dart';
+import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/assignments/presentation/create_assignment_controller.dart';
 import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
 import 'package:student/core/tutors/presentation/tutor_detail_controller.dart';
+import 'package:student/shared/widget/app_bottom_action_bar.dart';
+import 'package:student/shared/widget/app_button.dart';
+import 'package:student/shared/widget/app_empty_state.dart';
+import 'package:student/shared/widget/back_icon_button.dart';
+import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/tutors/book_tutor_sheet.dart';
 import 'package:video_player/video_player.dart';
 
@@ -78,13 +86,26 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Text(
-            e.toString(),
-            style: const TextStyle(color: Color(0xFF6B7280)),
+        error: (e, _) => SafeArea(
+          child: Column(
+            children: [
+              const _Header(title: 'Tutor'),
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    child: Text(
+                      e.toString(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Color(0xff8a949b)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         data: (tutor) {
@@ -93,30 +114,64 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
               (_) => _initVideo(tutor.introVideo!),
             );
           }
+
           return Column(
             children: [
-              _AppBar(),
+              SafeArea(bottom: false, child: _Header(title: tutor.name)),
               Expanded(
                 child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xl),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _VideoSection(chewieController: _chewieController),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _InfoCard(tutor: tutor),
-                            const SizedBox(height: 16),
-                            _ReviewsSection(),
-                          ],
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
                         ),
+                        child: _IntroVideo(controller: _chewieController),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: _Headline(tutor: tutor),
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: SectionTitle(
+                          title: 'Student reviews',
+                          fontSize: 22,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      // Reviews aren't exposed by the API yet, so this is the
+                      // only state the section can be in.
+                      const AppEmptyState(
+                        imagePath: 'assets/images/no_comments_puppet.png',
+                        title: 'No reviews yet',
+                        backgroundColor: Colors.transparent,
                       ),
                     ],
                   ),
                 ),
               ),
-              _BottomBar(tutorId: widget.tutorId, tutorName: tutor.name),
+              AppBottomActionBar(
+                children: [
+                  AppButton.filled(
+                    label: 'Book tutor',
+                    onTap: () => showBookTutorSheet(
+                      context,
+                      ref,
+                      tutorId: widget.tutorId,
+                      tutorName: tutor.name,
+                    ),
+                  ),
+                ],
+              ),
             ],
           );
         },
@@ -125,292 +180,140 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
   }
 }
 
-// ── App Bar ───────────────────────────────────────────────────────────────────
+class _Header extends StatelessWidget {
+  final String title;
 
-class _AppBar extends StatelessWidget {
+  const _Header({required this.title});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.fromLTRB(
-        16,
-        MediaQuery.of(context).padding.top + 8,
-        16,
-        8,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.sm,
+        AppSpacing.lg,
+        AppSpacing.md,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                color: Color(0xFFF3F4F6),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                size: 18,
-                color: Color(0xFF111827),
+          const BackIconButton(),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.black,
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
               ),
             ),
           ),
-          const Text(
-            'Tutor',
-            style: TextStyle(
-              color: Color(0xFF111827),
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(width: 40, height: 40),
         ],
       ),
     );
   }
 }
 
-// ── Video Section ─────────────────────────────────────────────────────────────
+class _IntroVideo extends StatelessWidget {
+  final ChewieController? controller;
 
-class _VideoSection extends StatelessWidget {
-  final ChewieController? chewieController;
-
-  const _VideoSection({required this.chewieController});
+  const _IntroVideo({required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 200,
-      width: double.infinity,
-      child: chewieController != null
-          ? Chewie(controller: chewieController!)
-          : Stack(
-              fit: StackFit.expand,
-              children: [
-                Container(color: const Color(0xFF111827)),
-                Center(
-                  child: Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.play_arrow_rounded,
-                          color: Color(0xFF111827),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: AspectRatio(
+        aspectRatio: 2,
+        child: controller != null
+            ? Chewie(controller: controller!)
+            : const _VideoPlaceholder(),
+      ),
     );
   }
 }
 
-// ── Info Card ─────────────────────────────────────────────────────────────────
+class _VideoPlaceholder extends StatelessWidget {
+  const _VideoPlaceholder();
 
-class _InfoCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppColors.ink,
+      child: Center(
+        child: Container(
+          width: 52,
+          height: 52,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.play_arrow_rounded,
+            color: AppColors.ink,
+            size: 28,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Headline extends StatelessWidget {
   final TutorEntity tutor;
 
-  const _InfoCard({required this.tutor});
+  const _Headline({required this.tutor});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              _Avatar(url: tutor.avatarUrl, size: 64, radius: 32),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tutor.name,
-                      style: const TextStyle(
-                        color: Color(0xFF111827),
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    if (tutor.profession != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        tutor.profession!,
-                        style: const TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _Stat(
-                  value: tutor.rating.toStringAsFixed(1),
-                  label: '★ Rating',
-                ),
-                Container(width: 1, height: 32, color: const Color(0xFFE5E7EB)),
-                _Stat(value: tutor.feedbackCount.toString(), label: 'Reviews'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  final String value;
-  final String label;
-
-  const _Stat({required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            color: Color(0xFF111827),
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 11),
-        ),
-      ],
-    );
-  }
-}
-
-// ── Reviews Section ───────────────────────────────────────────────────────────
-
-class _ReviewsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Student Reviews',
-          style: TextStyle(
-            color: Color(0xFF111827),
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
+        Text(
+          // The subject leads; the tutor's name sits under it with their photo.
+          tutor.profession ?? tutor.name,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 30,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.8,
           ),
         ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Center(
-            child: Text(
-              'No reviews yet',
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+        const SizedBox(height: AppSpacing.sm),
+        Row(
+          children: [
+            _Avatar(url: tutor.avatarUrl, name: tutor.name, size: 38),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                tutor.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Color(0xff8a949b),
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );
   }
 }
 
-// ── Bottom Bar ────────────────────────────────────────────────────────────────
-
-class _BottomBar extends ConsumerWidget {
-  final String tutorId;
-  final String tutorName;
-
-  const _BottomBar({required this.tutorId, required this.tutorName});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bottom = MediaQuery.of(context).padding.bottom;
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.fromLTRB(20, 12, 20, 12 + bottom),
-      child: SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: Material(
-          color: const Color(0xFF18C96A),
-          borderRadius: BorderRadius.circular(28),
-          child: InkWell(
-            onTap: () => showBookTutorSheet(
-              context,
-              ref,
-              tutorId: tutorId,
-              tutorName: tutorName,
-            ),
-            borderRadius: BorderRadius.circular(28),
-            child: const Center(
-              child: Text(
-                'Book Tutor',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ── Avatar ────────────────────────────────────────────────────────────────────
-
 class _Avatar extends StatelessWidget {
   final String? url;
+  final String name;
   final double size;
-  final double radius;
 
-  const _Avatar({this.url, required this.size, required this.radius});
+  const _Avatar({this.url, required this.name, required this.size});
+
+  String get _initial => name.isNotEmpty ? name[0].toUpperCase() : '?';
 
   @override
   Widget build(BuildContext context) {
@@ -420,24 +323,33 @@ class _Avatar extends StatelessWidget {
         ? url!
         : '$baseCdnUrl/$url';
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: imageUrl != null
-          ? Image.network(
-              imageUrl,
-              width: size,
-              height: size,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => _placeholder(size),
-            )
-          : _placeholder(size),
+    return ClipOval(
+      child: SizedBox.square(
+        dimension: size,
+        child: imageUrl == null
+            ? _fallback(context)
+            : Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _fallback(context),
+              ),
+      ),
     );
   }
 
-  Widget _placeholder(double size) => Container(
-    width: size,
-    height: size,
-    color: const Color(0xFFE5E7EB),
-    child: const Icon(Icons.person_outline, color: Color(0xFF9CA3AF), size: 32),
-  );
+  Widget _fallback(BuildContext context) {
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.primary,
+      child: Center(
+        child: Text(
+          _initial,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: size * 0.42,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
 }

@@ -11,12 +11,17 @@ class AppEmptyState extends StatelessWidget {
   final String? subtitle;
   final double imageHeight;
 
+  /// Pass [Colors.transparent] where the placeholder sits directly on the
+  /// page rather than in its own card.
+  final Color backgroundColor;
+
   const AppEmptyState({
     super.key,
     required this.imagePath,
     required this.title,
     this.subtitle,
     this.imageHeight = 150,
+    this.backgroundColor = AppColors.emptySurface,
   });
 
   @override
@@ -28,7 +33,7 @@ class AppEmptyState extends StatelessWidget {
         horizontal: AppSpacing.xl,
       ),
       decoration: BoxDecoration(
-        color: AppColors.emptySurface,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
       child: Column(

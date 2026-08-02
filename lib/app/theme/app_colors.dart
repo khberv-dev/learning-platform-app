@@ -38,6 +38,15 @@ abstract class AppColors {
   /// Neutral surface for [AppEmptyState].
   static const emptySurface = Color(0xffefefef);
 
+  /// Rating badges — a navy star on coral when earned, flat grey when not.
+  static const ratingFill = Color(0xfff4796b);
+  static const ratingInk = Color(0xff1b1b8f);
+  static const ratingEmpty = Color(0xffc9cdd1);
+  static const ratingEmptyInk = Color(0xffa8adb2);
+
+  /// Solid offset edge under raised white cards, matching the buttons.
+  static const cardEdge = Color(0xffcfd4d8);
+
   /// Bottom of the survey's white-to-green page gradient.
   static const surveyGradientEnd = Color(0xff7cc04a);
 }

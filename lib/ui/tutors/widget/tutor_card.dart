@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/data/network/config.dart';
+import 'package:student/app/theme/app_colors.dart';
+import 'package:student/app/theme/app_radius.dart';
+import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
+import 'package:student/shared/widget/rating_stars.dart';
 
 class TutorCard extends StatelessWidget {
   final TutorEntity tutor;
@@ -13,76 +17,90 @@ class TutorCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push('/tutor/${tutor.id}'),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          // A solid offset edge rather than a diffuse drop shadow, so the card
+          // sits in the same raised language as the buttons.
           boxShadow: const [
             BoxShadow(
-              color: Color(0x14000000),
-              blurRadius: 8,
-              offset: Offset(0, 2),
+              color: AppColors.cardEdge,
+              offset: Offset(0, 5),
+              blurRadius: 3,
             ),
           ],
         ),
-        child: Column(
+        child: Row(
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _Avatar(url: tutor.avatarUrl, size: 60, radius: 30),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tutor.name,
-                        style: const TextStyle(
-                          color: Color(0xFF111827),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      if (tutor.profession != null) ...[
-                        const SizedBox(height: 5),
-                        _ProfessionChip(profession: tutor.profession!),
-                      ],
-                      const SizedBox(height: 5),
-                      Text(
-                        '★★★★★  ${tutor.rating.toStringAsFixed(1)}  ·  ${tutor.feedbackCount} reviews',
-                        style: const TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+            _Avatar(url: tutor.avatarUrl, name: tutor.name, size: 62),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    tutor.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                    ),
                   ),
-                ),
-              ],
+                  if (tutor.profession != null) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    _ProfessionChip(profession: tutor.profession!),
+                  ],
+                  const SizedBox(height: AppSpacing.sm),
+                  _Rating(
+                    rating: tutor.rating,
+                    feedbackCount: tutor.feedbackCount,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: const Center(
-                child: Text(
-                  'View Profile',
-                  style: TextStyle(
-                    color: Color(0xFF18C96A),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
+            const SizedBox(width: AppSpacing.sm),
+            const Icon(
+              Icons.chevron_right_rounded,
+              size: 30,
+              color: Colors.black,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _Rating extends StatelessWidget {
+  final double rating;
+  final int feedbackCount;
+
+  const _Rating({required this.rating, required this.feedbackCount});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        RatingStars(rating: rating),
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(
+          child: Text(
+            '${rating.toStringAsFixed(1)}  ·  $feedbackCount reviews',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Color(0xff8a949b),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -94,51 +112,43 @@ class _ProfessionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = _chipColors(profession);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: 4,
+      ),
       decoration: BoxDecoration(
-        color: colors.$1,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(AppRadius.round),
+        border: Border.all(color: AppColors.ink, width: 1.5),
       ),
       child: Text(
         profession,
-        style: TextStyle(
-          color: colors.$2,
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          color: AppColors.ink,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
-  }
-
-  static (Color, Color) _chipColors(String profession) {
-    final p = profession.toLowerCase();
-    if (p.contains('ielts') || p.contains('toefl') || p.contains('exam')) {
-      return (const Color(0xFFFFF7ED), const Color(0xFFEA580C));
-    }
-    if (p.contains('english') ||
-        p.contains('literature') ||
-        p.contains('writing') ||
-        p.contains('grammar')) {
-      return (const Color(0xFFEFF6FF), const Color(0xFF3B82F6));
-    }
-    if (p.contains('math') ||
-        p.contains('science') ||
-        p.contains('physics') ||
-        p.contains('speak')) {
-      return (const Color(0xFFF0FDF4), const Color(0xFF15803D));
-    }
-    return (const Color(0xFFF3F4F6), const Color(0xFF374151));
   }
 }
 
 class _Avatar extends StatelessWidget {
   final String? url;
+  final String name;
   final double size;
-  final double radius;
 
-  const _Avatar({this.url, required this.size, required this.radius});
+  const _Avatar({this.url, required this.name, required this.size});
+
+  String get _initials {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length >= 2 && parts[1].isNotEmpty) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.isNotEmpty ? name[0].toUpperCase() : '?';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,24 +158,33 @@ class _Avatar extends StatelessWidget {
         ? url!
         : '$baseCdnUrl/$url';
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: imageUrl != null
-          ? Image.network(
-              imageUrl,
-              width: size,
-              height: size,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => _placeholder(size),
-            )
-          : _placeholder(size),
+    return ClipOval(
+      child: SizedBox.square(
+        dimension: size,
+        child: imageUrl == null
+            ? _fallback(context)
+            : Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _fallback(context),
+              ),
+      ),
     );
   }
 
-  Widget _placeholder(double size) => Container(
-    width: size,
-    height: size,
-    color: const Color(0xFFE5E7EB),
-    child: const Icon(Icons.person_outline, color: Color(0xFF9CA3AF), size: 28),
-  );
+  Widget _fallback(BuildContext context) {
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.primary,
+      child: Center(
+        child: Text(
+          _initials,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: size * 0.34,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
 }
