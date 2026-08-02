@@ -7,6 +7,7 @@ import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
 import 'package:student/shared/widget/app_button.dart';
+import 'package:student/ui/payments/payment_types_screen.dart';
 import 'package:student/utils/lib.dart';
 
 class CourseDetailScreen extends ConsumerWidget {
@@ -108,7 +109,7 @@ class _CourseDetailBody extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: _PurchaseBar(price: course.price),
+            child: _PurchaseBar(courseId: course.id, price: course.price),
           ),
       ],
     );
@@ -293,9 +294,10 @@ class _UnitCard extends StatelessWidget {
 }
 
 class _PurchaseBar extends StatelessWidget {
+  final String courseId;
   final int price;
 
-  const _PurchaseBar({required this.price});
+  const _PurchaseBar({required this.courseId, required this.price});
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +313,10 @@ class _PurchaseBar extends StatelessWidget {
         label: "Purchase (${formatNumber(price)} so'm)",
         icon: const Icon(Icons.shopping_cart_outlined),
         fontSize: 16,
-        onTap: () {},
+        // Opening the picker requests the payment; checkout then continues
+        // on the provider's own site.
+        onTap: () =>
+            context.push('${PaymentTypesScreen.path}?courseId=$courseId'),
       ),
     );
   }

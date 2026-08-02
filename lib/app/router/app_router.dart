@@ -14,6 +14,7 @@ import 'package:student/ui/courses/live_session_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
+import 'package:student/ui/payments/payment_types_screen.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
 import 'package:student/ui/roadmap/roadmap_screen.dart';
@@ -63,6 +64,11 @@ final _appRouter = GoRouter(
       builder: (_, _) => const NotificationsScreen(),
     ),
     GoRoute(path: RoadmapScreen.path, builder: (_, _) => const RoadmapScreen()),
+    GoRoute(
+      path: PaymentTypesScreen.path,
+      builder: (_, state) =>
+          PaymentTypesScreen(courseId: state.uri.queryParameters['courseId']!),
+    ),
     GoRoute(
       path: AiAssessmentScreen.path,
       builder: (_, _) => AiAssessmentScreen(),

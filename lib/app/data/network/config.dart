@@ -6,4 +6,4 @@ const mainHostUrl = 'https://cp.i-teach.uz';
 const hostUrl = kDebugMode ? devHostUrl : mainHostUrl;
 
 const baseApiUrl = '$hostUrl/api/';
-const baseCdnUrl = '$hostUrl/public';
+const baseCdnUrl = '$hostUrl/public/';
