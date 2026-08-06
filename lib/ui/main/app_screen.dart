@@ -2,21 +2,89 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
+import 'package:student/core/courses/domain/entity/my_course_entity.dart';
+import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/main/presentation/navbar_controller.dart';
+import 'package:student/core/payments/presentation/purchase_watcher.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/courses_page.dart';
+import 'package:student/ui/courses/widget/purchase_success_dialog.dart';
 import 'package:student/ui/home/home_page.dart';
 import 'package:student/ui/main/widget/app_navbar.dart';
 import 'package:student/ui/profile/profile_page.dart';
 import 'package:student/ui/tutors/tutors_page.dart';
 
-class AppScreen extends ConsumerWidget {
+class AppScreen extends ConsumerStatefulWidget {
   static const path = '/app';
 
   const AppScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppScreen> createState() => _AppScreenState();
+}
+
+class _AppScreenState extends ConsumerState<AppScreen>
+    with WidgetsBindingObserver {
+  /// Guards against two resume events overlapping the same refetch.
+  bool _isCheckingPurchase = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _checkForPurchasedCourse();
+  }
+
+  /// Checkout finishes on the provider's site, so returning to the app is the
+  /// only signal available. Refetch the library and see whether a course the
+  /// student didn't own before has appeared.
+  Future<void> _checkForPurchasedCourse() async {
+    final watch = ref.read(purchaseWatchProvider);
+    if (watch == null || _isCheckingPurchase) return;
+    _isCheckingPurchase = true;
+
+    try {
+      ref.invalidate(myCoursesControllerProvider);
+      final courses = await ref.read(myCoursesControllerProvider.future);
+
+      final purchased = courses
+          .where((c) => !watch.knownCourseIds.contains(c.courseId))
+          .toList();
+
+      // Nothing new yet — confirmation may still be pending, so keep watching
+      // and check again on the next resume.
+      if (purchased.isEmpty || !mounted) return;
+
+      ref.read(purchaseWatchProvider.notifier).stop();
+      await showPurchaseSuccessDialog(
+        context,
+        courseTitle: purchased.first.title,
+        onOpenCourse: () => _openCourse(purchased.first),
+      );
+    } catch (_) {
+      // A failed refetch just means no congratulation; the watch stays put.
+    } finally {
+      _isCheckingPurchase = false;
+    }
+  }
+
+  void _openCourse(MyCourseEntity course) {
+    if (!mounted) return;
+    context.push('/course/${course.courseId}?owned=true');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final navbarIndex = ref.watch(navbarControllerProvider);
     final showChat = ref.watch(hasChatRoomsProvider).value ?? false;
 
@@ -42,17 +110,16 @@ class AppScreen extends ConsumerWidget {
         showChat: showChat,
         onItemClick: onNavItemClick,
       ),
-      body: SafeArea(
-        bottom: false,
-        child: IndexedStack(
-          index: navbarIndex,
-          children: const [
-            HomePage(),
-            CoursesPage(),
-            TutorsPage(),
-            ProfilePage(),
-          ],
-        ),
+      // Not SafeArea: the profile hero bleeds to the top edge, so each page
+      // applies the top inset itself.
+      body: IndexedStack(
+        index: navbarIndex,
+        children: const [
+          HomePage(),
+          CoursesPage(),
+          TutorsPage(),
+          ProfilePage(),
+        ],
       ),
     );
   }

@@ -26,8 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is required by the real-time calling component iTeach uses for speaking practice. Practice calls are audio-only, so your camera is never turned on.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app needs microphone access to record your spoken answers for the AI Assessment.</string>
+	<string>iTeach needs your microphone to record spoken answers during AI assessments and to let you talk with your speaking partner and tutors.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

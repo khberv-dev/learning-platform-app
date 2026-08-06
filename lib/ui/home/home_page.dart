@@ -22,7 +22,9 @@ class HomePage extends ConsumerWidget {
     final balance = ref.watch(currentUserProvider)?.balance ?? 0;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(top: AppSpacing.xxl),
+      padding: EdgeInsets.only(
+        top: AppSpacing.xxl + MediaQuery.paddingOf(context).top,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
-import 'package:student/ui/profile/widget/avatar_card.dart';
-import 'package:student/ui/profile/widget/personal_info_card.dart';
+import 'package:student/ui/auth/forgot_password_screen.dart';
+import 'package:student/ui/profile/widget/profile_hero.dart';
+import 'package:student/ui/profile/widget/profile_pill.dart';
 import 'package:student/ui/profile/widget/settings_card.dart';
+import 'package:student/utils/lib.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -13,44 +16,38 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
 
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-          child: const SizedBox(
-            height: 56,
-            child: Center(
-              child: Text(
-                'Profile',
-                style: TextStyle(
-                  color: Color(0xFF111827),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              20,
-              16,
-              20,
-              AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ProfileHero(user: user),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.xl,
+              AppSpacing.lg,
+              AppSpacing.xl,
+              AppSpacing.xl,
             ),
             child: Column(
               children: [
-                AvatarCard(user: user),
-                const SizedBox(height: 12),
-                PersonalInfoCard(user: user),
-                const SizedBox(height: 12),
-                const SettingsCard(),
+                ProfileField(
+                  label: 'Phone number',
+                  value: formatPhone(user?.phoneNumber),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                ProfileField(
+                  label: 'Password',
+                  value: 'Update password',
+                  // Reuses the recovery flow — it verifies by OTP and sets a
+                  // new password, which is what updating one means here.
+                  onTap: () => context.push(ForgotPasswordScreen.path),
+                ),
               ],
             ),
           ),
-        ),
-      ],
+          const SettingsCard(),
+        ],
+      ),
     );
   }
 }

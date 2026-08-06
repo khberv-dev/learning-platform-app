@@ -7,8 +7,7 @@ import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
 import 'package:student/shared/widget/app_button.dart';
-import 'package:student/ui/payments/payment_types_screen.dart';
-import 'package:student/utils/lib.dart';
+import 'package:student/ui/plans/plans_screen.dart';
 
 class CourseDetailScreen extends ConsumerWidget {
   static const path = '/course/:id';
@@ -109,7 +108,7 @@ class _CourseDetailBody extends StatelessWidget {
             bottom: 0,
             left: 0,
             right: 0,
-            child: _PurchaseBar(courseId: course.id, price: course.price),
+            child: _PurchaseBar(courseId: course.id),
           ),
       ],
     );
@@ -295,9 +294,8 @@ class _UnitCard extends StatelessWidget {
 
 class _PurchaseBar extends StatelessWidget {
   final String courseId;
-  final int price;
 
-  const _PurchaseBar({required this.courseId, required this.price});
+  const _PurchaseBar({required this.courseId});
 
   @override
   Widget build(BuildContext context) {
@@ -310,13 +308,12 @@ class _PurchaseBar extends StatelessWidget {
         MediaQuery.of(context).padding.bottom + 16,
       ),
       child: AppButton.filled(
-        label: "Purchase (${formatNumber(price)} so'm)",
+        // A course carries no price of its own — each plan sets one, so this
+        // leads to the plan picker rather than straight to checkout.
+        label: 'Choose a plan',
         icon: const Icon(Icons.shopping_cart_outlined),
         fontSize: 16,
-        // Opening the picker requests the payment; checkout then continues
-        // on the provider's own site.
-        onTap: () =>
-            context.push('${PaymentTypesScreen.path}?courseId=$courseId'),
+        onTap: () => context.push('${PlansScreen.path}?courseId=$courseId'),
       ),
     );
   }

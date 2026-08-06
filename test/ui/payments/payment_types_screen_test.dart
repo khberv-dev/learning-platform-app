@@ -4,7 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_theme.dart';
+import 'package:student/core/courses/data/repository/courses_repository.dart';
+import 'package:student/core/courses/domain/entity/my_course_entity.dart';
+import 'package:student/core/courses/domain/repository/i_courses_repository.dart';
+import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/core/payments/data/repository/payments_repository.dart';
+import 'package:student/core/payments/presentation/purchase_watcher.dart';
 import 'package:student/core/payments/domain/entity/payment_entity.dart';
 import 'package:student/core/payments/domain/entity/payment_type_entity.dart';
 import 'package:student/core/payments/domain/repository/i_payments_repository.dart';
@@ -25,6 +30,20 @@ const _click = PaymentTypeEntity(
 
 const _pending = PaymentEntity(id: 'pa1', status: PaymentStatus.created);
 
+/// The library as it stands before checkout, for the snapshot the watcher
+/// diffs against.
+class _Courses implements ICoursesRepository {
+  final List<MyCourseEntity> owned;
+
+  _Courses({this.owned = const []});
+
+  @override
+  Future<List<MyCourseEntity>> getMyCourses() async => owned;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) async => <Never>[];
+}
+
 class _Repo implements IPaymentsRepository {
   final List<PaymentTypeEntity> types;
   final Object? requestError;
@@ -33,7 +52,7 @@ class _Repo implements IPaymentsRepository {
   /// Lets a test hand back a different URL than the one listed.
   final String? echoedUrl;
 
-  final requestedCourses = <String>[];
+  final requestedPlans = <String>[];
   final selections = <({String paymentId, String paymentTypeId})>[];
 
   _Repo({
@@ -44,8 +63,8 @@ class _Repo implements IPaymentsRepository {
   });
 
   @override
-  Future<PaymentRequestEntity> requestPayment(String courseId) async {
-    requestedCourses.add(courseId);
+  Future<PaymentRequestEntity> requestPayment(String planId) async {
+    requestedPlans.add(planId);
     if (requestError != null) throw requestError!;
     return PaymentRequestEntity(payment: _pending, paymentTypes: types);
   }
@@ -73,28 +92,32 @@ class _Repo implements IPaymentsRepository {
   }
 }
 
-Future<void> _pump(
+Future<ProviderContainer> _pump(
   WidgetTester tester,
   _Repo repo, {
   List<Uri>? opened,
   bool launchSucceeds = true,
+  List<MyCourseEntity> owned = const [],
 }) async {
   tester.view.physicalSize = const Size(390, 844) * 2;
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
 
-  final container = ProviderContainer();
+  final container = ProviderContainer(
+    overrides: [
+      paymentsRepositoryProvider.overrideWithValue(repo),
+      coursesRepositoryProvider.overrideWithValue(_Courses(owned: owned)),
+      urlLauncherProvider.overrideWithValue((uri) async {
+        opened?.add(uri);
+        return launchSucceeds;
+      }),
+    ],
+  );
   addTearDown(container.dispose);
 
   await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        paymentsRepositoryProvider.overrideWithValue(repo),
-        urlLauncherProvider.overrideWithValue((uri) async {
-          opened?.add(uri);
-          return launchSucceeds;
-        }),
-      ],
+    UncontrolledProviderScope(
+      container: container,
       child: MaterialApp.router(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
@@ -105,7 +128,7 @@ Future<void> _pump(
                 body: Center(
                   child: TextButton(
                     onPressed: () =>
-                        context.push('${PaymentTypesScreen.path}?courseId=c1'),
+                        context.push('${PaymentTypesScreen.path}?planId=pl1'),
                     child: const Text('open'),
                   ),
                 ),
@@ -114,8 +137,14 @@ Future<void> _pump(
             GoRoute(
               path: PaymentTypesScreen.path,
               builder: (_, state) => PaymentTypesScreen(
-                courseId: state.uri.queryParameters['courseId']!,
+                planId: state.uri.queryParameters['planId']!,
               ),
+            ),
+            // Stands in for the shell the flow lands on after choosing.
+            GoRoute(
+              path: '/app',
+              builder: (_, _) =>
+                  const Scaffold(body: Center(child: Text('courses tab'))),
             ),
           ],
         ),
@@ -125,6 +154,7 @@ Future<void> _pump(
 
   await tester.tap(find.text('open'));
   await tester.pumpAndSettle();
+  return container;
 }
 
 DioException _apiError(int status, String message) => DioException(
@@ -137,13 +167,13 @@ DioException _apiError(int status, String message) => DioException(
 );
 
 void main() {
-  testWidgets('opening the screen requests a payment for the course', (
+  testWidgets('opening the screen requests a payment for the plan', (
     tester,
   ) async {
     final repo = _Repo();
     await _pump(tester, repo);
 
-    expect(repo.requestedCourses, ['c1']);
+    expect(repo.requestedPlans, ['pl1']);
     expect(find.byType(PaymentTypeTile), findsNWidgets(2));
     expect(find.text('Payme'), findsOneWidget);
     expect(find.text('Click'), findsOneWidget);
@@ -162,6 +192,57 @@ void main() {
     expect(repo.selections.single.paymentId, 'pa1');
     expect(repo.selections.single.paymentTypeId, 'pt2');
     expect(opened.single, Uri.parse('https://click.uz/pay'));
+  });
+
+  testWidgets('lands on the Courses tab before handing off', (tester) async {
+    final opened = <Uri>[];
+    final container = await _pump(tester, _Repo(), opened: opened);
+
+    await tester.tap(find.text('Click'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('courses tab'), findsOneWidget);
+    expect(find.byType(PaymentTypeTile), findsNothing);
+    expect(container.read(navbarControllerProvider), 1);
+    expect(opened, hasLength(1));
+  });
+
+  testWidgets('records what was owned so the return can be diffed', (
+    tester,
+  ) async {
+    final container = await _pump(
+      tester,
+      _Repo(),
+      owned: [
+        MyCourseEntity(
+          enrollmentId: 'en1',
+          courseId: 'c1',
+          title: 'English A1',
+          lessonsCount: 5,
+          progress: 0,
+          status: CourseStatus.active,
+        ),
+      ],
+    );
+
+    await tester.tap(find.text('Click'));
+    await tester.pumpAndSettle();
+
+    final watch = container.read(purchaseWatchProvider);
+    expect(watch?.knownCourseIds, {'c1'});
+    expect(watch?.planId, 'pl1');
+  });
+
+  testWidgets('drops the watch when the provider cannot be opened', (
+    tester,
+  ) async {
+    final container = await _pump(tester, _Repo(), launchSucceeds: false);
+
+    await tester.tap(find.text('Payme'));
+    await tester.pumpAndSettle();
+
+    expect(container.read(purchaseWatchProvider), isNull);
+    expect(find.text("Couldn't open Payme"), findsOneWidget);
   });
 
   testWidgets('prefers the URL the API echoes back', (tester) async {
@@ -203,17 +284,6 @@ void main() {
       findsOneWidget,
     );
     expect(find.byType(PaymentTypeTile), findsNothing);
-  });
-
-  testWidgets('reports a provider the device cannot open', (tester) async {
-    final opened = <Uri>[];
-    await _pump(tester, _Repo(), opened: opened, launchSucceeds: false);
-
-    await tester.tap(find.text('Payme'));
-    await tester.pumpAndSettle();
-
-    expect(opened, hasLength(1));
-    expect(find.text("Couldn't open Payme"), findsOneWidget);
   });
 
   testWidgets('reports a type with no checkout link', (tester) async {

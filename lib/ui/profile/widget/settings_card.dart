@@ -4,12 +4,20 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:student/app/data/network/token_storage.dart';
+import 'package:student/app/theme/app_colors.dart';
+import 'package:student/app/theme/app_radius.dart';
+import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/shared/url_launcher.dart';
 import 'package:student/ui/auth/login_screen.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:student/ui/profile/widget/profile_pill.dart';
 
 final selectedLanguageProvider = StateProvider<String>((ref) => 'English');
 
+const _privacyPolicyUrl = 'https://i-teach.uz/web/privacy_policy.html';
+const _deleteAccountUrl = 'https://i-teach.uz/web/delete_account.html';
+
+/// Dark panel of white pill rows, running to the bottom of the page.
 class SettingsCard extends ConsumerWidget {
   const SettingsCard({super.key});
 
@@ -17,91 +25,54 @@ class SettingsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final language = ref.watch(selectedLanguageProvider);
 
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      clipBehavior: Clip.antiAlias,
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: AppColors.librarySurface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+      ),
       child: Column(
         children: [
-          _SettingsRow(
-            icon: Icons.language_rounded,
+          ProfileSettingRow(
             label: 'Language',
-            trailing: Row(
-              children: [
-                Text(
-                  language,
-                  style: const TextStyle(
-                    color: Color(0xFF9CA3AF),
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  size: 18,
-                  color: Color(0xFFD1D5DB),
-                ),
-              ],
-            ),
+            trailing: ProfileSettingValue(value: language, showChevron: true),
             onTap: () => _showLanguagePicker(context, ref),
           ),
-          _divider(),
-          _SettingsRow(
-            icon: Icons.privacy_tip_outlined,
+          const SizedBox(height: AppSpacing.md),
+          ProfileSettingRow(
             label: 'Privacy Policy',
-            trailing: const Icon(
-              Icons.chevron_right_rounded,
-              size: 18,
-              color: Color(0xFFD1D5DB),
-            ),
-            onTap: () => launchUrl(
-              Uri.parse('https://i-teach.uz/web/privacy_policy.html'),
-              mode: LaunchMode.inAppBrowserView,
-            ),
+            trailing: const ProfileSettingValue(showChevron: true),
+            onTap: () =>
+                ref.read(urlLauncherProvider)(Uri.parse(_privacyPolicyUrl)),
           ),
-          _divider(),
+          const SizedBox(height: AppSpacing.md),
           FutureBuilder<PackageInfo>(
             future: PackageInfo.fromPlatform(),
-            builder: (context, snap) {
-              final version = snap.data != null
-                  ? 'v${snap.data!.version}'
-                  : '—';
-              return _SettingsRow(
-                icon: Icons.info_outline_rounded,
-                label: 'App Version',
-                trailing: Text(
-                  version,
-                  style: const TextStyle(
-                    color: Color(0xFF9CA3AF),
-                    fontSize: 13,
-                  ),
-                ),
-              );
-            },
-          ),
-          _divider(),
-          _SettingsRow(
-            icon: Icons.logout_rounded,
-            label: 'Log Out',
-            danger: true,
-            trailing: const Icon(
-              Icons.chevron_right_rounded,
-              size: 18,
-              color: Color(0xFFEF4444),
+            builder: (context, snap) => ProfileSettingRow(
+              label: 'App version',
+              trailing: ProfileSettingValue(
+                value: snap.data == null ? '—' : 'v${snap.data!.version}',
+              ),
             ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ProfileSettingRow(
+            label: 'Log out',
+            labelColor: const Color(0xffef4444),
             onTap: () => _confirmLogout(context, ref),
           ),
-          _divider(),
-          _SettingsRow(
-            icon: Icons.delete_outline_rounded,
-            label: 'Delete Account',
-            danger: true,
-            trailing: const Icon(
-              Icons.chevron_right_rounded,
-              size: 18,
-              color: Color(0xFFEF4444),
-            ),
-            onTap: _openDeleteAccount,
+          const SizedBox(height: AppSpacing.md),
+          ProfileSettingRow(
+            label: 'Delete account',
+            labelColor: const Color(0xffef4444),
+            onTap: () =>
+                ref.read(urlLauncherProvider)(Uri.parse(_deleteAccountUrl)),
           ),
         ],
       ),
@@ -112,13 +83,15 @@ class SettingsCard extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
         title: const Text(
-          'Log Out',
+          'Log out',
           style: TextStyle(
-            color: Color(0xFF111827),
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
           ),
         ),
         content: const Text('Are you sure you want to log out?'),
@@ -135,19 +108,12 @@ class SettingsCard extends ConsumerWidget {
               if (context.mounted) context.go(LoginScreen.path);
             },
             child: const Text(
-              'Log Out',
-              style: TextStyle(color: Color(0xFFEF4444)),
+              'Log out',
+              style: TextStyle(color: Color(0xffef4444)),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  void _openDeleteAccount() {
-    launchUrl(
-      Uri.parse('https://i-teach.uz/web/delete_account.html'),
-      mode: LaunchMode.inAppBrowserView,
     );
   }
 
@@ -158,16 +124,18 @@ class SettingsCard extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
         title: const Text(
           'Language',
           style: TextStyle(
-            color: Color(0xFF111827),
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: languages.map((lang) {
@@ -179,8 +147,8 @@ class SettingsCard extends ConsumerWidget {
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 14,
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.md,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -189,19 +157,19 @@ class SettingsCard extends ConsumerWidget {
                       lang,
                       style: TextStyle(
                         color: selected
-                            ? const Color(0xFF18C96A)
-                            : const Color(0xFF111827),
-                        fontSize: 15,
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.black,
+                        fontSize: 16,
                         fontWeight: selected
-                            ? FontWeight.w600
-                            : FontWeight.normal,
+                            ? FontWeight.w700
+                            : FontWeight.w500,
                       ),
                     ),
                     if (selected)
-                      const Icon(
+                      Icon(
                         Icons.check_rounded,
-                        color: Color(0xFF18C96A),
-                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 20,
                       ),
                   ],
                 ),
@@ -213,78 +181,3 @@ class SettingsCard extends ConsumerWidget {
     );
   }
 }
-
-class _SettingsRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Widget? trailing;
-  final bool danger;
-  final VoidCallback? onTap;
-
-  const _SettingsRow({
-    required this.icon,
-    required this.label,
-    this.trailing,
-    this.danger = false,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                _IconBox(icon: icon, danger: danger),
-                const SizedBox(width: 12),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: danger
-                        ? const Color(0xFFEF4444)
-                        : const Color(0xFF111827),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-            ?trailing,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _IconBox extends StatelessWidget {
-  final IconData icon;
-  final bool danger;
-
-  const _IconBox({required this.icon, this.danger = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: danger ? const Color(0xFFFEF2F2) : const Color(0xFFF0F0F0),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Icon(
-        icon,
-        size: 16,
-        color: danger ? const Color(0xFFEF4444) : const Color(0xFF333333),
-      ),
-    );
-  }
-}
-
-Widget _divider() =>
-    const Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6));

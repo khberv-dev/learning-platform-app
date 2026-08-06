@@ -21,14 +21,14 @@ class TutorsPage extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(
             AppSpacing.xl,
-            AppSpacing.lg,
+            AppSpacing.lg + MediaQuery.paddingOf(context).top,
             AppSpacing.xl,
             AppSpacing.lg,
           ),
-          child: SectionTitle(title: 'Find a tutor', fontSize: 30),
+          child: const SectionTitle(title: 'Find a tutor', fontSize: 30),
         ),
         Expanded(
           child: RefreshIndicator(

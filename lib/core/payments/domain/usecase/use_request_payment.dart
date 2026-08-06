@@ -12,6 +12,6 @@ class UseRequestPayment {
 
   const UseRequestPayment(this._repo);
 
-  Future<PaymentRequestEntity> call(String courseId) =>
-      _repo.requestPayment(courseId);
+  Future<PaymentRequestEntity> call(String planId) =>
+      _repo.requestPayment(planId);
 }

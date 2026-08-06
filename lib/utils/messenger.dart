@@ -14,12 +14,23 @@ String apiErrorMessage(Object error) {
 }
 
 void showErrorMessage(BuildContext context, String message) {
-  ScaffoldMessenger.of(context)
+  showErrorOn(
+    ScaffoldMessenger.of(context),
+    message,
+    background: Theme.of(context).colorScheme.error,
+  );
+}
+
+/// For when the screen that started the work may be gone by the time the
+/// outcome is known — capture the messenger before navigating away.
+void showErrorOn(
+  ScaffoldMessengerState messenger,
+  String message, {
+  required Color background,
+}) {
+  messenger
     ..clearSnackBars()
     ..showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Theme.of(context).colorScheme.error,
-      ),
+      SnackBar(content: Text(message), backgroundColor: background),
     );
 }

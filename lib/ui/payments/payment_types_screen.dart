@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/courses/presentation/courses_controller.dart';
+import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/core/payments/domain/entity/payment_entity.dart';
 import 'package:student/core/payments/domain/entity/payment_type_entity.dart';
 import 'package:student/core/payments/domain/usecase/use_select_payment_type.dart';
 import 'package:student/core/payments/presentation/payment_request_controller.dart';
+import 'package:student/core/payments/presentation/purchase_watcher.dart';
 import 'package:student/shared/url_launcher.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/back_icon_button.dart';
 import 'package:student/shared/widget/section_title.dart';
+import 'package:student/ui/main/app_screen.dart';
 import 'package:student/utils/messenger.dart';
 
 /// Picks how to pay for a course.
 ///
-/// Opening the screen requests a payment, which creates a pending enrolment
-/// and returns the methods available. Choosing one attaches it to that payment
-/// and hands off to the provider's checkout page outside the app; an admin
-/// confirms the payment afterwards.
+/// Opening the screen requests a payment for the chosen plan, which creates a
+/// pending enrolment and returns the methods available. Choosing one attaches
+/// it to that payment, drops the student back on the Courses tab, and hands
+/// off to the provider's checkout page outside the app. Confirmation happens
+/// elsewhere, so [PurchaseWatchController] records what was already owned and
+/// [AppScreen] compares once the student returns.
+/// Index of the Courses tab in [AppScreen]'s IndexedStack.
+const _coursesTabIndex = 1;
+
 class PaymentTypesScreen extends ConsumerStatefulWidget {
   static const path = '/payment-types';
 
-  final String courseId;
+  final String planId;
 
-  const PaymentTypesScreen({super.key, required this.courseId});
+  const PaymentTypesScreen({super.key, required this.planId});
 
   @override
   ConsumerState<PaymentTypesScreen> createState() => _PaymentTypesScreenState();
@@ -53,9 +63,33 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
         return;
       }
 
+      // Snapshot before leaving — this is what the courses list is diffed
+      // against when the student comes back.
+      final owned = await _ownedCourseIds();
+      if (!mounted) return;
+
+      ref
+          .read(purchaseWatchProvider.notifier)
+          .start(knownCourseIds: owned, planId: widget.planId);
+
+      // This screen is about to be replaced, so the messenger has to be held
+      // on to for any failure reported after the hand-off.
+      final messenger = ScaffoldMessenger.of(context);
+      final errorColour = Theme.of(context).colorScheme.error;
+
+      // Land on Courses first, so returning from the provider shows the
+      // library rather than a stale checkout screen.
+      ref.read(navbarControllerProvider.notifier).state = _coursesTabIndex;
+      context.go(AppScreen.path);
+
       final opened = await ref.read(urlLauncherProvider)(uri);
-      if (!opened && mounted) {
-        showErrorMessage(context, "Couldn't open ${type.title}");
+      if (!opened) {
+        ref.read(purchaseWatchProvider.notifier).stop();
+        showErrorOn(
+          messenger,
+          "Couldn't open ${type.title}",
+          background: errorColour,
+        );
       }
     } catch (e) {
       if (mounted) showErrorMessage(context, apiErrorMessage(e));
@@ -64,9 +98,20 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
     }
   }
 
+  /// Courses already owned, tolerating a list that hasn't loaded — a failure
+  /// here would only mean the congratulation is skipped.
+  Future<Set<String>> _ownedCourseIds() async {
+    try {
+      final courses = await ref.read(myCoursesControllerProvider.future);
+      return courses.map((c) => c.courseId).toSet();
+    } catch (_) {
+      return const {};
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(paymentRequestControllerProvider(widget.courseId));
+    final state = ref.watch(paymentRequestControllerProvider(widget.planId));
 
     return Scaffold(
       backgroundColor: const Color(0xfff6f7fa),
@@ -95,10 +140,10 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
               child: RefreshIndicator(
                 onRefresh: () async {
                   ref.invalidate(
-                    paymentRequestControllerProvider(widget.courseId),
+                    paymentRequestControllerProvider(widget.planId),
                   );
                   await ref.read(
-                    paymentRequestControllerProvider(widget.courseId).future,
+                    paymentRequestControllerProvider(widget.planId).future,
                   );
                 },
                 child: state.when(

@@ -30,14 +30,14 @@ class _CoursesPageState extends State<CoursesPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(
             AppSpacing.xl,
-            AppSpacing.lg,
+            AppSpacing.lg + MediaQuery.paddingOf(context).top,
             AppSpacing.xl,
             AppSpacing.lg,
           ),
-          child: SectionTitle(title: 'Courses', fontSize: 30),
+          child: const SectionTitle(title: 'Courses', fontSize: 30),
         ),
         CoursesTabBar(
           labels: const ['Courses', 'Live sessions'],

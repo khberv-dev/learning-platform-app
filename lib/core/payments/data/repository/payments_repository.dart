@@ -9,19 +9,19 @@ final paymentsRepositoryProvider = Provider<IPaymentsRepository>(
   (ref) => PaymentsRepository(dio: ref.read(dioClientProvider)),
 );
 
-/// Buying a course is a three-step handshake: request a payment, attach a
-/// method, then settle with that provider outside the app. An admin confirms
-/// it afterwards, which is what flips the enrolment to active.
+/// Buying a course is a three-step handshake: request a payment against a
+/// plan, attach a method, then settle with that provider outside the app. An
+/// admin confirms it afterwards, which is what flips the enrolment to active.
 class PaymentsRepository implements IPaymentsRepository {
   final Dio _dio;
 
   const PaymentsRepository({required Dio dio}) : _dio = dio;
 
   @override
-  Future<PaymentRequestEntity> requestPayment(String courseId) async {
+  Future<PaymentRequestEntity> requestPayment(String planId) async {
     final response = await _dio.post(
       'payments/request',
-      data: {'courseId': courseId},
+      data: {'planId': planId},
     );
     return PaymentRequestResponse.fromJson(
       response.data as Map<String, dynamic>,
