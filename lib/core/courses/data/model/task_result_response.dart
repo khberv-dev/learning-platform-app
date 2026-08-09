@@ -1,61 +1,77 @@
+import 'package:student/core/courses/data/model/task_response.dart';
+import 'package:student/core/courses/domain/entity/task_content_type.dart';
 import 'package:student/core/courses/domain/entity/task_result_entity.dart';
 
 class TaskSubmissionResponse {
-  final String answer;
+  final List<String> answers;
   final bool isCorrect;
+  final DateTime? submittedAt;
 
-  const TaskSubmissionResponse({required this.answer, required this.isCorrect});
+  const TaskSubmissionResponse({
+    required this.answers,
+    required this.isCorrect,
+    this.submittedAt,
+  });
 
-  factory TaskSubmissionResponse.fromJson(Map<String, dynamic> json) =>
-      TaskSubmissionResponse(
-        answer: json['answer'] as String? ?? '',
-        isCorrect: json['isCorrect'] as bool? ?? false,
-      );
+  factory TaskSubmissionResponse.fromJson(Map<String, dynamic> json) {
+    final rawAnswers = json['answers'];
+    return TaskSubmissionResponse(
+      answers: rawAnswers is List
+          ? rawAnswers.map((e) => e.toString()).toList()
+          : const [],
+      isCorrect: json['isCorrect'] as bool? ?? false,
+      submittedAt: DateTime.tryParse(json['submittedAt'] as String? ?? ''),
+    );
+  }
 
-  TaskSubmissionEntity toEntity() =>
-      TaskSubmissionEntity(answer: answer, isCorrect: isCorrect);
+  TaskSubmissionEntity toEntity() => TaskSubmissionEntity(
+    answers: answers,
+    isCorrect: isCorrect,
+    submittedAt: submittedAt,
+  );
 }
 
 class TaskResultResponse {
   final String taskId;
-  final String task;
-  final List<String>? options;
-  final String answer;
+  final String? name;
+  final List<TaskQuestionResponse> questions;
+  final String? file;
+  final TaskContentType? contentType;
   final TaskSubmissionResponse? submission;
 
   const TaskResultResponse({
     required this.taskId,
-    required this.task,
-    required this.answer,
-    this.options,
+    required this.questions,
+    this.name,
+    this.file,
+    this.contentType,
     this.submission,
   });
 
   factory TaskResultResponse.fromJson(Map<String, dynamic> json) {
-    final rawOptions = json['options'];
-    final options = rawOptions is List
-        ? rawOptions.map((e) => e as String).toList()
-        : null;
-
+    final rawQuestions = json['questions'] as List<dynamic>? ?? [];
     final rawSubmission = json['submission'];
-    final submission = rawSubmission is Map<String, dynamic>
-        ? TaskSubmissionResponse.fromJson(rawSubmission)
-        : null;
 
     return TaskResultResponse(
-      taskId: json['taskId'] as String,
-      task: json['task'] as String? ?? '',
-      answer: json['answer'] as String? ?? '',
-      options: options,
-      submission: submission,
+      taskId: json['taskId'].toString(),
+      name: json['name'] as String?,
+      questions: rawQuestions
+          .map((e) => TaskQuestionResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      file: json['file'] as String?,
+      contentType: TaskContentType.fromJson(json['contentType'] as String?),
+      submission: rawSubmission is Map<String, dynamic>
+          ? TaskSubmissionResponse.fromJson(rawSubmission)
+          : null,
     );
   }
 
   TaskResultEntity toEntity() => TaskResultEntity(
     taskId: taskId,
-    question: task,
-    correctAnswer: answer,
-    options: options,
+    name: name,
+    questions: questions.map((q) => q.toEntity()).toList(),
+    file: file,
+    contentType: contentType,
     submission: submission?.toEntity(),
   );
 }

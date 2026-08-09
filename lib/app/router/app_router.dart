@@ -12,6 +12,7 @@ import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/courses/live_session_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
+import 'package:student/ui/courses/unit_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
 import 'package:student/ui/payments/payment_types_screen.dart';
@@ -115,6 +116,14 @@ final _appRouter = GoRouter(
       path: LiveSessionScreen.path,
       builder: (_, state) =>
           LiveSessionScreen(session: state.extra as LiveLessonEntity),
+    ),
+    GoRoute(
+      path: UnitScreen.path,
+      builder: (_, state) => UnitScreen(
+        courseId: state.uri.queryParameters['courseId']!,
+        unitIndex:
+            int.tryParse(state.uri.queryParameters['unitIndex'] ?? '0') ?? 0,
+      ),
     ),
     GoRoute(
       path: LessonScreen.path,

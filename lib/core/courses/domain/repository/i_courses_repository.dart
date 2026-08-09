@@ -20,7 +20,7 @@ abstract class ICoursesRepository {
     required String lessonId,
   });
 
-  Future<void> submitTasks(Map<String, String> answers);
+  Future<void> submitTasks(Map<String, List<String>> answers);
 
   Future<List<TaskResultEntity>> getLessonResults(String lessonId);
 }

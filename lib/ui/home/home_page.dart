@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/ui/home/widget/ai_test_card.dart';
-import 'package:student/ui/home/widget/balance_card.dart';
 import 'package:student/ui/home/widget/continue_learning_card.dart';
 import 'package:student/ui/home/widget/home_topbar.dart';
 import 'package:student/ui/home/widget/live_session_card.dart';
@@ -14,13 +11,11 @@ import 'package:student/ui/home/widget/stats_row.dart';
 import 'package:student/ui/home/widget/streak_card.dart';
 import 'package:student/ui/home/widget/upcoming_section.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final balance = ref.watch(currentUserProvider)?.balance ?? 0;
-
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: EdgeInsets.only(
         top: AppSpacing.xxl + MediaQuery.paddingOf(context).top,
@@ -51,11 +46,6 @@ class HomePage extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           const StatsRow(),
-          const SizedBox(height: AppSpacing.lg),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: BalanceCard(balance: balance),
-          ),
           const SizedBox(height: AppSpacing.xxl),
           // Everything below sits on a dark teal panel. The navbar clearance
           // lives inside its padding rather than on the scroll view, so the

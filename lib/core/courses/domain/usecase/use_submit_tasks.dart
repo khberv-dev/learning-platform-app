@@ -11,6 +11,6 @@ class UseSubmitTasks {
 
   const UseSubmitTasks(this._repository);
 
-  Future<void> call(Map<String, String> answers) =>
+  Future<void> call(Map<String, List<String>> answers) =>
       _repository.submitTasks(answers);
 }

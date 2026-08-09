@@ -4,8 +4,12 @@ import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/usecase/use_submit_tasks.dart';
 import 'package:student/core/courses/presentation/tasks_controller.dart';
 import 'package:student/shared/widget/app_button.dart';
+import 'package:student/ui/courses/widget/task_content_view.dart';
 import 'package:student/utils/messenger.dart';
 
+/// One task per page. A task groups several questions under an optional piece
+/// of content (audio to listen to, a picture, or a text passage), and the API
+/// takes one answer string per question, in question order.
 class TasksScreen extends ConsumerStatefulWidget {
   static const path = '/tasks';
 
@@ -28,17 +32,16 @@ class TasksScreen extends ConsumerStatefulWidget {
 
 class _TasksScreenState extends ConsumerState<TasksScreen> {
   int _currentIndex = 0;
-  final Map<String, String> _answers = {};
-  final TextEditingController _textController = TextEditingController();
+
+  /// taskId → one answer per question, in order. Grown to the task's question
+  /// count the first time any of its questions is answered.
+  final Map<String, List<String>> _answers = {};
+
+  /// `taskId:questionIndex` → controller, so drafts survive stepping back and
+  /// forth between tasks.
+  final Map<String, TextEditingController> _controllers = {};
+
   bool _isSubmitting = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _textController.addListener(_onTextChanged);
-  }
-
-  void _onTextChanged() => setState(() {});
 
   TasksParams get _params => (
     courseId: widget.courseId,
@@ -48,35 +51,47 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
 
   @override
   void dispose() {
-    _textController.removeListener(_onTextChanged);
-    _textController.dispose();
+    for (final controller in _controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
-  bool _canAdvance(TaskEntity task) {
-    if (task.isMultipleChoice) return _answers.containsKey(task.id);
-    return _textController.text.trim().isNotEmpty;
+  List<String> _answersFor(TaskEntity task) => _answers.putIfAbsent(
+    task.id,
+    () => List<String>.filled(task.questions.length, '', growable: false),
+  );
+
+  String _answerAt(TaskEntity task, int questionIndex) =>
+      _answersFor(task)[questionIndex];
+
+  void _setAnswer(TaskEntity task, int questionIndex, String value) {
+    setState(() => _answersFor(task)[questionIndex] = value);
   }
 
-  void _selectOption(TaskEntity task, String option) {
-    setState(() => _answers[task.id] = option);
+  TextEditingController _controllerFor(TaskEntity task, int questionIndex) {
+    return _controllers.putIfAbsent('${task.id}:$questionIndex', () {
+      final controller = TextEditingController(
+        text: _answerAt(task, questionIndex),
+      );
+      controller.addListener(
+        () => _setAnswer(task, questionIndex, controller.text),
+      );
+      return controller;
+    });
   }
 
-  void _next(TaskEntity task) {
-    if (!task.isMultipleChoice) {
-      _answers[task.id] = _textController.text.trim();
-      _textController.clear();
-    }
-    setState(() => _currentIndex++);
-  }
+  bool _isComplete(TaskEntity task) =>
+      _answersFor(task).every((a) => a.trim().isNotEmpty);
 
-  Future<void> _submit(TaskEntity task) async {
-    if (!task.isMultipleChoice) {
-      _answers[task.id] = _textController.text.trim();
-    }
+  Future<void> _submit() async {
     setState(() => _isSubmitting = true);
     try {
-      await ref.read(useSubmitTasksProvider).call(_answers);
+      final payload = _answers.map(
+        (taskId, answers) =>
+            MapEntry(taskId, answers.map((a) => a.trim()).toList()),
+      );
+      await ref.read(useSubmitTasksProvider).call(payload);
       ref.invalidate(lessonTaskResultsProvider(widget.lessonId));
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
@@ -110,11 +125,18 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                     ),
                   ),
                 ),
-                data: (tasks) {
+                data: (allTasks) {
+                  // A task with no questions is nothing to answer — content
+                  // alone belongs on the lesson, not in the solving queue.
+                  final tasks = allTasks
+                      .where((t) => t.questions.isNotEmpty)
+                      .toList();
                   if (tasks.isEmpty) return const _EmptyState();
+
                   final idx = _currentIndex.clamp(0, tasks.length - 1);
                   final task = tasks[idx];
                   final isLast = idx == tasks.length - 1;
+
                   return Column(
                     children: [
                       _QueueProgress(current: idx + 1, total: tasks.length),
@@ -122,20 +144,22 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                           child: _TaskCard(
-                            index: idx,
                             task: task,
-                            selectedAnswer: _answers[task.id],
-                            textController: _textController,
-                            onOptionTap: (opt) => _selectOption(task, opt),
+                            answerAt: (qi) => _answerAt(task, qi),
+                            controllerFor: (qi) => _controllerFor(task, qi),
+                            onOptionTap: (qi, option) =>
+                                _setAnswer(task, qi, option),
                           ),
                         ),
                       ),
                       _BottomBar(
+                        isFirst: idx == 0,
                         isLast: isLast,
                         isSubmitting: _isSubmitting,
-                        canAdvance: _canAdvance(task),
-                        onNext: () => _next(task),
-                        onSubmit: () => _submit(task),
+                        canAdvance: _isComplete(task),
+                        onBack: () => setState(() => _currentIndex = idx - 1),
+                        onNext: () => setState(() => _currentIndex = idx + 1),
+                        onSubmit: _submit,
                       ),
                     ],
                   );
@@ -260,22 +284,22 @@ class _QueueProgress extends StatelessWidget {
 // ── Task card ─────────────────────────────────────────────────────────────────
 
 class _TaskCard extends StatelessWidget {
-  final int index;
   final TaskEntity task;
-  final String? selectedAnswer;
-  final TextEditingController textController;
-  final void Function(String) onOptionTap;
+  final String Function(int questionIndex) answerAt;
+  final TextEditingController Function(int questionIndex) controllerFor;
+  final void Function(int questionIndex, String option) onOptionTap;
 
   const _TaskCard({
-    required this.index,
     required this.task,
-    required this.selectedAnswer,
-    required this.textController,
+    required this.answerAt,
+    required this.controllerFor,
     required this.onOptionTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final showNumbers = task.questions.length > 1;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -286,28 +310,130 @@ class _TaskCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            task.question,
-            style: const TextStyle(
-              color: Color(0xFF111827),
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 20),
-          if (task.isMultipleChoice)
-            ...task.options!.map(
-              (opt) => _OptionTile(
-                label: opt,
-                isSelected: selectedAnswer == opt,
-                onTap: () => onOptionTap(opt),
+          if (task.name != null && task.name!.isNotEmpty) ...[
+            Text(
+              task.name!,
+              style: const TextStyle(
+                color: Color(0xFF111827),
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                height: 1.4,
               ),
-            )
-          else
-            _OpenAnswerField(controller: textController),
+            ),
+            const SizedBox(height: 16),
+          ],
+          if (task.hasContent) ...[
+            TaskContentView(
+              file: task.file!,
+              contentType: task.contentType!,
+              // The audio has to be re-fetched per task, and reusing one key
+              // across tasks would keep the previous clip loaded.
+              key: ValueKey(task.id),
+            ),
+            const SizedBox(height: 20),
+          ],
+          for (var i = 0; i < task.questions.length; i++) ...[
+            if (i > 0) const _QuestionDivider(),
+            _QuestionBlock(
+              question: task.questions[i],
+              number: showNumbers ? i + 1 : null,
+              selectedAnswer: answerAt(i),
+              controller: controllerFor(i),
+              onOptionTap: (option) => onOptionTap(i, option),
+            ),
+          ],
         ],
       ),
+    );
+  }
+}
+
+class _QuestionDivider extends StatelessWidget {
+  const _QuestionDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: Divider(height: 1, thickness: 1, color: Color(0xFFF3F4F6)),
+    );
+  }
+}
+
+// ── Question ──────────────────────────────────────────────────────────────────
+
+class _QuestionBlock extends StatelessWidget {
+  final TaskQuestionEntity question;
+
+  /// 1-based label, shown only when the task holds more than one question.
+  final int? number;
+
+  final String selectedAnswer;
+  final TextEditingController controller;
+  final void Function(String option) onOptionTap;
+
+  const _QuestionBlock({
+    required this.question,
+    required this.number,
+    required this.selectedAnswer,
+    required this.controller,
+    required this.onOptionTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (number != null) ...[
+              Container(
+                width: 22,
+                height: 22,
+                margin: const EdgeInsets.only(top: 2),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF0FDF4),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '$number',
+                  style: const TextStyle(
+                    color: Color(0xFF18C96A),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+            ],
+            Expanded(
+              child: Text(
+                question.question,
+                style: const TextStyle(
+                  color: Color(0xFF111827),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (question.isMultipleChoice)
+          ...question.options!.map(
+            (opt) => _OptionTile(
+              label: opt,
+              isSelected: selectedAnswer == opt,
+              onTap: () => onOptionTap(opt),
+            ),
+          )
+        else
+          _OpenAnswerField(controller: controller),
+      ],
     );
   }
 }
@@ -388,35 +514,15 @@ class _OptionTile extends StatelessWidget {
 
 // ── Open answer field ─────────────────────────────────────────────────────────
 
-class _OpenAnswerField extends StatefulWidget {
+class _OpenAnswerField extends StatelessWidget {
   final TextEditingController controller;
 
   const _OpenAnswerField({required this.controller});
 
   @override
-  State<_OpenAnswerField> createState() => _OpenAnswerFieldState();
-}
-
-class _OpenAnswerFieldState extends State<_OpenAnswerField> {
-  @override
-  void initState() {
-    super.initState();
-    widget.controller.addListener(_rebuild);
-  }
-
-  void _rebuild() => setState(() {});
-
-  @override
-  void dispose() {
-    widget.controller.removeListener(_rebuild);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: widget.controller,
-      autofocus: true,
+      controller: controller,
       style: const TextStyle(color: Color(0xFF111827), fontSize: 14),
       decoration: InputDecoration(
         hintText: 'Type your answer…',
@@ -440,7 +546,7 @@ class _OpenAnswerFieldState extends State<_OpenAnswerField> {
           borderSide: const BorderSide(color: Color(0xFF18C96A), width: 2),
         ),
       ),
-      minLines: 3,
+      minLines: 2,
       maxLines: 5,
     );
   }
@@ -449,16 +555,20 @@ class _OpenAnswerFieldState extends State<_OpenAnswerField> {
 // ── Bottom bar ────────────────────────────────────────────────────────────────
 
 class _BottomBar extends StatelessWidget {
+  final bool isFirst;
   final bool isLast;
   final bool isSubmitting;
   final bool canAdvance;
+  final VoidCallback onBack;
   final VoidCallback onNext;
   final VoidCallback onSubmit;
 
   const _BottomBar({
+    required this.isFirst,
     required this.isLast,
     required this.isSubmitting,
     required this.canAdvance,
+    required this.onBack,
     required this.onNext,
     required this.onSubmit,
   });
@@ -468,21 +578,35 @@ class _BottomBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       decoration: const BoxDecoration(color: Color(0xFFF5F7FA)),
-      child: SizedBox(
-        width: double.infinity,
-        child: isLast
-            ? AppButton.filled(
-                label: 'Submit',
+      child: Row(
+        children: [
+          if (!isFirst) ...[
+            Expanded(
+              child: AppButton.white(
+                label: 'Back',
                 fontSize: 15,
-                isLoading: isSubmitting,
-                onTap: canAdvance ? onSubmit : null,
-              )
-            : AppButton.filled(
-                label: 'Next',
-                icon: const Icon(Icons.arrow_forward_rounded),
-                fontSize: 15,
-                onTap: canAdvance ? onNext : null,
+                onTap: isSubmitting ? null : onBack,
               ),
+            ),
+            const SizedBox(width: 12),
+          ],
+          Expanded(
+            flex: 2,
+            child: isLast
+                ? AppButton.filled(
+                    label: 'Submit',
+                    fontSize: 15,
+                    isLoading: isSubmitting,
+                    onTap: canAdvance ? onSubmit : null,
+                  )
+                : AppButton.filled(
+                    label: 'Next',
+                    icon: const Icon(Icons.arrow_forward_rounded),
+                    fontSize: 15,
+                    onTap: canAdvance ? onNext : null,
+                  ),
+          ),
+        ],
       ),
     );
   }

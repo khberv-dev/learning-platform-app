@@ -83,7 +83,8 @@ class CoursesRepository implements ICoursesRepository {
   }
 
   @override
-  Future<void> submitTasks(Map<String, String> answers) async {
+  Future<void> submitTasks(Map<String, List<String>> answers) async {
+    // One answer string per question of the task, in question order.
     await _dio.post('task-submissions', data: answers);
   }
 

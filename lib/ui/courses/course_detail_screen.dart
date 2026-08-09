@@ -7,6 +7,7 @@ import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
 import 'package:student/shared/widget/app_button.dart';
+import 'package:student/ui/courses/unit_screen.dart';
 import 'package:student/ui/plans/plans_screen.dart';
 
 class CourseDetailScreen extends ConsumerWidget {
@@ -205,87 +206,80 @@ class _UnitCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final numberStr = (index + 1).toString().padLeft(2, '0');
 
-    return Opacity(
-      opacity: isOwned ? 1.0 : 0.6,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: isOwned
-                    ? const Color(0xFFF0FDF4)
-                    : const Color(0xFFF3F4F6),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                numberStr,
-                style: TextStyle(
-                  color: isOwned
-                      ? const Color(0xFF18C96A)
-                      : const Color(0xFF9CA3AF),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    unit.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color(0xFF111827),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    '${unit.lessonsCount} lessons',
-                    style: const TextStyle(
-                      color: Color(0xFF6B7280),
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            GestureDetector(
-              onTap: isOwned
-                  ? () => context.push(
-                      '/lesson?courseId=$courseId&unitIndex=$index&lessonIndex=0',
-                    )
-                  : null,
-              child: Container(
-                width: 40,
-                height: 40,
+    return GestureDetector(
+      // Units are the only thing this page opens — the lessons inside them, and
+      // playback, live one level deeper on the unit page.
+      onTap: isOwned
+          ? () => context.push(
+              '${UnitScreen.path}?courseId=$courseId&unitIndex=$index',
+            )
+          : null,
+      behavior: HitTestBehavior.opaque,
+      child: Opacity(
+        opacity: isOwned ? 1.0 : 0.6,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: isOwned
-                      ? const Color(0xFF18C96A)
-                      : const Color(0xFFE5E7EB),
-                  shape: BoxShape.circle,
+                      ? const Color(0xFFF0FDF4)
+                      : const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  isOwned ? Icons.play_arrow_rounded : Icons.lock_outline,
-                  color: isOwned ? Colors.white : const Color(0xFF9CA3AF),
-                  size: 20,
+                alignment: Alignment.center,
+                child: Text(
+                  numberStr,
+                  style: TextStyle(
+                    color: isOwned
+                        ? const Color(0xFF18C96A)
+                        : const Color(0xFF9CA3AF),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      unit.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFF111827),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${unit.lessonsCount} lessons',
+                      style: const TextStyle(
+                        color: Color(0xFF6B7280),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                isOwned ? Icons.chevron_right_rounded : Icons.lock_outline,
+                color: const Color(0xFF9CA3AF),
+                size: isOwned ? 22 : 18,
+              ),
+            ],
+          ),
         ),
       ),
     );
