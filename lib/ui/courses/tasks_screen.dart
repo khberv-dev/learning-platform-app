@@ -41,6 +41,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
   /// forth between tasks.
   final Map<String, TextEditingController> _controllers = {};
 
+  final ScrollController _scrollController = ScrollController();
+
   bool _isSubmitting = false;
 
   TasksParams get _params => (
@@ -54,7 +56,21 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
     for (final controller in _controllers.values) {
       controller.dispose();
     }
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  /// Steps to another task, starting it from the top. A long task leaves the
+  /// view scrolled down, and carrying that offset into the next one drops the
+  /// student partway through it — often past the audio or picture the
+  /// questions hang on.
+  void _goToTask(int index) {
+    setState(() => _currentIndex = index);
+    // Offset 0 is valid whatever the next task's height turns out to be, so
+    // this needs no wait for the rebuild. Jumps rather than animates: the
+    // content swaps wholesale, and scrolling through the outgoing task on the
+    // way out just reads as a glitch.
+    if (_scrollController.hasClients) _scrollController.jumpTo(0);
   }
 
   List<String> _answersFor(TaskEntity task) => _answers.putIfAbsent(
@@ -142,6 +158,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                       _QueueProgress(current: idx + 1, total: tasks.length),
                       Expanded(
                         child: SingleChildScrollView(
+                          controller: _scrollController,
                           padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                           child: _TaskCard(
                             task: task,
@@ -157,8 +174,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                         isLast: isLast,
                         isSubmitting: _isSubmitting,
                         canAdvance: _isComplete(task),
-                        onBack: () => setState(() => _currentIndex = idx - 1),
-                        onNext: () => setState(() => _currentIndex = idx + 1),
+                        onBack: () => _goToTask(idx - 1),
+                        onNext: () => _goToTask(idx + 1),
                         onSubmit: _submit,
                       ),
                     ],
@@ -326,6 +343,7 @@ class _TaskCard extends StatelessWidget {
             TaskContentView(
               file: task.file!,
               contentType: task.contentType!,
+              title: task.name ?? 'Task',
               // The audio has to be re-fetched per task, and reusing one key
               // across tasks would keep the previous clip loaded.
               key: ValueKey(task.id),

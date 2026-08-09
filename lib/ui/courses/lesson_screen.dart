@@ -13,6 +13,7 @@ import 'package:student/core/courses/presentation/tasks_controller.dart'
     show lessonTaskResultsProvider;
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
+import 'package:student/ui/courses/widget/lesson_materials_section.dart';
 import 'package:video_player/video_player.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
@@ -333,6 +334,7 @@ class _LessonInfo extends StatelessWidget {
               unitId: unitId,
               taskResults: taskResults,
             ),
+            LessonMaterialsSection(lessonId: lesson!.id),
           ],
         ],
       ),

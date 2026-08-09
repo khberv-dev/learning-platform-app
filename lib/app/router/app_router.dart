@@ -10,7 +10,9 @@ import 'package:student/ui/auth/register_screen.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
+import 'package:student/ui/courses/image_viewer_screen.dart';
 import 'package:student/ui/courses/live_session_screen.dart';
+import 'package:student/ui/courses/pdf_viewer_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/courses/unit_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
@@ -116,6 +118,20 @@ final _appRouter = GoRouter(
       path: LiveSessionScreen.path,
       builder: (_, state) =>
           LiveSessionScreen(session: state.extra as LiveLessonEntity),
+    ),
+    GoRoute(
+      path: ImageViewerScreen.path,
+      builder: (_, state) => ImageViewerScreen(
+        url: state.uri.queryParameters['url']!,
+        title: state.uri.queryParameters['title'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: PdfViewerScreen.path,
+      builder: (_, state) => PdfViewerScreen(
+        url: state.uri.queryParameters['url']!,
+        title: state.uri.queryParameters['title'] ?? '',
+      ),
     ),
     GoRoute(
       path: UnitScreen.path,

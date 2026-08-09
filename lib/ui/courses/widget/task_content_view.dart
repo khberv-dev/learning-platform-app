@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/task_content_type.dart';
+import 'package:student/ui/courses/image_viewer_screen.dart';
 import 'package:student/utils/lib.dart';
 
 /// The material a task hangs its questions on — an audio clip, a picture, or a
@@ -15,17 +17,24 @@ class TaskContentView extends StatelessWidget {
   final String file;
   final TaskContentType contentType;
 
+  /// Names the picture in the full-screen viewer — pass the task's name.
+  final String title;
+
   const TaskContentView({
     super.key,
     required this.file,
     required this.contentType,
+    this.title = '',
   });
 
   @override
   Widget build(BuildContext context) {
     return switch (contentType) {
       TaskContentType.audio => _AudioContent(url: resolveMediaUrl(file)!),
-      TaskContentType.picture => _PictureContent(url: resolveMediaUrl(file)!),
+      TaskContentType.picture => _PictureContent(
+        url: resolveMediaUrl(file)!,
+        title: title,
+      ),
       TaskContentType.text => _TextContent(text: file),
     };
   }
@@ -195,28 +204,66 @@ class _AudioContentState extends State<_AudioContent> {
 
 class _PictureContent extends StatelessWidget {
   final String url;
+  final String title;
 
-  const _PictureContent({required this.url});
+  const _PictureContent({required this.url, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Image.network(
-        url,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        loadingBuilder: (context, child, progress) => progress == null
-            ? child
-            : Container(
-                height: 180,
-                color: const Color(0xFFF3F4F6),
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator(strokeWidth: 2),
+    return Stack(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.network(
+            url,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            loadingBuilder: (context, child, progress) => progress == null
+                ? child
+                : Container(
+                    height: 180,
+                    color: const Color(0xFFF3F4F6),
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(strokeWidth: 2),
+                  ),
+            errorBuilder: (context, error, stack) =>
+                const _ContentError(message: 'Image could not be loaded'),
+          ),
+        ),
+        // Detail in a task picture is often the whole question, and the card is
+        // too narrow to read it in — so the full-screen viewer is a tap away.
+        Positioned.fill(
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => context.push(
+                '${ImageViewerScreen.path}'
+                '?url=${Uri.encodeQueryComponent(url)}'
+                '&title=${Uri.encodeQueryComponent(title)}',
               ),
-        errorBuilder: (context, error, stack) =>
-            const _ContentError(message: 'Image could not be loaded'),
-      ),
+            ),
+          ),
+        ),
+        Positioned(
+          right: 10,
+          bottom: 10,
+          child: IgnorePointer(
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.zoom_out_map_rounded,
+                color: Colors.white,
+                size: 16,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

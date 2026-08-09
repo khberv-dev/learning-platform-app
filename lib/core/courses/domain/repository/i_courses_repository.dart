@@ -1,5 +1,6 @@
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
+import 'package:student/core/courses/domain/entity/lesson_material_entity.dart';
 import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
@@ -21,6 +22,8 @@ abstract class ICoursesRepository {
   });
 
   Future<void> submitTasks(Map<String, List<String>> answers);
+
+  Future<List<LessonMaterialEntity>> getLessonMaterials(String lessonId);
 
   Future<List<TaskResultEntity>> getLessonResults(String lessonId);
 }
