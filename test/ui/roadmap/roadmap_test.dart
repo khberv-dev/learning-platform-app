@@ -13,17 +13,32 @@ void main() {
       );
     });
 
-    test('pairs steps onto each straight run', () {
-      expect(RoadmapPath.slot(0).dy, RoadmapPath.slot(1).dy);
-      expect(RoadmapPath.slot(2).dy, RoadmapPath.slot(3).dy);
-      expect(RoadmapPath.slot(1).dy, lessThan(RoadmapPath.slot(2).dy));
+    test('gives the opening stub a single step, then pairs the rest', () {
+      // Step 0 has the stub to itself.
+      expect(RoadmapPath.slot(0).dy, isNot(RoadmapPath.slot(1).dy));
+      // Everything above it goes two to a run.
+      expect(RoadmapPath.slot(1).dy, RoadmapPath.slot(2).dy);
+      expect(RoadmapPath.slot(3).dy, RoadmapPath.slot(4).dy);
+      expect(RoadmapPath.slot(2).dy, isNot(RoadmapPath.slot(3).dy));
+    });
+
+    test('starts where the road starts and climbs', () {
+      expect(RoadmapPath.slot(0).dy, RoadmapPath.runCentresY.last);
+      // Later steps sit higher up, i.e. at a smaller y.
+      expect(RoadmapPath.slot(1).dy, lessThan(RoadmapPath.slot(0).dy));
+      expect(RoadmapPath.slot(3).dy, lessThan(RoadmapPath.slot(1).dy));
+      expect(
+        RoadmapPath.slot(RoadmapPath.capacity - 1).dy,
+        lessThan(RoadmapPath.slot(0).dy),
+      );
     });
 
     test('zigzags, reversing direction each run', () {
-      // Run 0 travels right to left, so its first step is the further one.
-      expect(RoadmapPath.slot(0).dx, greaterThan(RoadmapPath.slot(1).dx));
-      // Run 1 comes back the other way.
-      expect(RoadmapPath.slot(2).dx, lessThan(RoadmapPath.slot(3).dx));
+      // The run above the stub is walked left to right, so its first step is
+      // the nearer one.
+      expect(RoadmapPath.slot(1).dx, lessThan(RoadmapPath.slot(2).dx));
+      // The run above that comes back the other way.
+      expect(RoadmapPath.slot(3).dx, greaterThan(RoadmapPath.slot(4).dx));
     });
 
     test('every slot stays inside the road, allowing for the left crop', () {
@@ -38,9 +53,10 @@ void main() {
     });
 
     test('clamps rather than throwing past the last run', () {
+      // Steps climb, so running off the end lands on the topmost run.
       expect(
         RoadmapPath.slot(RoadmapPath.capacity + 50).dy,
-        RoadmapPath.runCentresY.last,
+        RoadmapPath.runCentresY.first,
       );
     });
   });

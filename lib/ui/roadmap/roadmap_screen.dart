@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
-import 'package:student/shared/widget/back_icon_button.dart';
+import 'package:student/shared/widget/close_icon_button.dart';
 import 'package:student/ui/roadmap/roadmap_path.dart';
 import 'package:student/ui/roadmap/widget/road_step_node.dart';
 
@@ -135,17 +136,20 @@ class _RoadmapScreenState extends ConsumerState<RoadmapScreen> {
     super.dispose();
   }
 
-  /// Opens at the learner's position rather than the top of a path that runs
+  /// Opens at the learner's position rather than at one end of a path that runs
   /// to roughly ten screens.
   void _revealCurrent(int index, double artworkHeight, double viewportHeight) {
     if (_hasRevealedCurrent || !_scrollController.hasClients) return;
     _hasRevealedCurrent = true;
 
-    final target =
-        RoadmapPath.slot(index).dy * artworkHeight - viewportHeight / 2;
-    _scrollController.jumpTo(
-      target.clamp(0.0, _scrollController.position.maxScrollExtent),
-    );
+    final maxExtent = _scrollController.position.maxScrollExtent;
+    // The ladder begins at the foot of the artwork, so with nothing to reveal
+    // the opening view is the bottom rather than the top.
+    final target = index < 0
+        ? maxExtent
+        : RoadmapPath.slot(index).dy * artworkHeight - viewportHeight / 2;
+
+    _scrollController.jumpTo(target.clamp(0.0, maxExtent));
   }
 
   @override
@@ -164,7 +168,7 @@ class _RoadmapScreenState extends ConsumerState<RoadmapScreen> {
           final artworkHeight = width * RoadmapPath.aspectRatio;
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted || currentIndex < 0) return;
+            if (!mounted) return;
             _revealCurrent(currentIndex, artworkHeight, constraints.maxHeight);
           });
 
@@ -172,6 +176,10 @@ class _RoadmapScreenState extends ConsumerState<RoadmapScreen> {
             children: [
               SingleChildScrollView(
                 controller: _scrollController,
+                // The artwork has to meet the screen edge at both ends; iOS's
+                // default bounce would drag the page background into view past
+                // the shore and the sky.
+                physics: const ClampingScrollPhysics(),
                 child: SizedBox(
                   width: width,
                   height: artworkHeight,
@@ -204,12 +212,14 @@ class _RoadmapScreenState extends ConsumerState<RoadmapScreen> {
               SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: Row(
-                    children: [
-                      const BackIconButton(),
-                      const SizedBox(width: AppSpacing.md),
-                      _Title(level: level),
-                    ],
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: CloseIconButton(
+                      // White to carry over the artwork, which is green all the
+                      // way up.
+                      color: Colors.white,
+                      onTap: () => context.pop(),
+                    ),
                   ),
                 ),
               ),
@@ -244,34 +254,6 @@ class _PositionedStep extends StatelessWidget {
       top: slot.dy * canvasHeight - RoadStepNode.diameter / 2,
       width: _slotWidth,
       child: RoadStepNode(label: step.topic, status: step.status),
-    );
-  }
-}
-
-class _Title extends StatelessWidget {
-  final String level;
-
-  const _Title({required this.level});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.sm,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(235),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        'Your roadmap · $level',
-        style: const TextStyle(
-          color: AppColors.ink,
-          fontSize: 15,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
     );
   }
 }
