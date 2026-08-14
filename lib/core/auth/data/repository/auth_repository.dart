@@ -5,6 +5,7 @@ import 'package:student/app/data/network/token_storage.dart';
 import 'package:student/core/auth/data/model/auth_response.dart';
 import 'package:student/core/auth/domain/entity/auth_entity.dart';
 import 'package:student/core/auth/domain/repository/i_auth_repository.dart';
+import 'package:student/core/user/domain/entity/student_level.dart';
 
 final authRepositoryProvider = Provider<IAuthRepository>(
   (ref) => AuthRepository(
@@ -39,6 +40,7 @@ class AuthRepository implements IAuthRepository {
     required String phoneNumber,
     required String password,
     required String code,
+    StudentLevel? level,
   }) async {
     final response = await _dio.post(
       'auth/sign-up',
@@ -47,6 +49,9 @@ class AuthRepository implements IAuthRepository {
         'phoneNumber': phoneNumber,
         'password': password,
         'code': code,
+        // Left out rather than sent null: the field is optional, and the API
+        // rejects a null against its enum validator.
+        if (level != null) 'level': level.code,
       },
     );
     return _saveAndReturn(response.data as Map<String, dynamic>);

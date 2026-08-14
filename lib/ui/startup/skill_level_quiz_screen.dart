@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/startup/presentation/skill_quiz_controller.dart';
+import 'package:student/core/startup/presentation/skill_quiz_result_controller.dart';
+import 'package:student/core/user/domain/entity/student_level.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -25,6 +27,10 @@ class SkillLevelQuizScreen extends ConsumerStatefulWidget {
 class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
   int _questionIndex = 0;
   int? _selectedOption;
+
+  /// Answers matching the question's `correct` value so far. Only the tally is
+  /// kept — nothing here needs to say which ones were missed.
+  int _correctCount = 0;
 
   void _onClose() {
     // The survey navigates here with `go`, so there may be nothing to pop.
@@ -50,14 +56,31 @@ class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
     final question = questions[_questionIndex];
 
     void onContinue() {
+      final chosen = question.options[_selectedOption!];
+      // The asset's `correct` holds the option's text, not its index, and is
+      // authored by hand — so compare leniently.
+      if (chosen.trim().toLowerCase() ==
+          question.correct.trim().toLowerCase()) {
+        _correctCount++;
+      }
+
       if (_questionIndex < questions.length - 1) {
         setState(() {
           _questionIndex++;
           _selectedOption = null;
         });
-      } else {
-        context.go(RegisterScreen.path);
+        return;
       }
+
+      ref
+          .read(skillQuizResultProvider.notifier)
+          .setLevel(
+            StudentLevel.fromScore(
+              correct: _correctCount,
+              total: questions.length,
+            ),
+          );
+      context.go(RegisterScreen.path);
     }
 
     return Scaffold(

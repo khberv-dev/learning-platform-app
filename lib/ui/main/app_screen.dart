@@ -5,6 +5,7 @@ import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/main/presentation/navbar_controller.dart';
+import 'package:student/core/notifications/presentation/push_messaging_service.dart';
 import 'package:student/core/payments/presentation/purchase_watcher.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/courses_page.dart';
@@ -32,6 +33,14 @@ class _AppScreenState extends ConsumerState<AppScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
+    // The shell is only reachable with a valid token, and registering the
+    // device's push token needs one — so this is the first safe moment,
+    // whether the student just logged in or the splash screen let them
+    // straight through.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(pushMessagingProvider).start();
+    });
   }
 
   @override

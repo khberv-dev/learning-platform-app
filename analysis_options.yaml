@@ -1,1 +1,8 @@
 include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Swift Package Manager checks plugin sources out under build/, and their
+    # own tests are written against dev dependencies this app doesn't have —
+    # analysing them buries real findings under errors from other packages.
+    - build/**

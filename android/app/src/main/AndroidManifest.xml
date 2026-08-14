@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <!-- Android 13+ will not show a notification without this being granted at
+         runtime; requestPermission() in PushMessagingService prompts for it. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
             android:label="iTeach"
@@ -32,7 +35,28 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Lets a tap on a notification reach onMessageOpenedApp instead of
+                 just bringing the app forward. -->
+            <intent-filter>
+                <action android:name="FLUTTER_NOTIFICATION_CLICK"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
+
+        <!-- Without these three, a background push falls back to the launcher
+             icon (a white square, since Android masks it to alpha), an
+             uncoloured header, and the system's "Miscellaneous" channel. The
+             channel id must match the one PushMessagingService creates. -->
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@drawable/ic_notification"/>
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_color"
+                android:resource="@color/notification_accent"/>
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="iteach_default"/>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

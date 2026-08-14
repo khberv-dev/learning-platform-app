@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243473383824",
+    "project_id": "learning-platform-iteach",
+    "storage_bucket": "learning-platform-iteach.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243473383824:android:214b3d90ee4680e44f7315",
+        "android_client_info": {
+          "package_name": "uz.iteach.student"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHrPnOqOewJAKLPbaz6pE3zJeGEomJVv4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

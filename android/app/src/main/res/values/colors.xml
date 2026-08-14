@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tint Android applies to the notification icon and title. The theme's
+         primary green, so pushes read as coming from this app. -->
+    <color name="notification_accent">#18C96A</color>
+</resources>

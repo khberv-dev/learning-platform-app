@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/register_controller.dart';
+import 'package:student/core/startup/presentation/skill_quiz_result_controller.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -152,6 +153,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           firstName: _fullNameController.text.trim(),
           phoneNumber: '998$digits',
           password: _passwordController.text,
+          // Null when the placement quiz was skipped or closed early, which
+          // leaves the API to apply its own default level.
+          level: ref.read(skillQuizResultProvider),
         );
   }
 

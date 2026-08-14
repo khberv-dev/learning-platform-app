@@ -7,6 +7,7 @@ import 'package:student/app/data/network/token_storage.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/notifications/presentation/push_messaging_service.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/shared/url_launcher.dart';
 import 'package:student/ui/auth/login_screen.dart';
@@ -103,6 +104,11 @@ class SettingsCard extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               Navigator.of(ctx).pop();
+              // Unregisters the device for push. Has to go first — it is an
+              // authenticated call, and clearing the tokens would strand the
+              // session row on the server, still receiving this student's
+              // notifications.
+              await ref.read(pushMessagingProvider).signOut();
               await ref.read(tokenStorageProvider).clearAll();
               ref.read(currentUserProvider.notifier).state = null;
               if (context.mounted) context.go(LoginScreen.path);
