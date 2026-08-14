@@ -16,7 +16,6 @@ import 'package:student/ui/profile/widget/profile_pill.dart';
 final selectedLanguageProvider = StateProvider<String>((ref) => 'English');
 
 const _privacyPolicyUrl = 'https://i-teach.uz/web/privacy_policy.html';
-const _deleteAccountUrl = 'https://i-teach.uz/web/delete_account.html';
 
 /// Dark panel of white pill rows, running to the bottom of the page.
 class SettingsCard extends ConsumerWidget {
@@ -72,9 +71,74 @@ class SettingsCard extends ConsumerWidget {
           ProfileSettingRow(
             label: 'Delete account',
             labelColor: const Color(0xffef4444),
-            onTap: () =>
-                ref.read(urlLauncherProvider)(Uri.parse(_deleteAccountUrl)),
+            onTap: () => _confirmDeleteAccount(context),
           ),
+        ],
+      ),
+    );
+  }
+
+  /// Step 1: make the student say yes before anything happens. Answering no
+  /// just closes it.
+  void _confirmDeleteAccount(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        title: const Text(
+          'Delete account',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to delete your account? '
+          'This removes your courses and progress, and cannot be undone.',
+        ),
+        actions: [
+          TextButton(onPressed: Navigator.of(ctx).pop, child: const Text('No')),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              _showDeletionRequested(context);
+            },
+            child: const Text(
+              'Yes',
+              style: TextStyle(color: Color(0xffef4444)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Step 2: acknowledge the request. Nothing is signed out or cleared here —
+  /// the account stays usable until the request is actioned.
+  void _showDeletionRequested(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
+        title: const Text(
+          'Request sent',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        content: const Text(
+          'Your account deletion request has been sent. '
+          'You can keep using the app until it is processed.',
+        ),
+        actions: [
+          TextButton(onPressed: Navigator.of(ctx).pop, child: const Text('OK')),
         ],
       ),
     );
