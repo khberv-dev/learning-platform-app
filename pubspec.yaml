@@ -1,7 +1,7 @@
 name: student
 description: "Mobile app for iTeach students"
 publish_to: 'none'
-version: 0.0.10+10
+version: 1.0.0+12
 
 environment:
   sdk: ^3.11.4
@@ -28,7 +28,9 @@ dependencies:
   shared_preferences: ^2.5.5
   socket_io_client: ^2.0.0
   talker_dio_logger: ^5.1.16
+  upgrader: ^13.6.0
   url_launcher: ^6.3.2
+  version: ^3.0.2
   video_player: ^2.9.2
 
 dev_dependencies:
