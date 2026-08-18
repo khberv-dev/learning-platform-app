@@ -9,8 +9,8 @@ import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_option_chip.dart';
 import 'package:student/shared/widget/app_progress_header.dart';
+import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
-import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 
 const _surveyQueries = [
   SurveyQuery(
@@ -79,7 +79,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
     if (_queryIndex < _surveyQueries.length - 1) {
       setState(() => _queryIndex++);
     } else {
-      context.go(SkillLevelQuizScreen.path);
+      context.go(LevelCheckScreen.path);
     }
   }
 
@@ -90,7 +90,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
         child: Column(
           children: [
             AppProgressHeader(
-              progress: (_queryIndex + 1) / _surveyQueries.length,
+              // The level check that follows is one more step of the same
+              // intake, so the bar shouldn't read as full before it.
+              progress: (_queryIndex + 1) / (_surveyQueries.length + 1),
               // `go`, not `pop` — closing the survey should land on
               // onboarding regardless of how the user got here.
               onClose: () => context.go(OnboardingScreen.path),

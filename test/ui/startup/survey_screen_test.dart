@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_theme.dart';
 import 'package:student/shared/widget/app_option_chip.dart';
 import 'package:student/shared/widget/close_icon_button.dart';
+import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 
@@ -160,6 +161,49 @@ void main() {
           .isSelected,
       isTrue,
     );
+  });
+
+  testWidgets('the last question hands over to the level check', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844) * 2;
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp.router(
+        theme: container.read(appThemeProvider),
+        routerConfig: GoRouter(
+          initialLocation: SurveyScreen.path,
+          routes: [
+            GoRoute(
+              path: SurveyScreen.path,
+              builder: (_, _) => const SurveyScreen(),
+            ),
+            GoRoute(
+              path: LevelCheckScreen.path,
+              builder: (_, _) =>
+                  const Scaffold(body: Center(child: Text('level check'))),
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    for (final answer in ['Career Growth', '15 minutes']) {
+      await tester.tap(find.text(answer));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Resume'));
+      await tester.pumpAndSettle();
+    }
+
+    // Not the placement quiz: whether that is worth running is the level
+    // check's question to ask.
+    expect(find.text('level check'), findsOneWidget);
   });
 
   testWidgets('options alternate left and right alignment', (tester) async {

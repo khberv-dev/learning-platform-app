@@ -22,6 +22,7 @@ import 'package:student/ui/plans/plans_screen.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
 import 'package:student/ui/roadmap/roadmap_screen.dart';
+import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/no_connection_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
@@ -43,6 +44,10 @@ final _appRouter = GoRouter(
     GoRoute(path: OnboardingScreen.path, builder: (_, _) => OnboardingScreen()),
     GoRoute(path: WelcomeScreen.path, builder: (_, _) => WelcomeScreen()),
     GoRoute(path: SurveyScreen.path, builder: (_, _) => SurveyScreen()),
+    GoRoute(
+      path: LevelCheckScreen.path,
+      builder: (_, _) => const LevelCheckScreen(),
+    ),
     GoRoute(
       path: SkillLevelQuizScreen.path,
       builder: (_, _) => SkillLevelQuizScreen(),

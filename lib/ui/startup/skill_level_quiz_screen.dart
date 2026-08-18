@@ -12,7 +12,7 @@ import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_option_chip.dart';
 import 'package:student/shared/widget/app_progress_header.dart';
 import 'package:student/ui/auth/register_screen.dart';
-import 'package:student/ui/startup/survey_screen.dart';
+import 'package:student/ui/startup/level_check_screen.dart';
 
 class SkillLevelQuizScreen extends ConsumerStatefulWidget {
   static const path = '/skill_quiz';
@@ -33,11 +33,11 @@ class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
   int _correctCount = 0;
 
   void _onClose() {
-    // The survey navigates here with `go`, so there may be nothing to pop.
+    // The level check navigates here with `go`, so there may be nothing to pop.
     if (context.canPop()) {
       context.pop();
     } else {
-      context.go(SurveyScreen.path);
+      context.go(LevelCheckScreen.path);
     }
   }
 
