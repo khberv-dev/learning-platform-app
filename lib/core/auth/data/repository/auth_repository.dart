@@ -4,6 +4,7 @@ import 'package:student/app/data/network/dio_client.dart';
 import 'package:student/app/data/network/token_storage.dart';
 import 'package:student/core/auth/data/model/auth_response.dart';
 import 'package:student/core/auth/domain/entity/auth_entity.dart';
+import 'package:student/core/auth/domain/entity/otp_purpose.dart';
 import 'package:student/core/auth/domain/repository/i_auth_repository.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 
@@ -58,8 +59,14 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<void> sendOtp({required String phoneNumber}) async {
-    await _dio.post('auth/otp/send', data: {'phoneNumber': phoneNumber});
+  Future<void> sendOtp({
+    required String phoneNumber,
+    required OtpPurpose purpose,
+  }) async {
+    await _dio.post(
+      'auth/otp/send',
+      data: {'phoneNumber': phoneNumber, 'purpose': purpose.value},
+    );
   }
 
   @override

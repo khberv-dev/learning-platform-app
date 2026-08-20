@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/auth/domain/entity/otp_purpose.dart';
 import 'package:student/core/auth/presentation/otp_controller.dart';
 import 'package:student/core/auth/presentation/recover_password_controller.dart';
 import 'package:student/core/auth/presentation/register_controller.dart';
@@ -62,10 +63,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     });
   }
 
+  /// The purpose the first code was sent under. Asking again under the other
+  /// one would be refused — registration will not send to a number that has an
+  /// account, and recovery only ever runs for one that does.
+  OtpPurpose get _purpose => widget.mode == OtpMode.register
+      ? OtpPurpose.registration
+      : OtpPurpose.recover;
+
   void _resend() {
     ref
         .read(otpControllerProvider.notifier)
-        .sendOtp(phoneNumber: widget.phoneNumber);
+        .sendOtp(phoneNumber: widget.phoneNumber, purpose: _purpose);
+    // Started even if the request fails: the API's own cooldown has begun
+    // either way, and the countdown is what tells the student to wait.
     _startResendTimer();
   }
 
@@ -119,6 +129,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         );
       });
     }
+
+    // A resend can be refused — one code a minute, five an hour — and the
+    // student would otherwise be left watching a countdown for a code that was
+    // never sent.
+    ref.listen<AsyncValue<void>>(otpControllerProvider, (prev, next) {
+      if (prev?.isLoading != true) return;
+      next.whenOrNull(
+        error: (e, _) => showErrorMessage(context, apiErrorMessage(context, e)),
+      );
+    });
 
     final l10n = AppLocalizations.of(context);
     final isLoading = widget.mode == OtpMode.register

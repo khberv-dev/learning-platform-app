@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/core/auth/domain/entity/otp_purpose.dart';
 import 'package:student/core/auth/domain/usecase/use_send_otp.dart';
 import 'package:student/core/auth/domain/usecase/use_sign_up.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
@@ -34,7 +35,9 @@ class RegisterController extends AsyncNotifier<void> {
     _level = level;
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref.read(useSendOtpProvider).call(phoneNumber: phoneNumber),
+      () => ref
+          .read(useSendOtpProvider)
+          .call(phoneNumber: phoneNumber, purpose: OtpPurpose.registration),
     );
   }
 
