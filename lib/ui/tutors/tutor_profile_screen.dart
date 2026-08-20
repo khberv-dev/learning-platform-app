@@ -8,6 +8,7 @@ import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/assignments/presentation/create_assignment_controller.dart';
 import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
 import 'package:student/core/tutors/presentation/tutor_detail_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
@@ -79,7 +80,9 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
           ScaffoldMessenger.of(context)
             ..clearSnackBars()
             ..showSnackBar(
-              const SnackBar(content: Text('Booking request sent')),
+              SnackBar(
+                content: Text(AppLocalizations.of(context).tutorBookingSent),
+              ),
             );
         },
       );
@@ -92,7 +95,7 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
         error: (e, _) => SafeArea(
           child: Column(
             children: [
-              const _Header(title: 'Tutor'),
+              _Header(title: AppLocalizations.of(context).tutorHeader),
               Expanded(
                 child: Center(
                   child: Padding(
@@ -138,21 +141,21 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
                         child: _Headline(tutor: tutor),
                       ),
                       const SizedBox(height: AppSpacing.xl),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg,
                         ),
                         child: SectionTitle(
-                          title: 'Student reviews',
+                          title: AppLocalizations.of(context).tutorReviewsTitle,
                           fontSize: 22,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       // Reviews aren't exposed by the API yet, so this is the
                       // only state the section can be in.
-                      const AppEmptyState(
+                      AppEmptyState(
                         imagePath: 'assets/images/no_comments_puppet.png',
-                        title: 'No reviews yet',
+                        title: AppLocalizations.of(context).tutorNoReviews,
                         backgroundColor: Colors.transparent,
                       ),
                     ],
@@ -162,7 +165,7 @@ class _TutorProfileScreenState extends ConsumerState<TutorProfileScreen> {
               AppBottomActionBar(
                 children: [
                   AppButton.filled(
-                    label: 'Book tutor',
+                    label: AppLocalizations.of(context).tutorBook,
                     onTap: () => showBookTutorSheet(
                       context,
                       ref,

@@ -6,6 +6,7 @@ import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/unit_screen.dart';
 import 'package:student/ui/plans/plans_screen.dart';
@@ -59,7 +60,7 @@ class _CourseDetailBody extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
                 child: Text(
-                  'Units',
+                  AppLocalizations.of(context).courseUnits,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: const Color(0xFF111827),
                     fontWeight: FontWeight.w700,
@@ -177,7 +178,9 @@ class _Banner extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${course.lessonsCount} lessons',
+                  AppLocalizations.of(
+                    context,
+                  ).courseLessonCount(course.lessonsCount),
                   style: const TextStyle(color: Colors.white, fontSize: 13),
                 ),
               ],
@@ -263,7 +266,9 @@ class _UnitCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      '${unit.lessonsCount} lessons',
+                      AppLocalizations.of(
+                        context,
+                      ).courseLessonCount(unit.lessonsCount),
                       style: const TextStyle(
                         color: Color(0xFF6B7280),
                         fontSize: 12,
@@ -304,7 +309,7 @@ class _PurchaseBar extends StatelessWidget {
       child: AppButton.filled(
         // A course carries no price of its own — each plan sets one, so this
         // leads to the plan picker rather than straight to checkout.
-        label: 'Choose a plan',
+        label: AppLocalizations.of(context).courseChoosePlan,
         icon: const Icon(Icons.shopping_cart_outlined),
         fontSize: 16,
         onTap: () => context.push('${PlansScreen.path}?courseId=$courseId'),

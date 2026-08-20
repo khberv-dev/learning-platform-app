@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:student/l10n/app_localizations_en.dart';
 import 'package:student/ui/roadmap/roadmap_path.dart';
 import 'package:student/ui/roadmap/roadmap_screen.dart';
 import 'package:student/ui/roadmap/widget/road_step_node.dart';
+
+/// The step builder takes its wording from the locale; the assertions here
+/// are about structure, so any locale does — English keeps them readable.
+final _l10n = AppLocalizationsEn();
 
 void main() {
   group('RoadmapPath', () {
     test('holds enough slots for every step the screen builds', () {
       expect(
         RoadmapPath.capacity,
-        greaterThanOrEqualTo(buildRoadmapSteps('A1').length),
+        greaterThanOrEqualTo(buildRoadmapSteps(_l10n, 'A1').length),
       );
     });
 
@@ -64,7 +69,7 @@ void main() {
   group('buildRoadmapSteps', () {
     test('marks exactly one step as current', () {
       for (final level in ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']) {
-        final steps = buildRoadmapSteps(level);
+        final steps = buildRoadmapSteps(_l10n, level);
         expect(
           steps.where((s) => s.status == RoadStepStatus.current).length,
           1,
@@ -74,7 +79,7 @@ void main() {
     });
 
     test('completes every topic below the learner\'s level', () {
-      final steps = buildRoadmapSteps('B1');
+      final steps = buildRoadmapSteps(_l10n, 'B1');
       // A1 and A2 are six topics each.
       expect(
         steps.take(12).every((s) => s.status == RoadStepStatus.completed),
@@ -85,13 +90,13 @@ void main() {
     });
 
     test('an unknown level falls back to the start', () {
-      final steps = buildRoadmapSteps('Z9');
+      final steps = buildRoadmapSteps(_l10n, 'Z9');
       expect(steps.first.status, RoadStepStatus.current);
       expect(steps.any((s) => s.status == RoadStepStatus.completed), isFalse);
     });
 
     test('the top level leaves nothing locked before it', () {
-      final steps = buildRoadmapSteps('C2');
+      final steps = buildRoadmapSteps(_l10n, 'C2');
       expect(steps.last.status, RoadStepStatus.locked);
       expect(
         steps.take(30).every((s) => s.status == RoadStepStatus.completed),

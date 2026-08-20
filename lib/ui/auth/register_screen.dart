@@ -5,6 +5,7 @@ import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/register_controller.dart';
 import 'package:student/core/startup/presentation/skill_quiz_result_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -42,11 +43,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             context.push('${OtpScreen.path}?phone=998$digits&mode=register');
           }
         },
-        error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
+        error: (e, _) => showErrorMessage(context, apiErrorMessage(context, e)),
       );
     });
 
     final isLoading = ref.watch(registerControllerProvider).isLoading;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: AppGradientBackground(
@@ -68,9 +70,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: AppSpacing.xxl),
-                        const Text(
-                          'Create account',
-                          style: TextStyle(
+                        Text(
+                          l10n.registerTitle,
+                          style: const TextStyle(
                             color: AppColors.deepGreen,
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
@@ -79,19 +81,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                         const SizedBox(height: AppSpacing.xxl),
                         AppTextField(
-                          label: 'Full name',
+                          label: l10n.fieldFullName,
                           controller: _fullNameController,
                           textCapitalization: TextCapitalization.words,
                           validator: (value) {
                             if ((value ?? '').trim().isEmpty) {
-                              return 'Enter your full name';
+                              return l10n.validationFullName;
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AppTextField(
-                          label: 'Phone number',
+                          label: l10n.fieldPhone,
                           controller: _phoneController,
                           prefixText: '+998 ',
                           keyboardType: TextInputType.number,
@@ -99,19 +101,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           validator: (value) {
                             final digits = (value ?? '').replaceAll(' ', '');
                             if (digits.length != 9) {
-                              return 'Enter a valid phone number';
+                              return l10n.validationPhone;
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AppTextField(
-                          label: 'Password',
+                          label: l10n.fieldPassword,
                           controller: _passwordController,
                           obscureText: true,
                           validator: (value) {
                             if ((value ?? '').length < 8) {
-                              return 'Password must be at least 8 characters';
+                              return l10n.validationPassword;
                             }
                             return null;
                           },
@@ -127,12 +129,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             AppBottomActionBar(
               children: [
                 AppButton.filled(
-                  label: 'Create account',
+                  label: l10n.registerSubmit,
                   isLoading: isLoading,
                   onTap: _submit,
                 ),
                 AppButton.outlined(
-                  label: 'Log in',
+                  label: l10n.loginSubmit,
                   onTap: () => context.go(LoginScreen.path),
                 ),
               ],
@@ -181,15 +183,17 @@ class _LegalNotice extends StatelessWidget {
     );
     const emphasis = TextStyle(fontWeight: FontWeight.w800);
 
-    return const SizedBox(
+    final l10n = AppLocalizations.of(context);
+
+    return SizedBox(
       width: double.infinity,
       child: Text.rich(
         TextSpan(
           children: [
-            TextSpan(text: 'By creating an account you agree to our\n'),
-            TextSpan(text: 'Terms of Use', style: emphasis),
-            TextSpan(text: ' and '),
-            TextSpan(text: 'Privacy Policy', style: emphasis),
+            TextSpan(text: l10n.registerLegalLead),
+            TextSpan(text: l10n.registerLegalTerms, style: emphasis),
+            TextSpan(text: l10n.registerLegalAnd),
+            TextSpan(text: l10n.registerLegalPrivacy, style: emphasis),
           ],
         ),
         textAlign: TextAlign.center,

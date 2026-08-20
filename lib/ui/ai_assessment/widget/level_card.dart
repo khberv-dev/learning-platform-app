@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 class LevelCard extends StatelessWidget {
   final String level;
@@ -45,9 +46,9 @@ class LevelCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Your English Level',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context).aiYourLevel,
+            style: const TextStyle(
               color: Color(0xFF111827),
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -55,7 +56,7 @@ class LevelCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Based on $answersCount conversation responses',
+            AppLocalizations.of(context).aiBasedOnResponses(answersCount),
             style: const TextStyle(color: Color(0xFF6B7280), fontSize: 13),
           ),
           const SizedBox(height: 12),
@@ -66,7 +67,7 @@ class LevelCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              '↑ Improved from $previousLevel',
+              AppLocalizations.of(context).aiImprovedFrom(previousLevel),
               style: const TextStyle(
                 color: Color(0xFF16A34A),
                 fontSize: 13,

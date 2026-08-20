@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/login_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -34,11 +35,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (prev?.isLoading != true) return;
       next.whenOrNull(
         data: (_) => context.go(AppScreen.path),
-        error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
+        error: (e, _) => showErrorMessage(context, apiErrorMessage(context, e)),
       );
     });
 
     final isLoading = ref.watch(loginControllerProvider).isLoading;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: AppGradientBackground(
@@ -60,9 +62,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: AppSpacing.xxl),
-                        const Text(
-                          'Welcome back',
-                          style: TextStyle(
+                        Text(
+                          l10n.loginTitle,
+                          style: const TextStyle(
                             color: AppColors.deepGreen,
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
@@ -71,7 +73,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: AppSpacing.xxl),
                         AppTextField(
-                          label: 'Phone number',
+                          label: l10n.fieldPhone,
                           controller: _phoneController,
                           prefixText: '+998 ',
                           keyboardType: TextInputType.number,
@@ -79,19 +81,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           validator: (value) {
                             final digits = (value ?? '').replaceAll(' ', '');
                             if (digits.length != 9) {
-                              return 'Enter a valid phone number';
+                              return l10n.validationPhone;
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AppTextField(
-                          label: 'Password',
+                          label: l10n.fieldPassword,
                           controller: _passwordController,
                           obscureText: true,
                           validator: (value) {
                             if ((value ?? '').length < 8) {
-                              return 'Password must be at least 8 characters';
+                              return l10n.validationPassword;
                             }
                             return null;
                           },
@@ -108,7 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            child: const Text('Forgot password?'),
+                            child: Text(l10n.loginForgotPassword),
                           ),
                         ),
                       ],
@@ -120,12 +122,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             AppBottomActionBar(
               children: [
                 AppButton.filled(
-                  label: 'Log in',
+                  label: l10n.loginSubmit,
                   isLoading: isLoading,
                   onTap: _submit,
                 ),
                 AppButton.outlined(
-                  label: 'Create account',
+                  label: l10n.registerTitle,
                   // Registration starts with the survey, not the form.
                   onTap: () => context.go(SurveyScreen.path),
                 ),

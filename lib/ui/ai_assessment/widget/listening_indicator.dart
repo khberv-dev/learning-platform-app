@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 class ListeningIndicator extends StatelessWidget {
   const ListeningIndicator({super.key});
@@ -7,12 +8,12 @@ class ListeningIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        _Dot(),
-        SizedBox(width: 6),
+      children: [
+        const _Dot(),
+        const SizedBox(width: 6),
         Text(
-          'Listening...',
-          style: TextStyle(
+          AppLocalizations.of(context).aiListening,
+          style: const TextStyle(
             color: Color(0xFF18C96A),
             fontSize: 14,
             fontWeight: FontWeight.w500,

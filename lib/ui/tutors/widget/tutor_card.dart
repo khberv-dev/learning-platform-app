@@ -5,6 +5,7 @@ import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/rating_stars.dart';
 
 class TutorCard extends StatelessWidget {
@@ -90,7 +91,9 @@ class _Rating extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         Flexible(
           child: Text(
-            '${rating.toStringAsFixed(1)}  ·  $feedbackCount reviews',
+            AppLocalizations.of(
+              context,
+            ).tutorRatingReviews(rating.toStringAsFixed(1), feedbackCount),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(

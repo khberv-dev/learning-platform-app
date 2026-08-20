@@ -9,6 +9,8 @@ import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 
+import '../../support/localized_app.dart';
+
 Future<void> _pumpSurvey(WidgetTester tester) async {
   tester.view.physicalSize = const Size(390, 844) * 2;
   tester.view.devicePixelRatio = 2;
@@ -18,7 +20,7 @@ Future<void> _pumpSurvey(WidgetTester tester) async {
   addTearDown(container.dispose);
 
   await tester.pumpWidget(
-    MaterialApp.router(
+    localizedApp(
       theme: container.read(appThemeProvider),
       routerConfig: GoRouter(
         routes: [GoRoute(path: '/', builder: (_, _) => const SurveyScreen())],
@@ -38,7 +40,7 @@ void main() {
     addTearDown(container.dispose);
 
     await tester.pumpWidget(
-      MaterialApp.router(
+      localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           initialLocation: SurveyScreen.path,
@@ -174,7 +176,7 @@ void main() {
     addTearDown(container.dispose);
 
     await tester.pumpWidget(
-      MaterialApp.router(
+      localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           initialLocation: SurveyScreen.path,

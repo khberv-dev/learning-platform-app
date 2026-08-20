@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/ai_assessment/widget/assessment_summary_card.dart';
 import 'package:student/ui/ai_assessment/widget/level_card.dart';
@@ -11,23 +12,35 @@ class AiResultsScreen extends StatelessWidget {
 
   const AiResultsScreen({super.key});
 
-  static const _skills = [
-    SkillBreakdownItem(name: 'Grammar', percent: 86, color: Color(0xFF18C96A)),
+  /// Placeholder scores until the API returns a real breakdown; only the
+  /// names come from the locale.
+  static List<SkillBreakdownItem> _skills(AppLocalizations l10n) => [
     SkillBreakdownItem(
-      name: 'Vocabulary',
-      percent: 74,
-      color: Color(0xFF3B82F6),
+      name: l10n.aiSkillGrammar,
+      percent: 86,
+      color: const Color(0xFF18C96A),
     ),
-    SkillBreakdownItem(name: 'Fluency', percent: 68, color: Color(0xFFF59E0B)),
     SkillBreakdownItem(
-      name: 'Pronunciation',
+      name: l10n.aiSkillVocabulary,
+      percent: 74,
+      color: const Color(0xFF3B82F6),
+    ),
+    SkillBreakdownItem(
+      name: l10n.aiSkillFluency,
+      percent: 68,
+      color: const Color(0xFFF59E0B),
+    ),
+    SkillBreakdownItem(
+      name: l10n.aiSkillPronunciation,
       percent: 71,
-      color: Color(0xFF8B5CF6),
+      color: const Color(0xFF8B5CF6),
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
@@ -45,19 +58,14 @@ class AiResultsScreen extends StatelessWidget {
                       answersCount: 5,
                     ),
                     const SizedBox(height: 16),
-                    const SkillBreakdownCard(items: _skills),
+                    SkillBreakdownCard(items: _skills(l10n)),
                     const SizedBox(height: 16),
-                    const AssessmentSummaryCard(
-                      summary:
-                          'You show strong B2-level grammar and professional '
-                          'vocabulary. Focus on fluency and pronunciation to '
-                          'reach C1.',
-                    ),
+                    AssessmentSummaryCard(summary: l10n.aiSummary),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: double.infinity,
                       child: AppButton.filled(
-                        label: 'Start Personalized Learning',
+                        label: l10n.aiStartLearning,
                         fontSize: 16,
                         onTap: () => context.go(AppScreen.path),
                       ),
@@ -86,11 +94,11 @@ class _Header extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 36, height: 36),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Skill Results',
+              AppLocalizations.of(context).aiResultsTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF111827),
                 fontSize: 16,
                 fontWeight: FontWeight.w700,

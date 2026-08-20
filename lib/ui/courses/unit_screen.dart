@@ -5,6 +5,7 @@ import 'package:student/core/courses/domain/entity/lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 
 /// Lessons of a single unit. The course page lists units only, so this is the
@@ -124,7 +125,9 @@ class _Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Unit ${(unitIndex + 1).toString().padLeft(2, '0')}',
+                  AppLocalizations.of(
+                    context,
+                  ).unitNumber((unitIndex + 1).toString().padLeft(2, '0')),
                   style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 15,
@@ -172,7 +175,7 @@ class _UnitSummary extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          '${unit.lessonsCount} ${unit.lessonsCount == 1 ? 'lesson' : 'lessons'}',
+          AppLocalizations.of(context).courseLessonCount(unit.lessonsCount),
           style: const TextStyle(color: Color(0xFF6B7280), fontSize: 13),
         ),
       ],
@@ -281,22 +284,26 @@ class _NoLessons extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(Icons.menu_book_outlined, color: Color(0xFF9CA3AF), size: 32),
-          SizedBox(height: 12),
+          const Icon(
+            Icons.menu_book_outlined,
+            color: Color(0xFF9CA3AF),
+            size: 32,
+          ),
+          const SizedBox(height: 12),
           Text(
-            'No lessons yet',
-            style: TextStyle(
+            AppLocalizations.of(context).unitNoLessonsTitle,
+            style: const TextStyle(
               color: Color(0xFF111827),
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
-            'Lessons for this unit will appear here.',
-            style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+            AppLocalizations.of(context).unitNoLessonsSubtitle,
+            style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
           ),
         ],
       ),
@@ -309,8 +316,11 @@ class _MissingUnit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Unit not found', style: TextStyle(color: Color(0xFF6B7280))),
+    return Center(
+      child: Text(
+        AppLocalizations.of(context).unitNotFound,
+        style: const TextStyle(color: Color(0xFF6B7280)),
+      ),
     );
   }
 }

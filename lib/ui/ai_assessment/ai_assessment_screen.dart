@@ -7,11 +7,10 @@ import 'package:record/record.dart';
 import 'package:student/app/data/network/config.dart';
 import 'package:student/core/assessments/domain/usecase/use_create_conversation.dart';
 import 'package:student/core/assessments/domain/usecase/use_send_assessment_turn.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/ai_assessment/widget/ai_avatar.dart';
 import 'package:student/ui/ai_assessment/widget/listening_indicator.dart';
 import 'package:student/ui/ai_assessment/widget/mic_button.dart';
-
-const _initialPrompt = 'Try to speak anything you want!';
 
 enum _RecordState { idle, recording, uploading, playingFeedback }
 
@@ -54,7 +53,7 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
     });
 
     if (!await _recorder.hasPermission()) {
-      setState(() => _error = 'Microphone permission denied');
+      setState(() => _error = AppLocalizations.of(context).aiMicDenied);
       return;
     }
 
@@ -79,7 +78,7 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
       if (!mounted) return;
       setState(() {
         _state = _RecordState.idle;
-        _error = 'Recording failed';
+        _error = AppLocalizations.of(context).aiRecordFailed;
       });
       return;
     }
@@ -105,7 +104,7 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
       if (!mounted) return;
       setState(() {
         _state = _RecordState.idle;
-        _error = 'Upload failed. Tap to try again.';
+        _error = AppLocalizations.of(context).aiUploadFailed;
       });
     }
   }
@@ -130,16 +129,17 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
     final isPlayingFeedback = _state == _RecordState.playingFeedback;
     final isBusy = isUploading || isPlayingFeedback;
 
-    final cardText = _feedbackText ?? _initialPrompt;
+    final l10n = AppLocalizations.of(context);
+    final cardText = _feedbackText ?? l10n.aiInitialPrompt;
     final hint =
         _error ??
         (isUploading
-            ? 'Uploading…'
+            ? l10n.aiUploading
             : isPlayingFeedback
-            ? 'Playing feedback…'
+            ? l10n.aiPlayingFeedback
             : isRecording
-            ? 'Tap to stop'
-            : 'Tap to speak');
+            ? l10n.aiTapToStop
+            : l10n.aiTapToSpeak);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -225,11 +225,11 @@ class _Header extends StatelessWidget {
               ),
             ),
           ),
-          const Expanded(
+          Expanded(
             child: Text(
-              'AI Assessment',
+              AppLocalizations.of(context).aiTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF111827),
                 fontSize: 16,
                 fontWeight: FontWeight.w700,

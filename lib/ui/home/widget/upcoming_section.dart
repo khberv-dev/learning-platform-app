@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
 import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/section_title.dart';
+import 'package:student/utils/date_format.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UpcomingSection extends ConsumerWidget {
@@ -18,8 +20,8 @@ class UpcomingSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(
-            title: 'More upcoming lessons',
+          SectionTitle(
+            title: AppLocalizations.of(context).homeMoreUpcoming,
             color: Colors.white,
             fontSize: 22,
           ),
@@ -55,31 +57,6 @@ class _LessonItem extends StatelessWidget {
 
   const _LessonItem({required this.lesson});
 
-  String _formatDate(DateTime dt) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${months[dt.month - 1]} ${dt.day}';
-  }
-
-  String _formatTime(DateTime dt) {
-    final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
-    final minute = dt.minute.toString().padLeft(2, '0');
-    final period = dt.hour >= 12 ? 'PM' : 'AM';
-    return '$hour:$minute $period';
-  }
-
   Future<void> _join() async {
     final uri = Uri.tryParse(lesson.meetLink);
     if (uri != null && await canLaunchUrl(uri)) {
@@ -105,7 +82,7 @@ class _LessonItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _formatDate(local),
+                  formatShortMonthDay(context, local),
                   style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 13,
@@ -114,7 +91,7 @@ class _LessonItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 1),
                 Text(
-                  _formatTime(local),
+                  formatTime(context, local),
                   style: const TextStyle(
                     color: Color(0xFF9CA3AF),
                     fontSize: 10,
@@ -166,9 +143,9 @@ class _LessonItem extends StatelessWidget {
                   color: const Color(0xFFF0FDF4),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Text(
-                  'Join',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context).commonJoin,
+                  style: const TextStyle(
                     color: Color(0xFF18C96A),
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

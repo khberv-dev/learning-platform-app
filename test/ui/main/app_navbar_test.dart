@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:student/ui/main/widget/app_navbar.dart';
 
+import '../../support/localized_app.dart';
+
 Widget _host({
   int current = 0,
   bool showChat = false,
   void Function(int)? onItemClick,
-}) => MaterialApp(
+}) => localizedHome(
   home: Scaffold(
     bottomNavigationBar: AppNavbar(
       current: current,
@@ -76,7 +78,7 @@ void main() {
     late double reported;
 
     await tester.pumpWidget(
-      MaterialApp(
+      localizedHome(
         home: Scaffold(
           extendBody: true,
           bottomNavigationBar: AppNavbar(current: 0, onItemClick: (_) {}),

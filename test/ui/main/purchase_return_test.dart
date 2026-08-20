@@ -14,6 +14,8 @@ import 'package:student/core/live_lessons/domain/repository/i_live_lessons_repos
 import 'package:student/core/payments/presentation/purchase_watcher.dart';
 import 'package:student/ui/main/app_screen.dart';
 
+import '../../support/localized_app.dart';
+
 MyCourseEntity _course(String id, String title) => MyCourseEntity(
   enrollmentId: 'en-$id',
   courseId: id,
@@ -68,7 +70,7 @@ Future<ProviderContainer> _pump(WidgetTester tester, _Courses courses) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           routes: [

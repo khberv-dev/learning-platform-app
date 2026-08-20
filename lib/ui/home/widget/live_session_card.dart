@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
 import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/no_upcoming_lessons_card.dart';
 import 'package:student/shared/widget/section_title.dart';
+import 'package:student/utils/date_format.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LiveSessionCard extends ConsumerWidget {
@@ -19,8 +21,8 @@ class LiveSessionCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(
-            title: 'Live lessons',
+          SectionTitle(
+            title: AppLocalizations.of(context).homeLiveLessons,
             color: Colors.white,
             fontSize: 22,
           ),
@@ -46,27 +48,6 @@ class _NextLessonCard extends StatelessWidget {
   final LiveLessonScheduledEntity lesson;
 
   const _NextLessonCard({required this.lesson});
-
-  String _formatDateTime(DateTime dt) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
-    final minute = dt.minute.toString().padLeft(2, '0');
-    final period = dt.hour >= 12 ? 'PM' : 'AM';
-    return '${months[dt.month - 1]} ${dt.day} · $hour:$minute $period';
-  }
 
   Future<void> _joinLesson() async {
     final uri = Uri.tryParse(lesson.meetLink);
@@ -117,7 +98,9 @@ class _NextLessonCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      isOngoing ? 'LIVE NOW' : 'UPCOMING',
+                      isOngoing
+                          ? AppLocalizations.of(context).homeLiveNow
+                          : AppLocalizations.of(context).homeUpcoming,
                       style: TextStyle(
                         color: isOngoing
                             ? const Color(0xFF18C96A)
@@ -172,7 +155,7 @@ class _NextLessonCard extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                _formatDateTime(lesson.startTime.toLocal()),
+                formatMonthDayTime(context, lesson.startTime.toLocal()),
                 style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
               ),
             ],
@@ -189,10 +172,10 @@ class _NextLessonCard extends StatelessWidget {
               child: InkWell(
                 onTap: lesson.meetLink.isNotEmpty ? _joinLesson : null,
                 borderRadius: BorderRadius.circular(22),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    'Join Lesson',
-                    style: TextStyle(
+                    AppLocalizations.of(context).homeJoinLesson,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

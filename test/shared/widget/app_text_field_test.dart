@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:student/shared/widget/app_text_field.dart';
 
-Widget _host(Widget child) => MaterialApp(
+import '../../support/localized_app.dart';
+
+Widget _host(Widget child) => localizedHome(
   home: Scaffold(
     body: Padding(padding: const EdgeInsets.all(16), child: child),
   ),

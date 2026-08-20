@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 /// Empty state for the scheduled-lessons lists — artwork with the headline
 /// laid over it. Shared by the home page and the courses page's live tab.
@@ -23,14 +24,14 @@ class NoUpcomingLessonsCard extends StatelessWidget {
             alignment: Alignment.topCenter,
           ),
           // Sits over the artwork's darkest area, so white reads cleanly.
-          const Positioned(
+          Positioned(
             top: AppSpacing.lg,
             left: AppSpacing.lg,
             right: AppSpacing.lg,
             child: Text(
-              'No upcoming lessons',
+              AppLocalizations.of(context).homeNoUpcomingLessons,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.w800,

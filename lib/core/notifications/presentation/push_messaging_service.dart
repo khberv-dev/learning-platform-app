@@ -7,9 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student/app/router/app_router.dart';
 import 'package:student/core/notifications/domain/entity/session_entity.dart';
-import 'package:student/core/notifications/presentation/local_notifications.dart';
 import 'package:student/core/notifications/domain/usecase/use_delete_session.dart';
 import 'package:student/core/notifications/domain/usecase/use_register_session.dart';
+import 'package:student/core/notifications/presentation/local_notifications.dart';
 
 /// Handles a push that arrives while the app is backgrounded or killed.
 ///

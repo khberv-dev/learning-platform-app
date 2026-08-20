@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:student/shared/url_launcher.dart';
 import 'package:student/ui/profile/widget/settings_card.dart';
 
+import '../../support/localized_app.dart';
+
 /// Records anything the card tries to open externally, so the test can assert
 /// the delete flow stays in-app.
 class _SpyLauncher {
@@ -21,8 +23,10 @@ Future<_SpyLauncher> _pumpCard(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [urlLauncherProvider.overrideWithValue(launcher.call)],
-      child: const MaterialApp(
-        home: Scaffold(body: SingleChildScrollView(child: SettingsCard())),
+      child: localizedHome(
+        home: const Scaffold(
+          body: SingleChildScrollView(child: SettingsCard()),
+        ),
       ),
     ),
   );

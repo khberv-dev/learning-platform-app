@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pdfrx/pdfrx.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/url_launcher.dart';
 
 /// In-app reader for a PDF material.
@@ -43,7 +44,9 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
               // length, so it stays hidden until then.
               subtitle: _pageCount == null
                   ? null
-                  : 'Page $_currentPage of $_pageCount',
+                  : AppLocalizations.of(
+                      context,
+                    ).pdfPageOf(_currentPage, _pageCount!),
               onOpenExternally: _openExternally,
             ),
             Expanded(
@@ -137,7 +140,7 @@ class _TopBar extends StatelessWidget {
             // An escape hatch to the system viewer, which is also the only way
             // to print or share the file.
             onPressed: onOpenExternally,
-            tooltip: 'Open outside the app',
+            tooltip: AppLocalizations.of(context).commonOpenOutsideApp,
             icon: const Icon(
               Icons.open_in_new_rounded,
               color: Colors.white,
@@ -185,7 +188,9 @@ class _LoadingBanner extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            progress == null ? 'Loading…' : '${(progress * 100).round()}%',
+            progress == null
+                ? AppLocalizations.of(context).commonLoading
+                : '${(progress * 100).round()}%',
             style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
           ),
         ],
@@ -213,27 +218,27 @@ class _ErrorBanner extends StatelessWidget {
               size: 36,
             ),
             const SizedBox(height: 12),
-            const Text(
-              "This PDF couldn't be opened",
+            Text(
+              AppLocalizations.of(context).pdfLoadFailed,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
-              'It may be damaged, or the connection dropped.',
+            Text(
+              AppLocalizations.of(context).pdfLoadFailedHint,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+              style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
             ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: onOpenExternally,
-              child: const Text(
-                'Open outside the app',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context).commonOpenOutsideApp,
+                style: const TextStyle(
                   color: Color(0xFF18C96A),
                   fontSize: 14,
                   fontWeight: FontWeight.w700,

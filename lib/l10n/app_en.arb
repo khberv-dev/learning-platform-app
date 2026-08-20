@@ -1,0 +1,429 @@
+{
+  "@@locale": "en",
+
+  "languageTitle": "Choose your language",
+  "@languageTitle": {
+    "description": "Title of the language picker shown after the splash screen"
+  },
+  "languageSubtitle": "You can change it later in your profile",
+  "languageContinue": "Continue",
+  "languageSettingsTitle": "Language",
+
+  "commonContinue": "Continue",
+  "commonBack": "Back",
+  "commonResume": "Resume",
+  "commonCancel": "Cancel",
+  "commonRetry": "Retry",
+  "commonYes": "Yes",
+  "commonNo": "No",
+  "commonOk": "OK",
+  "commonJoin": "Join",
+  "commonLoading": "Loading…",
+  "commonSomethingWentWrong": "Something went wrong. Please try again.",
+  "commonOpenOutsideApp": "Open outside the app",
+  "commonShowPassword": "Show password",
+  "commonHidePassword": "Hide password",
+  "commonRatingOutOf": "{rating} out of {count}",
+  "@commonRatingOutOf": {
+    "description": "Screen-reader label for a star rating",
+    "placeholders": {
+      "rating": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+
+  "splashWelcome": "Welcome to iTeach!",
+
+  "onboardingHeadlineLead": "Learn ",
+  "onboardingHeadlineHighlight": "English",
+  "onboardingHeadlineTail": "\nFaster than ever",
+  "onboardingFreshStart": "Let's Get a Fresh Start",
+  "onboardingResume": "Resume Journey",
+
+  "welcomeTitle": "Welcome to iTeach",
+  "welcomeSubtitle": "Your personalized English\nlearning journey starts here",
+  "welcomeGetStarted": "Get Started",
+  "welcomeSignIn": "Sign In",
+
+  "noConnectionTitle": "No Connection",
+  "noConnectionMessage": "Unable to reach the server.\nCheck your connection and try again.",
+  "noConnectionRetry": "Try Again",
+
+  "surveyReasonTitle": "Why are you learning English?",
+  "surveyReasonDescription": "Choose the one that fits best",
+  "surveyReasonCareer": "Career Growth",
+  "surveyReasonTravel": "Travel & Adventure",
+  "surveyReasonAcademic": "Academic Studies",
+  "surveyReasonPersonal": "Personal Interest",
+  "surveyReasonImmigration": "Immigration",
+  "surveyTimeTitle": "How much time can you spend daily?",
+  "surveyTimeDescription": "We'll build a schedule that fits your lifestyle",
+  "surveyTime5": "5 minutes",
+  "surveyTime15": "15 minutes",
+  "surveyTime30": "30 minutes",
+  "surveyTime60": "1+ hour",
+
+  "levelCheckTitle": "Do you already know some English?",
+  "levelCheckDescription": "If you have studied before, a short test places you at the right level",
+  "levelCheckYes": "Yes, I have studied some",
+  "levelCheckNo": "No, I am starting from zero",
+
+  "navHome": "Home",
+  "navCourse": "Course",
+  "navChat": "Chat",
+  "navMentor": "Mentor",
+  "navProfile": "Profile",
+
+  "levelBeginner": "Beginner",
+  "levelIntermediate": "Intermediate",
+  "levelAdvanced": "Advanced",
+
+  "homeOnFire": "You're on fire",
+  "homeStreakDays": "{count, plural, one{{count} day} other{{count} days}}",
+  "@homeStreakDays": {
+    "description": "Streaks run into the thousands, so the count is grouped",
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "homeDontForgetMe": "Don't forget me!",
+  "homeStatsScores": "Scores",
+  "homeStatsCoins": "Coins",
+  "homeStatsRanking": "Global ranking",
+  "homeLibrary": "Library",
+  "homeNoCoursesTitle": "No active courses yet",
+  "homeNoCoursesSubtitle": "Browse and start learning today",
+  "homeNoCoursesButton": "Start practice",
+  "homeProgress": "Progress",
+  "homeResume": "Resume",
+  "homeLiveLessons": "Live lessons",
+  "homeLiveNow": "LIVE NOW",
+  "homeUpcoming": "UPCOMING",
+  "homeJoinLesson": "Join Lesson",
+  "homeMoreUpcoming": "More upcoming lessons",
+  "homeNoUpcomingLessons": "No upcoming lessons",
+  "homeAiTestTitle": "Test your skills with AI",
+  "homeAiTestBody": "Speak naturally and let AI evaluate your level — get a full skill report in minutes",
+  "homeAiTestButton": "Start test",
+  "homeSpeakingTitle": "Find a speaking partner",
+  "homeSpeakingBody": "Get matched with a real person at your level. Practice conversations that matter",
+  "homeSpeakingButton": "Find partner",
+
+  "coursesTitle": "Courses",
+  "coursesTabCourses": "Courses",
+  "coursesTabLive": "Live sessions",
+  "coursesRoadmap": "Roadmap",
+  "coursesMyCourses": "My courses",
+  "coursesAvailable": "Available to purchase",
+  "coursesNoneAvailable": "No courses available.",
+  "coursesCurrentUpcoming": "Current & Upcoming",
+  "coursesPastSessions": "Past sessions",
+  "coursesRecordedCount": "{count} recorded",
+  "@coursesRecordedCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "coursesNoRecordedTitle": "No recorded sessions",
+  "coursesNoRecordedSubtitle": "Recorded live sessions will appear\nhere once available",
+  "courseUnits": "Units",
+  "courseLessonCount": "{count, plural, one{{count} lesson} other{{count} lessons}}",
+  "@courseLessonCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "courseChoosePlan": "Choose a plan",
+  "courseExpired": "Expired",
+  "courseProgress": "Progress",
+  "courseLearnMore": "Learn more",
+  "courseRecordedSession": "RECORDED SESSION",
+  "courseRecorded": "RECORDED",
+
+  "unitNumber": "Unit {number}",
+  "@unitNumber": {
+    "placeholders": { "number": { "type": "String" } }
+  },
+  "unitNoLessonsTitle": "No lessons yet",
+  "unitNoLessonsSubtitle": "Lessons for this unit will appear here.",
+  "unitNotFound": "Unit not found",
+
+  "lessonUnitLesson": "Unit {unit} · Lesson {lesson}",
+  "@lessonUnitLesson": {
+    "description": "The numbers are zero-padded strings, e.g. 01",
+    "placeholders": {
+      "unit": { "type": "String" },
+      "lesson": { "type": "String" }
+    }
+  },
+  "lessonUnitLessonOf": "Unit {unit} · Lesson {lesson} of {total}",
+  "@lessonUnitLessonOf": {
+    "placeholders": {
+      "unit": { "type": "String" },
+      "lesson": { "type": "String" },
+      "total": { "type": "int" }
+    }
+  },
+  "lessonViewTasks": "View Tasks",
+  "lessonTasksCompleted": "Tasks Completed",
+  "lessonTasksInProgress": "Tasks In Progress",
+  "lessonScore": "{correct} of {total} correct · {percent}%",
+  "@lessonScore": {
+    "placeholders": {
+      "correct": { "type": "int" },
+      "total": { "type": "int" },
+      "percent": { "type": "int" }
+    }
+  },
+  "lessonRetake": "Retake",
+  "lessonInThisUnit": "In this unit",
+
+  "materialsTitle": "Materials",
+  "materialsFileCount": "{count, plural, one{{count} file} other{{count} files}}",
+  "@materialsFileCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "materialsLoadFailed": "Materials couldn't be loaded",
+  "materialsOpenFailed": "This file couldn't be opened",
+
+  "purchaseSuccessTitle": "You’re in!",
+  "purchaseSuccessBody": "{course} is now yours. Time to start learning.",
+  "@purchaseSuccessBody": {
+    "placeholders": { "course": { "type": "String" } }
+  },
+  "purchaseSuccessButton": "Start learning",
+
+  "tasksTitle": "Tasks",
+  "taskProgress": "Task {current} of {total}",
+  "@taskProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "taskFallbackName": "Task",
+  "taskAnswerHint": "Type your answer…",
+  "taskSubmit": "Submit",
+  "taskNext": "Next",
+  "tasksEmptyTitle": "No Tasks Yet",
+  "tasksEmptySubtitle": "Tasks for this lesson will appear here.",
+  "taskAudioError": "Audio could not be played",
+  "taskImageError": "Image could not be loaded",
+
+  "pdfPageOf": "Page {current} of {total}",
+  "@pdfPageOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "pdfLoadFailed": "This PDF couldn't be opened",
+  "pdfLoadFailedHint": "It may be damaged, or the connection dropped.",
+  "imageLoadFailed": "This image couldn't be loaded",
+
+  "loginTitle": "Welcome back",
+  "loginForgotPassword": "Forgot password?",
+  "loginSubmit": "Log in",
+  "registerTitle": "Create account",
+  "registerSubmit": "Create account",
+  "registerLegalLead": "By creating an account you agree to our\n",
+  "registerLegalTerms": "Terms of Use",
+  "registerLegalAnd": " and ",
+  "registerLegalPrivacy": "Privacy Policy",
+  "forgotTitle": "Reset password",
+  "forgotSubtitle": "Enter your phone number and a new password",
+  "forgotSubmit": "Send code",
+
+  "fieldPhone": "Phone number",
+  "fieldPassword": "Password",
+  "fieldNewPassword": "New password",
+  "fieldConfirmPassword": "Confirm password",
+  "fieldFullName": "Full name",
+  "validationPhone": "Enter a valid phone number",
+  "validationPassword": "Password must be at least 8 characters",
+  "validationPasswordsMatch": "Passwords do not match",
+  "validationFullName": "Enter your full name",
+
+  "otpTitle": "Verify Your\nPhone Number",
+  "otpSubtitle": "We sent a 6-digit code to {phone}",
+  "@otpSubtitle": {
+    "placeholders": { "phone": { "type": "String" } }
+  },
+  "otpResendIn": "Resend code in {seconds}s",
+  "@otpResendIn": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "otpResend": "Resend code",
+  "otpPasswordUpdated": "Password updated successfully",
+
+  "profilePhone": "Phone number",
+  "profilePassword": "Password",
+  "profileUpdatePassword": "Update password",
+  "settingsPrivacyPolicy": "Privacy Policy",
+  "settingsAppVersion": "App version",
+  "settingsLogOut": "Log out",
+  "settingsDeleteAccount": "Delete account",
+  "settingsLogOutConfirm": "Are you sure you want to log out?",
+  "settingsDeleteConfirm": "Are you sure you want to delete your account? This removes your courses and progress, and cannot be undone.",
+  "settingsDeleteRequestedTitle": "Request sent",
+  "settingsDeleteRequestedBody": "Your account deletion request has been sent. You can keep using the app until it is processed.",
+
+  "chatMentor": "Mentor",
+  "chatFile": "File",
+  "chatHint": "Type a message…",
+  "chatEmptyTitle": "No messages yet",
+  "chatEmptySubtitle": "Send a message to start the conversation.",
+
+  "tutorsTitle": "Find a tutor",
+  "tutorsLoadFailed": "Couldn't load tutors",
+  "tutorsPullToRetry": "Pull down to try again",
+  "tutorsEmptyTitle": "No tutors yet",
+  "tutorsEmptySubtitle": "Tutors will appear here once they join",
+  "tutorsAvailable": "Available tutors",
+  "tutorHeader": "Tutor",
+  "tutorReviewsTitle": "Student reviews",
+  "tutorNoReviews": "No reviews yet",
+  "tutorBook": "Book tutor",
+  "tutorBookingSent": "Booking request sent",
+  "tutorRatingReviews": "{rating}  ·  {count, plural, one{{count} review} other{{count} reviews}}",
+  "@tutorRatingReviews": {
+    "placeholders": {
+      "rating": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "bookTitle": "Select Schedule",
+  "bookSubtitle": "Choose up to 3 weekly slots with {name}",
+  "@bookSubtitle": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "bookLoadFailed": "Could not load schedule",
+  "bookNoAvailability": "This tutor hasn't set availability yet.\nYou can still send a booking request.",
+  "bookSlotsSelected": "{count}/3 slots selected",
+  "@bookSlotsSelected": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "bookConfirm": "Confirm Booking",
+
+  "weekdayMonday": "Monday",
+  "weekdayTuesday": "Tuesday",
+  "weekdayWednesday": "Wednesday",
+  "weekdayThursday": "Thursday",
+  "weekdayFriday": "Friday",
+  "weekdaySaturday": "Saturday",
+  "weekdaySunday": "Sunday",
+
+  "plansTitle": "Choose a plan",
+  "plansLoadFailed": "Couldn't load the plans",
+  "plansEmptyTitle": "No plans yet",
+  "plansEmptySubtitle": "This course is not on sale at the moment",
+  "plansDuration": "{count, plural, one{{count} month} other{{count} months}}",
+  "@plansDuration": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "plansPrice": "{amount} so'm",
+  "@plansPrice": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "plansWithMentor": "With mentor",
+
+  "paymentTitle": "Payment method",
+  "paymentLoadFailed": "Couldn't start the payment",
+  "paymentEmptyTitle": "No payment methods",
+  "paymentEmptySubtitle": "None are set up yet",
+  "paymentNoLink": "{type} has no checkout link yet",
+  "@paymentNoLink": {
+    "placeholders": { "type": { "type": "String" } }
+  },
+  "paymentOpenFailed": "Couldn't open {type}",
+  "@paymentOpenFailed": {
+    "placeholders": { "type": { "type": "String" } }
+  },
+
+  "aiTitle": "AI Assessment",
+  "aiInitialPrompt": "Try to speak anything you want!",
+  "aiMicDenied": "Microphone permission denied",
+  "aiRecordFailed": "Recording failed",
+  "aiUploadFailed": "Upload failed. Tap to try again.",
+  "aiUploading": "Uploading…",
+  "aiPlayingFeedback": "Playing feedback…",
+  "aiTapToStop": "Tap to stop",
+  "aiTapToSpeak": "Tap to speak",
+  "aiListening": "Listening…",
+  "aiResultsTitle": "Skill Results",
+  "aiSkillGrammar": "Grammar",
+  "aiSkillVocabulary": "Vocabulary",
+  "aiSkillFluency": "Fluency",
+  "aiSkillPronunciation": "Pronunciation",
+  "aiSkillBreakdown": "Skill Breakdown",
+  "aiSummary": "You show strong B2-level grammar and professional vocabulary. Focus on fluency and pronunciation to reach C1.",
+  "aiStartLearning": "Start Personalized Learning",
+  "aiYourLevel": "Your English Level",
+  "aiBasedOnResponses": "{count, plural, one{Based on {count} conversation response} other{Based on {count} conversation responses}}",
+  "@aiBasedOnResponses": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "aiImprovedFrom": "↑ Improved from {level}",
+  "@aiImprovedFrom": {
+    "placeholders": { "level": { "type": "String" } }
+  },
+
+  "p2pTitle": "Speaking Partner",
+  "p2pFinding": "Finding your match…",
+  "p2pLookingSubtitle": "Looking for someone at your level",
+  "p2pConnecting": "Connecting…",
+  "p2pMatched": "Matched",
+  "p2pConnected": "Connected",
+  "p2pMute": "Mute",
+  "p2pUnmute": "Unmute",
+  "p2pEnd": "End",
+  "p2pEndedCall": "Call ended",
+  "p2pPeerLeft": "Your partner left the call",
+  "p2pPeerDisconnected": "Your partner disconnected",
+  "p2pCancelled": "Call cancelled",
+  "p2pReplaced": "Session replaced by another connection",
+  "p2pError": "Call error",
+
+  "notificationsTitle": "Notifications",
+  "notificationsEmptyTitle": "No notifications yet",
+  "notificationsEmptySubtitle": "You're all caught up!",
+
+  "roadmapLevelA1": "Beginner",
+  "roadmapLevelA2": "Elementary",
+  "roadmapLevelB1": "Intermediate",
+  "roadmapLevelB2": "Upper-Intermediate",
+  "roadmapLevelC1": "Advanced",
+  "roadmapLevelC2": "Proficiency",
+  "roadmapTopicGreetings": "Greetings",
+  "roadmapTopicNumbersDates": "Numbers & Dates",
+  "roadmapTopicColorsObjects": "Colors & Objects",
+  "roadmapTopicFamily": "Family",
+  "roadmapTopicFoodDrinks": "Food & Drinks",
+  "roadmapTopicDailyRoutines": "Daily Routines",
+  "roadmapTopicShopping": "Shopping",
+  "roadmapTopicTravelTransport": "Travel & Transport",
+  "roadmapTopicWeatherSeasons": "Weather & Seasons",
+  "roadmapTopicHomeFurniture": "Home & Furniture",
+  "roadmapTopicHobbies": "Hobbies & Interests",
+  "roadmapTopicHealthBody": "Health & Body",
+  "roadmapTopicWorkCareers": "Work & Careers",
+  "roadmapTopicCurrentEvents": "Current Events",
+  "roadmapTopicFuturePlans": "Future Plans",
+  "roadmapTopicPastExperiences": "Past Experiences",
+  "roadmapTopicOpinionsFeelings": "Opinions & Feelings",
+  "roadmapTopicTourismCulture": "Tourism & Culture",
+  "roadmapTopicDebates": "Debates & Arguments",
+  "roadmapTopicSocialIssues": "Social Issues",
+  "roadmapTopicBusinessEnglish": "Business English",
+  "roadmapTopicMedia": "Media & Entertainment",
+  "roadmapTopicEnvironment": "Environment",
+  "roadmapTopicAcademicWriting": "Academic Writing",
+  "roadmapTopicAcademicDiscourse": "Academic Discourse",
+  "roadmapTopicProfessionalComms": "Professional Comms",
+  "roadmapTopicIdioms": "Idioms & Phrases",
+  "roadmapTopicLiterature": "Literature & Arts",
+  "roadmapTopicCriticalAnalysis": "Critical Analysis",
+  "roadmapTopicNegotiations": "Complex Negotiations",
+  "roadmapTopicNativeFluency": "Native-like Fluency",
+  "roadmapTopicSpecializedVocab": "Specialized Vocabulary",
+  "roadmapTopicCulturalReferences": "Cultural References",
+  "roadmapTopicRhetoric": "Advanced Rhetoric",
+  "roadmapTopicCreativeWriting": "Creative Writing",
+  "roadmapTopicPresentations": "Expert Presentations"
+}

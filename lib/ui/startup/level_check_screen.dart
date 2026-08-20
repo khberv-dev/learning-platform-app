@@ -5,6 +5,7 @@ import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/startup/presentation/skill_quiz_result_controller.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -60,6 +61,8 @@ class _LevelCheckScreenState extends ConsumerState<LevelCheckScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: AppGradientBackground(
         child: Column(
@@ -84,9 +87,9 @@ class _LevelCheckScreenState extends ConsumerState<LevelCheckScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Do you already know some English?',
-                      style: TextStyle(
+                    Text(
+                      l10n.levelCheckTitle,
+                      style: const TextStyle(
                         color: AppColors.deepGreen,
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -95,10 +98,9 @@ class _LevelCheckScreenState extends ConsumerState<LevelCheckScreen> {
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    const Text(
-                      'If you have studied before, a short test places you at '
-                      'the right level',
-                      style: TextStyle(
+                    Text(
+                      l10n.levelCheckDescription,
+                      style: const TextStyle(
                         color: AppColors.ink,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -108,14 +110,14 @@ class _LevelCheckScreenState extends ConsumerState<LevelCheckScreen> {
                     // Full width rather than the survey's staggered pills —
                     // these answers are sentences, and read better aligned.
                     _Answer(
-                      label: 'Yes, I have studied some',
+                      label: l10n.levelCheckYes,
                       emoji: '🗣️',
                       isSelected: _hasEnglish == true,
                       onTap: () => setState(() => _hasEnglish = true),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _Answer(
-                      label: 'No, I am starting from zero',
+                      label: l10n.levelCheckNo,
                       emoji: '🌱',
                       isSelected: _hasEnglish == false,
                       onTap: () => setState(() => _hasEnglish = false),
@@ -127,10 +129,10 @@ class _LevelCheckScreenState extends ConsumerState<LevelCheckScreen> {
             AppBottomActionBar(
               children: [
                 AppButton.filled(
-                  label: 'Resume',
+                  label: l10n.commonResume,
                   onTap: _hasEnglish == null ? null : _onResume,
                 ),
-                AppButton.outlined(label: 'Back', onTap: _onBack),
+                AppButton.outlined(label: l10n.commonBack, onTap: _onBack),
               ],
             ),
           ],

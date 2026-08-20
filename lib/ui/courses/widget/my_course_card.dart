@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 class MyCourseCard extends StatelessWidget {
   final MyCourseEntity course;
@@ -53,9 +54,9 @@ class MyCourseCard extends StatelessWidget {
                             color: const Color(0xFFFEF2F2),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text(
-                            'Expired',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context).courseExpired,
+                            style: const TextStyle(
                               color: Color(0xFFEF4444),
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -67,7 +68,9 @@ class MyCourseCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${course.lessonsCount} lessons',
+                    AppLocalizations.of(
+                      context,
+                    ).courseLessonCount(course.lessonsCount),
                     style: const TextStyle(
                       color: Color(0xFF6B7280),
                       fontSize: 12,
@@ -77,9 +80,9 @@ class MyCourseCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Progress',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context).courseProgress,
+                        style: const TextStyle(
                           color: Color(0xFF6B7280),
                           fontSize: 12,
                         ),

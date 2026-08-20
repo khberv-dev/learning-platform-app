@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 /// One destination. Either [imagePath] (a black silhouette PNG, tinted at
 /// paint time) or [icon] is used.
@@ -30,25 +31,27 @@ class AppNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     final destinations = <_NavDestination>[
-      const _NavDestination(
-        label: 'Home',
+      _NavDestination(
+        label: l10n.navHome,
         imagePath: 'assets/images/nav_home.png',
       ),
-      const _NavDestination(
-        label: 'Course',
+      _NavDestination(
+        label: l10n.navCourse,
         imagePath: 'assets/images/nav_course.png',
       ),
       // No nav_chat.png ships yet, so this one stays a Material icon.
       if (showChat)
-        const _NavDestination(label: 'Chat', icon: Icons.chat_bubble_rounded)
+        _NavDestination(label: l10n.navChat, icon: Icons.chat_bubble_rounded)
       else
-        const _NavDestination(
-          label: 'Mentor',
+        _NavDestination(
+          label: l10n.navMentor,
           imagePath: 'assets/images/nav_mentor.png',
         ),
-      const _NavDestination(
-        label: 'Profile',
+      _NavDestination(
+        label: l10n.navProfile,
         imagePath: 'assets/images/nav_profile.png',
       ),
     ];

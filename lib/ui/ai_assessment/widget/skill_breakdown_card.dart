@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 class SkillBreakdownCard extends StatelessWidget {
   final List<SkillBreakdownItem> items;
@@ -17,9 +18,9 @@ class SkillBreakdownCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Skill Breakdown',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context).aiSkillBreakdown,
+            style: const TextStyle(
               color: Color(0xFF111827),
               fontSize: 16,
               fontWeight: FontWeight.w700,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_colors.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 /// Five circular star badges, filled to the nearest whole star.
 class RatingStars extends StatelessWidget {
@@ -16,7 +17,9 @@ class RatingStars extends StatelessWidget {
     final filled = rating.round().clamp(0, count);
 
     return Semantics(
-      label: '${rating.toStringAsFixed(1)} out of $count',
+      label: AppLocalizations.of(
+        context,
+      ).commonRatingOutOf(rating.toStringAsFixed(1), count),
       excludeSemantics: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,

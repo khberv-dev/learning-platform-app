@@ -6,6 +6,8 @@ import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
 import 'package:student/shared/widget/rating_stars.dart';
 import 'package:student/ui/tutors/widget/tutor_card.dart';
 
+import '../../support/localized_app.dart';
+
 TutorEntity _tutor({
   String name = 'Botir Jobirovich',
   double rating = 4,
@@ -22,7 +24,7 @@ TutorEntity _tutor({
   avatarUrl: avatarUrl,
 );
 
-Widget _host(Widget child) => MaterialApp.router(
+Widget _host(Widget child) => localizedApp(
   routerConfig: GoRouter(
     routes: [
       GoRoute(

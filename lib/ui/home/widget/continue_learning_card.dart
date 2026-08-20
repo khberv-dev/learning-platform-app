@@ -5,6 +5,7 @@ import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/main/presentation/navbar_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/home/widget/home_promo_card.dart';
 
@@ -23,8 +24,8 @@ class ContinueLearningCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SectionTitle(
-            title: 'Library',
+          SectionTitle(
+            title: AppLocalizations.of(context).homeLibrary,
             color: Colors.white,
             fontSize: 22,
           ),
@@ -52,11 +53,13 @@ class _EmptyState extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+
     return HomePromoCard(
       background: Theme.of(context).colorScheme.surface,
-      title: 'No active courses yet',
-      subtitle: 'Browse and start learning today',
-      buttonLabel: 'Start practice',
+      title: l10n.homeNoCoursesTitle,
+      subtitle: l10n.homeNoCoursesSubtitle,
+      buttonLabel: l10n.homeNoCoursesButton,
       imagePath: 'assets/images/no_course_puppet.png',
       // Courses is a tab in the shell, not a route, so switch the navbar
       // rather than pushing.
@@ -150,9 +153,9 @@ class _CourseCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(18),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
-                      'Resume',
-                      style: TextStyle(
+                    child: Text(
+                      AppLocalizations.of(context).homeResume,
+                      style: const TextStyle(
                         color: Color(0xFF18C96A),
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
@@ -166,7 +169,7 @@ class _CourseCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Progress',
+                  AppLocalizations.of(context).homeProgress,
                   style: TextStyle(
                     color: expired ? Colors.white54 : const Color(0xFFD1FAE5),
                     fontSize: 12,

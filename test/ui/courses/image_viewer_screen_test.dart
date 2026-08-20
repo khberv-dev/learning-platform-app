@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:student/ui/courses/image_viewer_screen.dart';
 
-Widget _host() => const ProviderScope(
-  child: MaterialApp(
-    home: ImageViewerScreen(
+import '../../support/localized_app.dart';
+
+Widget _host() => ProviderScope(
+  child: localizedHome(
+    home: const ImageViewerScreen(
       url: 'https://example.test/handout.png',
       title: 'Handout',
     ),

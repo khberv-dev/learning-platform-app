@@ -4,6 +4,7 @@ import 'package:student/core/chat/domain/entity/chat_message_entity.dart';
 import 'package:student/core/chat/presentation/chat_messages_controller.dart';
 import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   static const path = '/chat/room';
@@ -39,7 +40,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final roomDetail = ref.watch(chatRoomProvider(widget.roomId)).value;
     final mentor = roomDetail?.mentor;
     final mentorId = mentor?.id;
-    final mentorName = mentor?.fullName ?? 'Mentor';
+    final mentorName =
+        mentor?.fullName ?? AppLocalizations.of(context).chatMentor;
     final mentorInitial = mentorName.isNotEmpty
         ? mentorName[0].toUpperCase()
         : '?';
@@ -138,9 +140,12 @@ class _Header extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const Text(
-                  'Mentor',
-                  style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 11),
+                Text(
+                  AppLocalizations.of(context).chatMentor,
+                  style: const TextStyle(
+                    color: Color(0xFF9CA3AF),
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -244,7 +249,8 @@ class _MessageBubble extends StatelessWidget {
                           const SizedBox(width: 6),
                           Flexible(
                             child: Text(
-                              message.fileName ?? 'File',
+                              message.fileName ??
+                                  AppLocalizations.of(context).chatFile,
                               style: TextStyle(
                                 color: isMe
                                     ? Colors.white
@@ -324,7 +330,7 @@ class _InputBarState extends State<_InputBar> {
               controller: widget.controller,
               style: const TextStyle(color: Color(0xFF111827), fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Type a message…',
+                hintText: AppLocalizations.of(context).chatHint,
                 hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
                 filled: true,
                 fillColor: const Color(0xFFF3F4F6),
@@ -402,24 +408,26 @@ class _EmptyMessages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    final l10n = AppLocalizations.of(context);
+
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.chat_bubble_outline_rounded,
             color: Color(0xFFD1D5DB),
             size: 48,
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Text(
-            'No messages yet',
-            style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+            l10n.chatEmptyTitle,
+            style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
-            'Send a message to start the conversation.',
-            style: TextStyle(color: Color(0xFFD1D5DB), fontSize: 12),
+            l10n.chatEmptySubtitle,
+            style: const TextStyle(color: Color(0xFFD1D5DB), fontSize: 12),
           ),
         ],
       ),

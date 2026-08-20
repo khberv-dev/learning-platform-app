@@ -10,6 +10,8 @@ import 'package:student/core/plans/domain/entity/plan_entity.dart';
 import 'package:student/core/plans/domain/repository/i_plans_repository.dart';
 import 'package:student/ui/plans/plans_screen.dart';
 
+import '../../support/localized_app.dart';
+
 const _plans = [
   PlanEntity(
     id: 'pl1',
@@ -60,7 +62,7 @@ Future<void> _pump(WidgetTester tester, _Repo repo) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [plansRepositoryProvider.overrideWithValue(repo)],
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           routes: [

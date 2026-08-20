@@ -6,6 +6,7 @@ import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/startup/presentation/skill_quiz_controller.dart';
 import 'package:student/core/startup/presentation/skill_quiz_result_controller.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -135,7 +136,7 @@ class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
             AppBottomActionBar(
               children: [
                 AppButton.filled(
-                  label: 'Continue',
+                  label: AppLocalizations.of(context).commonContinue,
                   onTap: _selectedOption != null ? onContinue : null,
                 ),
               ],

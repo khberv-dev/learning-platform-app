@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/lesson_material_entity.dart';
 import 'package:student/core/courses/presentation/materials_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/url_launcher.dart';
 import 'package:student/ui/courses/image_viewer_screen.dart';
 import 'package:student/ui/courses/pdf_viewer_screen.dart';
@@ -26,7 +27,10 @@ class LessonMaterialsSection extends ConsumerWidget {
   ) async {
     final resolved = resolveMediaUrl(material.url);
     if (resolved == null) {
-      showErrorMessage(context, "This file couldn't be opened");
+      showErrorMessage(
+        context,
+        AppLocalizations.of(context).materialsOpenFailed,
+      );
       return;
     }
 
@@ -51,7 +55,10 @@ class LessonMaterialsSection extends ConsumerWidget {
     final opened = uri != null && await ref.read(urlLauncherProvider).call(uri);
 
     if (!opened && context.mounted) {
-      showErrorMessage(context, "This file couldn't be opened");
+      showErrorMessage(
+        context,
+        AppLocalizations.of(context).materialsOpenFailed,
+      );
     }
   }
 
@@ -74,16 +81,18 @@ class LessonMaterialsSection extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Materials',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).materialsTitle,
+                  style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 Text(
-                  '${materials.length} ${materials.length == 1 ? 'file' : 'files'}',
+                  AppLocalizations.of(
+                    context,
+                  ).materialsFileCount(materials.length),
                   style: const TextStyle(
                     color: Color(0xFF9CA3AF),
                     fontSize: 12,
@@ -229,10 +238,10 @@ class _LoadFailed extends StatelessWidget {
       padding: const EdgeInsets.only(top: 20),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: Text(
-              "Materials couldn't be loaded",
-              style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+              AppLocalizations.of(context).materialsLoadFailed,
+              style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
             ),
           ),
           TextButton(
@@ -242,9 +251,9 @@ class _LoadFailed extends StatelessWidget {
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: const Text(
-              'Retry',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context).commonRetry,
+              style: const TextStyle(
                 color: Color(0xFF18C96A),
                 fontSize: 13,
                 fontWeight: FontWeight.w700,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/usecase/use_submit_tasks.dart';
 import 'package:student/core/courses/presentation/tasks_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/widget/task_content_view.dart';
 import 'package:student/utils/messenger.dart';
@@ -113,7 +114,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
-        showErrorMessage(context, apiErrorMessage(e));
+        showErrorMessage(context, apiErrorMessage(context, e));
       }
     }
   }
@@ -224,9 +225,9 @@ class _Header extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Tasks',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).tasksTitle,
+                  style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -269,7 +270,7 @@ class _QueueProgress extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Task $current of $total',
+                AppLocalizations.of(context).taskProgress(current, total),
                 style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12),
               ),
               Text(
@@ -343,7 +344,7 @@ class _TaskCard extends StatelessWidget {
             TaskContentView(
               file: task.file!,
               contentType: task.contentType!,
-              title: task.name ?? 'Task',
+              title: task.name ?? AppLocalizations.of(context).taskFallbackName,
               // The audio has to be re-fetched per task, and reusing one key
               // across tasks would keep the previous clip loaded.
               key: ValueKey(task.id),
@@ -543,7 +544,7 @@ class _OpenAnswerField extends StatelessWidget {
       controller: controller,
       style: const TextStyle(color: Color(0xFF111827), fontSize: 14),
       decoration: InputDecoration(
-        hintText: 'Type your answer…',
+        hintText: AppLocalizations.of(context).taskAnswerHint,
         hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
         filled: true,
         fillColor: const Color(0xFFF9FAFB),
@@ -601,7 +602,7 @@ class _BottomBar extends StatelessWidget {
           if (!isFirst) ...[
             Expanded(
               child: AppButton.white(
-                label: 'Back',
+                label: AppLocalizations.of(context).commonBack,
                 fontSize: 15,
                 onTap: isSubmitting ? null : onBack,
               ),
@@ -612,13 +613,13 @@ class _BottomBar extends StatelessWidget {
             flex: 2,
             child: isLast
                 ? AppButton.filled(
-                    label: 'Submit',
+                    label: AppLocalizations.of(context).taskSubmit,
                     fontSize: 15,
                     isLoading: isSubmitting,
                     onTap: canAdvance ? onSubmit : null,
                   )
                 : AppButton.filled(
-                    label: 'Next',
+                    label: AppLocalizations.of(context).taskNext,
                     icon: const Icon(Icons.arrow_forward_rounded),
                     fontSize: 15,
                     onTap: canAdvance ? onNext : null,
@@ -655,18 +656,18 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'No Tasks Yet',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context).tasksEmptyTitle,
+            style: const TextStyle(
               color: Color(0xFF111827),
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Tasks for this lesson will appear here.',
-            style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
+          Text(
+            AppLocalizations.of(context).tasksEmptySubtitle,
+            style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 13),
           ),
         ],
       ),

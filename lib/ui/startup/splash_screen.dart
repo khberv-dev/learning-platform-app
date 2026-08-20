@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/data/network/token_storage.dart';
+import 'package:student/app/locale/locale_controller.dart';
 import 'package:student/core/user/domain/usecase/use_get_me.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
+import 'package:student/ui/startup/language_screen.dart';
 import 'package:student/ui/startup/no_connection_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 
@@ -75,33 +78,38 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await Future.delayed(const Duration(seconds: 4));
     if (!mounted) return;
 
-    final token = await ref.read(tokenStorageProvider).getAccessToken();
-    if (!mounted) return;
+    final destination = await _destination();
+    if (!mounted || destination == null) return;
 
-    if (token == null) {
-      context.go(OnboardingScreen.path);
-      return;
-    }
+    // A student who has never chosen a language picks one first; the picker
+    // carries the destination on, so the detour costs them nothing.
+    final hasLanguage = ref.read(localeControllerProvider) != null;
+    context.go(hasLanguage ? destination : languageRouteFor(destination));
+  }
+
+  /// Where the student belongs, or null when the outcome is one the splash
+  /// screen deliberately sits still on.
+  Future<String?> _destination() async {
+    final token = await ref.read(tokenStorageProvider).getAccessToken();
+    if (!mounted) return null;
+
+    if (token == null) return OnboardingScreen.path;
 
     try {
       final user = await ref.read(useGetMeProvider).call();
-      if (!mounted) return;
+      if (!mounted) return null;
       ref.read(currentUserProvider.notifier).state = user;
-      context.go(AppScreen.path);
+      return AppScreen.path;
     } on DioException catch (e) {
-      if (!mounted) return;
       final status = e.response?.statusCode;
       final isServerError = status != null && status >= 500;
       final isNetworkError =
           e.type == DioExceptionType.connectionError ||
           e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout;
-      if (isServerError || isNetworkError) {
-        context.go(NoConnectionScreen.path);
-      }
+      return isServerError || isNetworkError ? NoConnectionScreen.path : null;
     } catch (_) {
-      if (!mounted) return;
-      context.go(LoginScreen.path);
+      return LoginScreen.path;
     }
   }
 
@@ -138,7 +146,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 child: Transform.translate(
                   offset: Offset(0, titleTranslateAnimation.value),
                   child: Text(
-                    'Welcome to iTeach!',
+                    AppLocalizations.of(context).splashWelcome,
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       fontWeight: FontWeight.w900,
                     ),

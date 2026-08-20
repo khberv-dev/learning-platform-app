@@ -6,6 +6,7 @@ import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/plans/domain/entity/plan_entity.dart';
 import 'package:student/core/plans/presentation/course_plans_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/back_icon_button.dart';
 import 'package:student/shared/widget/section_title.dart';
@@ -25,6 +26,7 @@ class PlansScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(coursePlansControllerProvider(courseId));
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xfff6f7fa),
@@ -32,8 +34,8 @@ class PlansScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg,
                 AppSpacing.sm,
                 AppSpacing.lg,
@@ -41,10 +43,10 @@ class PlansScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  BackIconButton(),
-                  SizedBox(width: AppSpacing.md),
+                  const BackIconButton(),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: SectionTitle(title: 'Choose a plan', fontSize: 24),
+                    child: SectionTitle(title: l10n.plansTitle, fontSize: 24),
                   ),
                 ],
               ),
@@ -61,14 +63,14 @@ class PlansScreen extends ConsumerWidget {
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   error: (e, _) => _Placeholder(
-                    title: "Couldn't load the plans",
-                    subtitle: apiErrorMessage(e),
+                    title: l10n.plansLoadFailed,
+                    subtitle: apiErrorMessage(context, e),
                   ),
                   data: (plans) {
                     if (plans.isEmpty) {
-                      return const _Placeholder(
-                        title: 'No plans yet',
-                        subtitle: 'This course is not on sale at the moment',
+                      return _Placeholder(
+                        title: l10n.plansEmptyTitle,
+                        subtitle: l10n.plansEmptySubtitle,
                       );
                     }
                     return ListView.separated(
@@ -108,7 +110,7 @@ class PlanCard extends StatelessWidget {
 
   const PlanCard({super.key, required this.plan, required this.onTap});
 
-  String get _duration => plan.month == 1 ? '1 month' : '${plan.month} months';
+  String _duration(AppLocalizations l10n) => l10n.plansDuration(plan.month);
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +149,7 @@ class PlanCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _duration,
+                    _duration(AppLocalizations.of(context)),
                     style: const TextStyle(
                       color: Color(0xff8a949b),
                       fontSize: 14,
@@ -163,7 +165,7 @@ class PlanCard extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.md),
             Text(
-              "${formatNumber(plan.price)} so'm",
+              AppLocalizations.of(context).plansPrice(formatNumber(plan.price)),
               style: const TextStyle(
                 color: Colors.black,
                 fontSize: 18,
@@ -197,9 +199,9 @@ class _MentorChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.round),
         border: Border.all(color: AppColors.ink, width: 1.5),
       ),
-      child: const Text(
-        'With mentor',
-        style: TextStyle(
+      child: Text(
+        AppLocalizations.of(context).plansWithMentor,
+        style: const TextStyle(
           color: AppColors.ink,
           fontSize: 12,
           fontWeight: FontWeight.w700,

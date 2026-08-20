@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 class AssessmentSummaryCard extends StatelessWidget {
   final String summary;
@@ -18,9 +19,9 @@ class AssessmentSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'AI Assessment',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context).aiTitle,
+            style: const TextStyle(
               color: Color(0xFF16A34A),
               fontSize: 13,
               fontWeight: FontWeight.w700,

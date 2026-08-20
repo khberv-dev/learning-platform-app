@@ -11,6 +11,7 @@ import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
 import 'package:student/core/courses/presentation/tasks_controller.dart'
     show lessonTaskResultsProvider;
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/courses/widget/lesson_materials_section.dart';
@@ -195,7 +196,9 @@ class _TopBar extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            'Unit $unitNumber · Lesson $lessonNumber',
+            AppLocalizations.of(
+              context,
+            ).lessonUnitLesson(unitNumber, lessonNumber),
             style: const TextStyle(
               color: Color(0xFF111827),
               fontSize: 15,
@@ -295,7 +298,9 @@ class _LessonInfo extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'Unit $unitNumber · Lesson $lessonNumber of $totalLessons',
+                  AppLocalizations.of(
+                    context,
+                  ).lessonUnitLessonOf(unitNumber, lessonNumber, totalLessons),
                   style: const TextStyle(
                     color: Color(0xFF18C96A),
                     fontSize: 12,
@@ -375,7 +380,7 @@ class _TasksSection extends StatelessWidget {
       return SizedBox(
         width: double.infinity,
         child: AppButton.filled(
-          label: 'View Tasks',
+          label: AppLocalizations.of(context).lessonViewTasks,
           icon: const Icon(Icons.task_alt_rounded),
           fontSize: 15,
           height: 48,
@@ -425,7 +430,9 @@ class _TasksSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      allDone ? 'Tasks Completed' : 'Tasks In Progress',
+                      allDone
+                          ? AppLocalizations.of(context).lessonTasksCompleted
+                          : AppLocalizations.of(context).lessonTasksInProgress,
                       style: const TextStyle(
                         color: Color(0xFF111827),
                         fontSize: 13,
@@ -433,7 +440,9 @@ class _TasksSection extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '$correct of $total correct · $pct%',
+                      AppLocalizations.of(
+                        context,
+                      ).lessonScore(correct, total, pct),
                       style: const TextStyle(
                         color: Color(0xFF6B7280),
                         fontSize: 12,
@@ -460,7 +469,7 @@ class _TasksSection extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: AppButton.outlined(
-              label: 'Retake',
+              label: AppLocalizations.of(context).lessonRetake,
               color: const Color(0xFF18C96A),
               fontSize: 13,
               height: 42,
@@ -497,16 +506,18 @@ class _UnitLessonList extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'In this unit',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context).lessonInThisUnit,
+                style: const TextStyle(
                   color: Color(0xFF111827),
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
               ),
               Text(
-                '${unit.lessonsCount} lessons',
+                AppLocalizations.of(
+                  context,
+                ).courseLessonCount(unit.lessonsCount),
                 style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
               ),
             ],

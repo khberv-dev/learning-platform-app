@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/profile/widget/profile_hero.dart';
 import 'package:student/ui/profile/widget/profile_pill.dart';
@@ -15,6 +16,7 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final l10n = AppLocalizations.of(context);
 
     return SingleChildScrollView(
       child: Column(
@@ -31,13 +33,13 @@ class ProfilePage extends ConsumerWidget {
             child: Column(
               children: [
                 ProfileField(
-                  label: 'Phone number',
+                  label: l10n.profilePhone,
                   value: formatPhone(user?.phoneNumber),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 ProfileField(
-                  label: 'Password',
-                  value: 'Update password',
+                  label: l10n.profilePassword,
+                  value: l10n.profileUpdatePassword,
                   // Reuses the recovery flow — it verifies by OTP and sets a
                   // new password, which is what updating one means here.
                   onTap: () => context.push(ForgotPasswordScreen.path),

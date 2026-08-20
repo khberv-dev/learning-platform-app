@@ -3,17 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/notification_icon_button.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
 
 /// Plain-language name for a CEFR level, which is what the design shows under
 /// the user's name rather than the raw "B1".
-String levelLabel(String cefr) => switch (cefr.toUpperCase()) {
-  'A1' || 'A2' => 'Beginner',
-  'B1' || 'B2' => 'Intermediate',
-  'C1' || 'C2' => 'Advanced',
-  _ => cefr,
-};
+String levelLabel(AppLocalizations l10n, String cefr) =>
+    switch (cefr.toUpperCase()) {
+      'A1' || 'A2' => l10n.levelBeginner,
+      'B1' || 'B2' => l10n.levelIntermediate,
+      'C1' || 'C2' => l10n.levelAdvanced,
+      _ => cefr,
+    };
 
 class HomeTopbar extends ConsumerWidget {
   const HomeTopbar({super.key});
@@ -57,7 +59,7 @@ class HomeTopbar extends ConsumerWidget {
                   ),
                 ),
                 Text(
-                  levelLabel(user?.level ?? ''),
+                  levelLabel(AppLocalizations.of(context), user?.level ?? ''),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(

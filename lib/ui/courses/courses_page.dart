@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/no_upcoming_lessons_card.dart';
 import 'package:student/shared/widget/section_title.dart';
@@ -27,6 +28,8 @@ class _CoursesPageState extends State<CoursesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -37,14 +40,14 @@ class _CoursesPageState extends State<CoursesPage> {
             AppSpacing.xl,
             AppSpacing.lg,
           ),
-          child: const SectionTitle(title: 'Courses', fontSize: 30),
+          child: SectionTitle(title: l10n.coursesTitle, fontSize: 30),
         ),
         CoursesTabBar(
-          labels: const ['Courses', 'Live sessions'],
+          labels: [l10n.coursesTabCourses, l10n.coursesTabLive],
           current: _tab,
           onSelected: (i) => setState(() => _tab = i),
           // Roadmap is its own screen, not a tab, so it never reads as active.
-          actionLabel: 'Roadmap',
+          actionLabel: l10n.coursesRoadmap,
           onAction: () => context.push(RoadmapScreen.path),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -85,6 +88,7 @@ class _CoursesTabState extends ConsumerState<_CoursesTab> {
   Widget build(BuildContext context) {
     final myCourses = ref.watch(myCoursesControllerProvider);
     final available = ref.watch(availableCoursesControllerProvider);
+    final l10n = AppLocalizations.of(context);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -106,7 +110,7 @@ class _CoursesTabState extends ConsumerState<_CoursesTab> {
                 AppSpacing.xl,
                 12,
               ),
-              child: const SectionTitle(title: 'My courses', fontSize: 22),
+              child: SectionTitle(title: l10n.coursesMyCourses, fontSize: 22),
             ),
           ),
           myCourses.when(
@@ -155,10 +159,7 @@ class _CoursesTabState extends ConsumerState<_CoursesTab> {
                 AppSpacing.xl,
                 12,
               ),
-              child: const SectionTitle(
-                title: 'Available to purchase',
-                fontSize: 22,
-              ),
+              child: SectionTitle(title: l10n.coursesAvailable, fontSize: 22),
             ),
           ),
           available.when(
@@ -179,12 +180,14 @@ class _CoursesTabState extends ConsumerState<_CoursesTab> {
             ),
             data: (courses) {
               if (courses.isEmpty) {
-                return const SliverToBoxAdapter(
+                return SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                    ),
                     child: Text(
-                      'No courses available.',
-                      style: TextStyle(color: Color(0xFF6B7280)),
+                      l10n.coursesNoneAvailable,
+                      style: const TextStyle(color: Color(0xFF6B7280)),
                     ),
                   ),
                 );
@@ -223,6 +226,7 @@ class _LiveSessionsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final recordedState = ref.watch(liveLessonsControllerProvider);
     final scheduledState = ref.watch(myLiveLessonsProvider);
+    final l10n = AppLocalizations.of(context);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -245,8 +249,8 @@ class _LiveSessionsTab extends ConsumerWidget {
                 AppSpacing.xl,
                 12,
               ),
-              child: const SectionTitle(
-                title: 'Current & Upcoming',
+              child: SectionTitle(
+                title: l10n.coursesCurrentUpcoming,
                 fontSize: 22,
               ),
             ),
@@ -289,11 +293,11 @@ class _LiveSessionsTab extends ConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SectionTitle(title: 'Past sessions', fontSize: 22),
+                  SectionTitle(title: l10n.coursesPastSessions, fontSize: 22),
                   // Only meaningful once something has been recorded.
                   if ((recordedState.value?.length ?? 0) > 0)
                     Text(
-                      '${recordedState.value!.length} recorded',
+                      l10n.coursesRecordedCount(recordedState.value!.length),
                       style: const TextStyle(
                         color: Color(0xff9aa5ad),
                         fontSize: 13,
@@ -360,12 +364,14 @@ class _NoRecordedSessions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+    final l10n = AppLocalizations.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: AppEmptyState(
         imagePath: 'assets/images/no_recorded_sessions_puppet.png',
-        title: 'No recorded sessions',
-        subtitle: 'Recorded live sessions will appear\nhere once available',
+        title: l10n.coursesNoRecordedTitle,
+        subtitle: l10n.coursesNoRecordedSubtitle,
       ),
     );
   }
@@ -378,11 +384,13 @@ class _NoMyCourses extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return HomePromoCard(
       background: Theme.of(context).colorScheme.surface,
-      title: 'No active courses yet',
-      subtitle: 'Browse and start learning today',
-      buttonLabel: 'Start practice',
+      title: l10n.homeNoCoursesTitle,
+      subtitle: l10n.homeNoCoursesSubtitle,
+      buttonLabel: l10n.homeNoCoursesButton,
       imagePath: 'assets/images/no_course_puppet.png',
       // Already on the courses tab, so browsing means the list below.
       onTap: onBrowse,

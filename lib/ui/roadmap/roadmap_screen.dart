@@ -4,82 +4,89 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/close_icon_button.dart';
 import 'package:student/ui/roadmap/roadmap_path.dart';
 import 'package:student/ui/roadmap/widget/road_step_node.dart';
 
 /// The CEFR ladder, in order. Each level's topics become steps on the path.
-const _levels = <({String code, String name, List<String> topics})>[
+///
+/// Built per call rather than held as a `const`: the level names and topics
+/// are shown to the student, so they follow the app's language. The codes do
+/// not — they are the API's.
+List<({String code, String name, List<String> topics})> _levels(
+  AppLocalizations l10n,
+) => [
   (
     code: 'A1',
-    name: 'Beginner',
+    name: l10n.roadmapLevelA1,
     topics: [
-      'Greetings',
-      'Numbers & Dates',
-      'Colors & Objects',
-      'Family',
-      'Food & Drinks',
-      'Daily Routines',
+      l10n.roadmapTopicGreetings,
+      l10n.roadmapTopicNumbersDates,
+      l10n.roadmapTopicColorsObjects,
+      l10n.roadmapTopicFamily,
+      l10n.roadmapTopicFoodDrinks,
+      l10n.roadmapTopicDailyRoutines,
     ],
   ),
   (
     code: 'A2',
-    name: 'Elementary',
+    name: l10n.roadmapLevelA2,
     topics: [
-      'Shopping',
-      'Travel & Transport',
-      'Weather & Seasons',
-      'Home & Furniture',
-      'Hobbies & Interests',
-      'Health & Body',
+      l10n.roadmapTopicShopping,
+      l10n.roadmapTopicTravelTransport,
+      l10n.roadmapTopicWeatherSeasons,
+      l10n.roadmapTopicHomeFurniture,
+      l10n.roadmapTopicHobbies,
+      l10n.roadmapTopicHealthBody,
     ],
   ),
   (
     code: 'B1',
-    name: 'Intermediate',
+    name: l10n.roadmapLevelB1,
     topics: [
-      'Work & Careers',
-      'Current Events',
-      'Future Plans',
-      'Past Experiences',
-      'Opinions & Feelings',
-      'Tourism & Culture',
+      l10n.roadmapTopicWorkCareers,
+      l10n.roadmapTopicCurrentEvents,
+      l10n.roadmapTopicFuturePlans,
+      l10n.roadmapTopicPastExperiences,
+      l10n.roadmapTopicOpinionsFeelings,
+      l10n.roadmapTopicTourismCulture,
     ],
   ),
   (
     code: 'B2',
-    name: 'Upper-Intermediate',
+    name: l10n.roadmapLevelB2,
     topics: [
-      'Debates & Arguments',
-      'Social Issues',
-      'Business English',
-      'Media & Entertainment',
-      'Environment',
-      'Academic Writing',
+      l10n.roadmapTopicDebates,
+      l10n.roadmapTopicSocialIssues,
+      l10n.roadmapTopicBusinessEnglish,
+      l10n.roadmapTopicMedia,
+      l10n.roadmapTopicEnvironment,
+      l10n.roadmapTopicAcademicWriting,
     ],
   ),
   (
     code: 'C1',
-    name: 'Advanced',
+    name: l10n.roadmapLevelC1,
     topics: [
-      'Academic Discourse',
-      'Professional Comms',
-      'Idioms & Phrases',
-      'Literature & Arts',
-      'Critical Analysis',
-      'Complex Negotiations',
+      l10n.roadmapTopicAcademicDiscourse,
+      l10n.roadmapTopicProfessionalComms,
+      l10n.roadmapTopicIdioms,
+      l10n.roadmapTopicLiterature,
+      l10n.roadmapTopicCriticalAnalysis,
+      l10n.roadmapTopicNegotiations,
     ],
   ),
   (
     code: 'C2',
-    name: 'Proficiency',
+    name: l10n.roadmapLevelC2,
     topics: [
-      'Native-like Fluency',
-      'Specialized Vocabulary',
-      'Cultural References',
-      'Advanced Rhetoric',
-      'Creative Writing',
-      'Expert Presentations',
+      l10n.roadmapTopicNativeFluency,
+      l10n.roadmapTopicSpecializedVocab,
+      l10n.roadmapTopicCulturalReferences,
+      l10n.roadmapTopicRhetoric,
+      l10n.roadmapTopicCreativeWriting,
+      l10n.roadmapTopicPresentations,
     ],
   ),
 ];
@@ -95,16 +102,20 @@ class RoadmapStep {
 /// Flattens the ladder into path steps: everything below the learner's level
 /// is done, the first topic of their own level is where they are, and the rest
 /// is still ahead.
-List<RoadmapStep> buildRoadmapSteps(String currentLevel) {
-  final found = _levels.indexWhere((l) => l.code == currentLevel);
+List<RoadmapStep> buildRoadmapSteps(
+  AppLocalizations l10n,
+  String currentLevel,
+) {
+  final levels = _levels(l10n);
+  final found = levels.indexWhere((l) => l.code == currentLevel);
   final current = found < 0 ? 0 : found;
 
   final steps = <RoadmapStep>[];
-  for (var i = 0; i < _levels.length; i++) {
-    for (var t = 0; t < _levels[i].topics.length; t++) {
+  for (var i = 0; i < levels.length; i++) {
+    for (var t = 0; t < levels[i].topics.length; t++) {
       steps.add(
         RoadmapStep(
-          topic: _levels[i].topics[t],
+          topic: levels[i].topics[t],
           status: i < current
               ? RoadStepStatus.completed
               : (i == current && t == 0)
@@ -155,7 +166,7 @@ class _RoadmapScreenState extends ConsumerState<RoadmapScreen> {
   @override
   Widget build(BuildContext context) {
     final level = ref.watch(currentUserProvider)?.level ?? 'A1';
-    final steps = buildRoadmapSteps(level);
+    final steps = buildRoadmapSteps(AppLocalizations.of(context), level);
     final currentIndex = steps.indexWhere(
       (s) => s.status == RoadStepStatus.current,
     );

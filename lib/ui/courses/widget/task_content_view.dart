@@ -4,6 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/task_content_type.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/courses/image_viewer_screen.dart';
 import 'package:student/utils/lib.dart';
 
@@ -114,7 +115,9 @@ class _AudioContentState extends State<_AudioContent> {
   @override
   Widget build(BuildContext context) {
     if (_hasFailed) {
-      return const _ContentError(message: 'Audio could not be played');
+      return _ContentError(
+        message: AppLocalizations.of(context).taskAudioError,
+      );
     }
 
     final total = _duration.inMilliseconds / 1000;
@@ -226,8 +229,9 @@ class _PictureContent extends StatelessWidget {
                     alignment: Alignment.center,
                     child: const CircularProgressIndicator(strokeWidth: 2),
                   ),
-            errorBuilder: (context, error, stack) =>
-                const _ContentError(message: 'Image could not be loaded'),
+            errorBuilder: (context, error, stack) => _ContentError(
+              message: AppLocalizations.of(context).taskImageError,
+            ),
           ),
         ),
         // Detail in a task picture is often the whole question, and the card is

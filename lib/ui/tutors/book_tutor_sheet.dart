@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/assignments/presentation/create_assignment_controller.dart';
 import 'package:student/core/tutors/presentation/tutor_detail_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/utils/messenger.dart';
 
 const _dayOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const _dayNames = {
-  'Mon': 'Monday',
-  'Tue': 'Tuesday',
-  'Wed': 'Wednesday',
-  'Thu': 'Thursday',
-  'Fri': 'Friday',
-  'Sat': 'Saturday',
-  'Sun': 'Sunday',
+
+/// The API keys availability by these three-letter codes; the sheet shows the
+/// day written out, in the app's language.
+String _dayName(AppLocalizations l10n, String code) => switch (code) {
+  'Mon' => l10n.weekdayMonday,
+  'Tue' => l10n.weekdayTuesday,
+  'Wed' => l10n.weekdayWednesday,
+  'Thu' => l10n.weekdayThursday,
+  'Fri' => l10n.weekdayFriday,
+  'Sat' => l10n.weekdaySaturday,
+  'Sun' => l10n.weekdaySunday,
+  _ => code,
 };
 
 Future<void> showBookTutorSheet(
@@ -78,7 +83,7 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
     final state = ref.read(createAssignmentControllerProvider);
     if (!mounted) return;
     if (state.hasError) {
-      showErrorMessage(context, apiErrorMessage(state.error!));
+      showErrorMessage(context, apiErrorMessage(context, state.error!));
     } else {
       Navigator.of(context).pop();
     }
@@ -89,6 +94,7 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
     final scheduleState = ref.watch(teacherScheduleProvider(widget.tutorId));
     final isLoading = ref.watch(createAssignmentControllerProvider).isLoading;
     final bottom = MediaQuery.of(context).padding.bottom;
+    final l10n = AppLocalizations.of(context);
 
     return Container(
       decoration: const BoxDecoration(
@@ -115,9 +121,9 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                const Text(
-                  'Select Schedule',
-                  style: TextStyle(
+                Text(
+                  l10n.bookTitle,
+                  style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -125,7 +131,7 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Choose up to 3 weekly slots with ${widget.tutorName}',
+                  l10n.bookSubtitle(widget.tutorName),
                   style: const TextStyle(
                     color: Color(0xFF6B7280),
                     fontSize: 13,
@@ -146,12 +152,12 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
                 padding: EdgeInsets.symmetric(vertical: 40),
                 child: Center(child: CircularProgressIndicator()),
               ),
-              error: (e, _) => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 40),
+              error: (e, _) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 40),
                 child: Center(
                   child: Text(
-                    'Could not load schedule',
-                    style: TextStyle(color: Color(0xFF6B7280)),
+                    l10n.bookLoadFailed,
+                    style: const TextStyle(color: Color(0xFF6B7280)),
                   ),
                 ),
               ),
@@ -163,13 +169,19 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
                     .toList();
 
                 if (days.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 40,
+                      horizontal: 20,
+                    ),
                     child: Center(
                       child: Text(
-                        'This tutor hasn\'t set availability yet.\nYou can still send a booking request.',
+                        l10n.bookNoAvailability,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Color(0xFF6B7280), height: 1.5),
+                        style: const TextStyle(
+                          color: Color(0xFF6B7280),
+                          height: 1.5,
+                        ),
                       ),
                     ),
                   );
@@ -182,7 +194,7 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
                     children: [
                       for (final day in days) ...[
                         Text(
-                          _dayNames[day] ?? day,
+                          _dayName(l10n, day),
                           style: const TextStyle(
                             color: Color(0xFF374151),
                             fontSize: 14,
@@ -229,7 +241,7 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '$_totalSelected/3 slots selected',
+                      l10n.bookSlotsSelected(_totalSelected),
                       style: const TextStyle(
                         color: Color(0xFF18C96A),
                         fontSize: 12,
@@ -263,9 +275,9 @@ class _BookTutorSheetState extends ConsumerState<_BookTutorSheet> {
                               valueColor: AlwaysStoppedAnimation(Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Confirm Booking',
-                            style: TextStyle(
+                        : Text(
+                            l10n.bookConfirm,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

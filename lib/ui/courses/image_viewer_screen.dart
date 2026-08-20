@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/url_launcher.dart';
 
 /// Full-screen reader for an image — pinch to zoom, drag to move, double-tap to
@@ -241,7 +242,7 @@ class _TopBar extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onOpenExternally,
-                tooltip: 'Open outside the app',
+                tooltip: AppLocalizations.of(context).commonOpenOutsideApp,
                 icon: const Icon(
                   Icons.open_in_new_rounded,
                   color: Colors.black,
@@ -300,10 +301,10 @@ class _LoadFailed extends StatelessWidget {
               size: 36,
             ),
             const SizedBox(height: 12),
-            const Text(
-              "This image couldn't be loaded",
+            Text(
+              AppLocalizations.of(context).imageLoadFailed,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
@@ -312,9 +313,9 @@ class _LoadFailed extends StatelessWidget {
             const SizedBox(height: 16),
             TextButton(
               onPressed: onOpenExternally,
-              child: const Text(
-                'Open outside the app',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context).commonOpenOutsideApp,
+                style: const TextStyle(
                   color: Color(0xFF18C96A),
                   fontSize: 14,
                   fontWeight: FontWeight.w700,

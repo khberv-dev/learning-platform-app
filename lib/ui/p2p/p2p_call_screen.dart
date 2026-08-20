@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/data/network/config.dart';
 import 'package:student/core/p2p/domain/entity/p2p_state.dart';
 import 'package:student/core/p2p/presentation/p2p_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/p2p/widget/call_action_button.dart';
 
@@ -64,10 +65,10 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
     return null;
   }
 
-  String _statusLabel(P2pState s) {
+  String _statusLabel(AppLocalizations l10n, P2pState s) {
     if (s is P2pConnected) return _timeLabel;
-    if (s is P2pConnecting) return 'Connecting…';
-    if (s is P2pMatched) return 'Matched';
+    if (s is P2pConnecting) return l10n.p2pConnecting;
+    if (s is P2pMatched) return l10n.p2pMatched;
     return '—';
   }
 
@@ -76,12 +77,14 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
     final p2pState = ref.watch(p2pControllerProvider);
     final peer = _peerFrom(p2pState);
 
+    final l10n = AppLocalizations.of(context);
+
     ref.listen<P2pState>(p2pControllerProvider, (prev, next) {
       if (next is P2pConnected) {
         _ensureTicker();
       } else if (next is P2pEnded) {
         _ticker?.cancel();
-        _showEnded(_endedMessage(next.reason));
+        _showEnded(_endedMessage(l10n, next.reason));
       } else if (next is P2pError) {
         _ticker?.cancel();
         _showEnded(next.message);
@@ -104,7 +107,7 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
               _PeerAvatar(peer: peer),
               const SizedBox(height: 20),
               Text(
-                peer?.displayName ?? 'Speaking Partner',
+                peer?.displayName ?? l10n.p2pTitle,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 26,
@@ -113,12 +116,14 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                p2pState is P2pConnected ? 'Connected' : 'Connecting…',
+                p2pState is P2pConnected
+                    ? l10n.p2pConnected
+                    : l10n.p2pConnecting,
                 style: const TextStyle(color: Color(0xFF18C96A), fontSize: 14),
               ),
               const SizedBox(height: 8),
               Text(
-                _statusLabel(p2pState),
+                _statusLabel(l10n, p2pState),
                 style: const TextStyle(
                   color: Color(0xFF94A3B8),
                   fontSize: 22,
@@ -135,7 +140,7 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
                       icon: _muted
                           ? Icons.mic_off_rounded
                           : Icons.mic_none_rounded,
-                      label: _muted ? 'Unmute' : 'Mute',
+                      label: _muted ? l10n.p2pUnmute : l10n.p2pMute,
                       background: const Color(0xFF1E293B),
                       iconColor: const Color(0xFF94A3B8),
                       labelColor: const Color(0xFF94A3B8),
@@ -144,7 +149,7 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
                     ),
                     CallActionButton(
                       icon: Icons.call_end_rounded,
-                      label: 'End',
+                      label: l10n.p2pEnd,
                       background: const Color(0xFFEF4444),
                       iconColor: Colors.white,
                       labelColor: const Color(0xFFEF4444),
@@ -172,20 +177,20 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
     }
   }
 
-  String _endedMessage(P2pEndReason reason) {
+  String _endedMessage(AppLocalizations l10n, P2pEndReason reason) {
     switch (reason) {
       case P2pEndReason.leave:
-        return 'Call ended';
+        return l10n.p2pEndedCall;
       case P2pEndReason.partnerLeft:
-        return 'Your partner left the call';
+        return l10n.p2pPeerLeft;
       case P2pEndReason.partnerDisconnected:
-        return 'Your partner disconnected';
+        return l10n.p2pPeerDisconnected;
       case P2pEndReason.cancelled:
-        return 'Call cancelled';
+        return l10n.p2pCancelled;
       case P2pEndReason.replaced:
-        return 'Session replaced by another connection';
+        return l10n.p2pReplaced;
       case P2pEndReason.error:
-        return 'Call error';
+        return l10n.p2pError;
     }
   }
 }

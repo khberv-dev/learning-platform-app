@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/user/domain/usecase/use_get_me.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
@@ -43,6 +44,8 @@ class _NoConnectionScreenState extends ConsumerState<NoConnectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -66,7 +69,7 @@ class _NoConnectionScreenState extends ConsumerState<NoConnectionScreen> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'No Connection',
+                  l10n.noConnectionTitle,
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF111827),
@@ -74,7 +77,7 @@ class _NoConnectionScreenState extends ConsumerState<NoConnectionScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Unable to reach the server.\nCheck your connection and try again.',
+                  l10n.noConnectionMessage,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: const Color(0xFF6B7280),
@@ -85,7 +88,7 @@ class _NoConnectionScreenState extends ConsumerState<NoConnectionScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: AppButton.filled(
-                    label: 'Try Again',
+                    label: l10n.noConnectionRetry,
                     isLoading: _isRetrying,
                     onTap: _retry,
                   ),

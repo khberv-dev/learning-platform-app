@@ -22,6 +22,10 @@ flutter pub get
 
 # Regenerate launcher icons after changing assets/images/brand.png
 dart run flutter_launcher_icons
+
+# Regenerate lib/l10n/app_localizations*.dart after editing an .arb file
+# (also runs automatically on `flutter pub get` and every build)
+flutter gen-l10n
 ```
 
 Test coverage is minimal — `test/` mirrors `lib/` (currently only `test/shared/widget/app_button_test.dart`). `flutter analyze` is the main automated check.
@@ -137,6 +141,19 @@ Create a conversation via `POST assessments/conversations`, then record audio lo
 Two distinct concepts with confusingly similar names:
 - `courses/domain/entity/live_lesson_entity.dart` — a recorded session attached to a course, played back with `video_player` + `chewie` in `LiveSessionScreen`
 - `live_lessons/domain/entity/live_lesson_scheduled_entity.dart` — an upcoming scheduled lesson from `live-lessons/my`, shown on the home page
+
+### Localization
+
+The app ships in **Uzbek, Russian and English**, via `flutter_localizations` + `gen-l10n`. Strings live in `lib/l10n/app_{en,ru,uz}.arb`; `app_en.arb` is the template (add a key there first, then translate it in the other two). The generated `app_localizations*.dart` files sit next to them and **are checked in** — regenerate with `flutter gen-l10n` after any `.arb` edit.
+
+- Screens read `AppLocalizations.of(context)` — non-null, since everything is under `MaterialApp`. Convention is `final l10n = AppLocalizations.of(context);` at the top of `build` when a screen uses more than one or two strings.
+- Anything shown to a student belongs in the `.arb`, including empty states, validation messages and semantics labels. Keys are screen-prefixed camelCase (`coursesMyCourses`, `otpResendIn`); shared wording goes under `common*`.
+- Counts use ICU plurals (`courseLessonCount`, `plansDuration`) so Russian gets its one/few/many forms. Numbers that need grouping declare `"format": "decimalPattern"`.
+- **Dates and times** go through `lib/utils/date_format.dart`, which wraps `MaterialLocalizations` — never hand-roll a month table or an AM/PM suffix.
+- `AppLanguage` (`lib/app/locale/app_language.dart`) is the list of shipped languages, in the order `supportedLocales` uses; Uzbek is first, so an unmatched device language falls back to it. Each option is labelled in its own language.
+- The chosen language lives in `localeControllerProvider` and is persisted by `LocaleStorage` (`app_language` in `SharedPreferences`). `main` reads it before `runApp` and seeds `startupLanguageProvider`, so the first frame is already in the right language. Null means "never chosen", which is what sends `SplashScreen` to `LanguageScreen` (`/language?next=…`, carrying the destination it had worked out). It can be changed later from the profile's settings card.
+- Tests pump screens through `test/support/localized_app.dart` (`localizedApp` / `localizedHome`) — a bare `MaterialApp` has no delegates and any localized screen will throw. They default to English, and take a `locale:` to check another.
+- Not localized: server-sent error messages (`apiErrorMessage` only translates its own fallback) and the Android notification channel name.
 
 ### Theme
 

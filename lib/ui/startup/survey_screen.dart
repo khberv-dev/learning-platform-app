@@ -4,6 +4,7 @@ import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/startup/domain/model/survey_query.dart';
 import 'package:student/core/startup/domain/model/survey_query_option.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -12,29 +13,35 @@ import 'package:student/shared/widget/app_progress_header.dart';
 import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 
-const _surveyQueries = [
+/// Built per-build rather than held as a `const`, because the wording comes
+/// from the current locale. The emoji don't.
+List<SurveyQuery> _surveyQueries(AppLocalizations l10n) => [
   SurveyQuery(
-    title: 'Why are you learning English?',
-    description: 'Choose the one that fits best',
+    title: l10n.surveyReasonTitle,
+    description: l10n.surveyReasonDescription,
     options: [
-      SurveyQueryOption(text: 'Career Growth', emoji: '💼'),
-      SurveyQueryOption(text: 'Travel & Adventure', emoji: '🌍'),
-      SurveyQueryOption(text: 'Academic Studies', emoji: '📚'),
-      SurveyQueryOption(text: 'Personal Interest', emoji: '💝'),
-      SurveyQueryOption(text: 'Immigration', emoji: '👥'),
+      SurveyQueryOption(text: l10n.surveyReasonCareer, emoji: '💼'),
+      SurveyQueryOption(text: l10n.surveyReasonTravel, emoji: '🌍'),
+      SurveyQueryOption(text: l10n.surveyReasonAcademic, emoji: '📚'),
+      SurveyQueryOption(text: l10n.surveyReasonPersonal, emoji: '💝'),
+      SurveyQueryOption(text: l10n.surveyReasonImmigration, emoji: '👥'),
     ],
   ),
   SurveyQuery(
-    title: 'How much time can you spend daily?',
-    description: "We'll build a schedule that fits your lifestyle",
+    title: l10n.surveyTimeTitle,
+    description: l10n.surveyTimeDescription,
     options: [
-      SurveyQueryOption(text: '5 minutes', emoji: '⏱️'),
-      SurveyQueryOption(text: '15 minutes', emoji: '☕'),
-      SurveyQueryOption(text: '30 minutes', emoji: '📖'),
-      SurveyQueryOption(text: '1+ hour', emoji: '🔥'),
+      SurveyQueryOption(text: l10n.surveyTime5, emoji: '⏱️'),
+      SurveyQueryOption(text: l10n.surveyTime15, emoji: '☕'),
+      SurveyQueryOption(text: l10n.surveyTime30, emoji: '📖'),
+      SurveyQueryOption(text: l10n.surveyTime60, emoji: '🔥'),
     ],
   ),
 ];
+
+/// How many queries [_surveyQueries] returns, needed outside a build where
+/// there is no [AppLocalizations] to hand.
+const _surveyQueryCount = 2;
 
 class SurveyScreen extends StatefulWidget {
   static const path = '/survey';
@@ -47,23 +54,24 @@ class SurveyScreen extends StatefulWidget {
 
 class _SurveyScreenState extends State<SurveyScreen> {
   int _queryIndex = 0;
-  final Map<SurveyQuery, Set<int>> _selected = {};
 
-  SurveyQuery get _query => _surveyQueries[_queryIndex];
+  /// Answers so far, keyed by question index — not by the question itself,
+  /// whose wording changes with the locale.
+  final Map<int, Set<int>> _selected = {};
 
-  Set<int> get _currentSelection => _selected[_query] ?? const {};
+  Set<int> get _currentSelection => _selected[_queryIndex] ?? const {};
 
-  void _onOptionTap(int index) {
+  void _onOptionTap(SurveyQuery query, int index) {
     setState(() {
       final current = {..._currentSelection};
-      if (_query.allowsMultiple) {
+      if (query.allowsMultiple) {
         if (!current.remove(index)) current.add(index);
       } else {
         current
           ..clear()
           ..add(index);
       }
-      _selected[_query] = current;
+      _selected[_queryIndex] = current;
     });
   }
 
@@ -76,7 +84,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void _onNext() {
-    if (_queryIndex < _surveyQueries.length - 1) {
+    if (_queryIndex < _surveyQueryCount - 1) {
       setState(() => _queryIndex++);
     } else {
       context.go(LevelCheckScreen.path);
@@ -85,6 +93,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final query = _surveyQueries(l10n)[_queryIndex];
+
     return Scaffold(
       body: AppGradientBackground(
         child: Column(
@@ -92,7 +103,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
             AppProgressHeader(
               // The level check that follows is one more step of the same
               // intake, so the bar shouldn't read as full before it.
-              progress: (_queryIndex + 1) / (_surveyQueries.length + 1),
+              progress: (_queryIndex + 1) / (_surveyQueryCount + 1),
               // `go`, not `pop` — closing the survey should land on
               // onboarding regardless of how the user got here.
               onClose: () => context.go(OnboardingScreen.path),
@@ -110,7 +121,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _query.title,
+                      query.title,
                       style: const TextStyle(
                         color: AppColors.deepGreen,
                         fontSize: 28,
@@ -121,7 +132,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      _query.description,
+                      query.description,
                       style: const TextStyle(
                         color: AppColors.ink,
                         fontSize: 14,
@@ -130,9 +141,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     _OptionStagger(
-                      options: _query.options,
+                      options: query.options,
                       selected: _currentSelection,
-                      onTap: _onOptionTap,
+                      onTap: (index) => _onOptionTap(query, index),
                     ),
                   ],
                 ),
@@ -141,10 +152,10 @@ class _SurveyScreenState extends State<SurveyScreen> {
             AppBottomActionBar(
               children: [
                 AppButton.filled(
-                  label: 'Resume',
+                  label: l10n.commonResume,
                   onTap: _currentSelection.isEmpty ? null : _onNext,
                 ),
-                AppButton.outlined(label: 'Back', onTap: _onBack),
+                AppButton.outlined(label: l10n.commonBack, onTap: _onBack),
               ],
             ),
           ],

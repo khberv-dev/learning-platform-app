@@ -6,6 +6,8 @@ import 'package:student/app/theme/app_theme.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/auth/login_screen.dart';
 
+import '../../support/localized_app.dart';
+
 Future<void> _pump(WidgetTester tester, Widget screen) async {
   tester.view.physicalSize = const Size(390, 844) * 2;
   tester.view.devicePixelRatio = 2;
@@ -16,7 +18,7 @@ Future<void> _pump(WidgetTester tester, Widget screen) async {
 
   await tester.pumpWidget(
     ProviderScope(
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           routes: [GoRoute(path: '/', builder: (_, _) => screen)],

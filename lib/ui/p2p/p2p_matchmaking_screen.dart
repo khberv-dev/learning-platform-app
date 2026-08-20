@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/p2p/domain/entity/p2p_state.dart';
 import 'package:student/core/p2p/presentation/p2p_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/widget/radar_pulse.dart';
 
@@ -58,21 +59,21 @@ class _P2pMatchmakingScreenState extends ConsumerState<P2pMatchmakingScreen> {
                   Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        RadarPulse(initials: '?'),
-                        SizedBox(height: 24),
+                      children: [
+                        const RadarPulse(initials: '?'),
+                        const SizedBox(height: 24),
                         Text(
-                          'Finding your match...',
-                          style: TextStyle(
+                          AppLocalizations.of(context).p2pFinding,
+                          style: const TextStyle(
                             color: Color(0xFF111827),
                             fontSize: 20,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'Looking for someone at your level',
-                          style: TextStyle(
+                          AppLocalizations.of(context).p2pLookingSubtitle,
+                          style: const TextStyle(
                             color: Color(0xFF9CA3AF),
                             fontSize: 14,
                           ),
@@ -128,11 +129,11 @@ class _Header extends StatelessWidget {
               ),
             ),
           ),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Speaking Partner',
+              AppLocalizations.of(context).p2pTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF111827),
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -163,9 +164,9 @@ class _CancelButton extends StatelessWidget {
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
         alignment: Alignment.center,
-        child: const Text(
-          'Cancel',
-          style: TextStyle(
+        child: Text(
+          AppLocalizations.of(context).commonCancel,
+          style: const TextStyle(
             color: Color(0xFF374151),
             fontSize: 16,
             fontWeight: FontWeight.w600,

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:student/app/data/network/token_storage.dart';
+import 'package:student/app/locale/app_language.dart';
+import 'package:student/app/locale/locale_controller.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/notifications/presentation/push_messaging_service.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/url_launcher.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/profile/widget/profile_pill.dart';
-
-final selectedLanguageProvider = StateProvider<String>((ref) => 'English');
 
 const _privacyPolicyUrl = 'https://i-teach.uz/web/privacy_policy.html';
 
@@ -23,7 +23,13 @@ class SettingsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final language = ref.watch(selectedLanguageProvider);
+    final l10n = AppLocalizations.of(context);
+    // Falls back to whatever the device resolved to, which is what the app is
+    // actually running in until the student picks something.
+    final language =
+        ref.watch(localeControllerProvider) ??
+        AppLanguage.fromLocale(Localizations.localeOf(context)) ??
+        AppLanguage.uz;
 
     return Container(
       width: double.infinity,
@@ -40,13 +46,16 @@ class SettingsCard extends ConsumerWidget {
       child: Column(
         children: [
           ProfileSettingRow(
-            label: 'Language',
-            trailing: ProfileSettingValue(value: language, showChevron: true),
-            onTap: () => _showLanguagePicker(context, ref),
+            label: l10n.languageSettingsTitle,
+            trailing: ProfileSettingValue(
+              value: language.label,
+              showChevron: true,
+            ),
+            onTap: () => _showLanguagePicker(context, ref, language),
           ),
           const SizedBox(height: AppSpacing.md),
           ProfileSettingRow(
-            label: 'Privacy Policy',
+            label: l10n.settingsPrivacyPolicy,
             trailing: const ProfileSettingValue(showChevron: true),
             onTap: () =>
                 ref.read(urlLauncherProvider)(Uri.parse(_privacyPolicyUrl)),
@@ -55,7 +64,7 @@ class SettingsCard extends ConsumerWidget {
           FutureBuilder<PackageInfo>(
             future: PackageInfo.fromPlatform(),
             builder: (context, snap) => ProfileSettingRow(
-              label: 'App version',
+              label: l10n.settingsAppVersion,
               trailing: ProfileSettingValue(
                 value: snap.data == null ? '—' : 'v${snap.data!.version}',
               ),
@@ -63,13 +72,13 @@ class SettingsCard extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           ProfileSettingRow(
-            label: 'Log out',
+            label: l10n.settingsLogOut,
             labelColor: const Color(0xffef4444),
             onTap: () => _confirmLogout(context, ref),
           ),
           const SizedBox(height: AppSpacing.md),
           ProfileSettingRow(
-            label: 'Delete account',
+            label: l10n.settingsDeleteAccount,
             labelColor: const Color(0xffef4444),
             onTap: () => _confirmDeleteAccount(context),
           ),
@@ -81,34 +90,36 @@ class SettingsCard extends ConsumerWidget {
   /// Step 1: make the student say yes before anything happens. Answering no
   /// just closes it.
   void _confirmDeleteAccount(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
-        title: const Text(
-          'Delete account',
-          style: TextStyle(
+        title: Text(
+          l10n.settingsDeleteAccount,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
         ),
-        content: const Text(
-          'Are you sure you want to delete your account? '
-          'This removes your courses and progress, and cannot be undone.',
-        ),
+        content: Text(l10n.settingsDeleteConfirm),
         actions: [
-          TextButton(onPressed: Navigator.of(ctx).pop, child: const Text('No')),
+          TextButton(
+            onPressed: Navigator.of(ctx).pop,
+            child: Text(l10n.commonNo),
+          ),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               _showDeletionRequested(context);
             },
-            child: const Text(
-              'Yes',
-              style: TextStyle(color: Color(0xffef4444)),
+            child: Text(
+              l10n.commonYes,
+              style: const TextStyle(color: Color(0xffef4444)),
             ),
           ),
         ],
@@ -119,51 +130,55 @@ class SettingsCard extends ConsumerWidget {
   /// Step 2: acknowledge the request. Nothing is signed out or cleared here —
   /// the account stays usable until the request is actioned.
   void _showDeletionRequested(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
-        title: const Text(
-          'Request sent',
-          style: TextStyle(
+        title: Text(
+          l10n.settingsDeleteRequestedTitle,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
         ),
-        content: const Text(
-          'Your account deletion request has been sent. '
-          'You can keep using the app until it is processed.',
-        ),
+        content: Text(l10n.settingsDeleteRequestedBody),
         actions: [
-          TextButton(onPressed: Navigator.of(ctx).pop, child: const Text('OK')),
+          TextButton(
+            onPressed: Navigator.of(ctx).pop,
+            child: Text(l10n.commonOk),
+          ),
         ],
       ),
     );
   }
 
   void _confirmLogout(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
-        title: const Text(
-          'Log out',
-          style: TextStyle(
+        title: Text(
+          l10n.settingsLogOut,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w800,
           ),
         ),
-        content: const Text('Are you sure you want to log out?'),
+        content: Text(l10n.settingsLogOutConfirm),
         actions: [
           TextButton(
             onPressed: Navigator.of(ctx).pop,
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           TextButton(
             onPressed: () async {
@@ -177,9 +192,9 @@ class SettingsCard extends ConsumerWidget {
               ref.read(currentUserProvider.notifier).state = null;
               if (context.mounted) context.go(LoginScreen.path);
             },
-            child: const Text(
-              'Log out',
-              style: TextStyle(color: Color(0xffef4444)),
+            child: Text(
+              l10n.settingsLogOut,
+              style: const TextStyle(color: Color(0xffef4444)),
             ),
           ),
         ],
@@ -187,19 +202,20 @@ class SettingsCard extends ConsumerWidget {
     );
   }
 
-  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
-    const languages = ['Uzbek', 'English', 'Russian'];
-    final current = ref.read(selectedLanguageProvider);
-
+  void _showLanguagePicker(
+    BuildContext context,
+    WidgetRef ref,
+    AppLanguage current,
+  ) {
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
-        title: const Text(
-          'Language',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(ctx).languageSettingsTitle,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -208,11 +224,13 @@ class SettingsCard extends ConsumerWidget {
         contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: languages.map((lang) {
-            final selected = lang == current;
+          children: AppLanguage.values.map((language) {
+            final selected = language == current;
             return InkWell(
               onTap: () {
-                ref.read(selectedLanguageProvider.notifier).state = lang;
+                // Applies straight away — the whole app rebuilds in the new
+                // language behind the closing dialog.
+                ref.read(localeControllerProvider.notifier).select(language);
                 Navigator.of(ctx).pop();
               },
               child: Padding(
@@ -224,7 +242,7 @@ class SettingsCard extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      lang,
+                      '${language.flag}  ${language.label}',
                       style: TextStyle(
                         color: selected
                             ? Theme.of(context).colorScheme.primary

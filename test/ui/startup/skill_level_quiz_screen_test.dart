@@ -7,6 +7,8 @@ import 'package:student/core/startup/data/repository/quiz_repository.dart';
 import 'package:student/shared/widget/app_option_chip.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 
+import '../../support/localized_app.dart';
+
 const _longOption =
     'He likes to play a tennis with his friends every single weekend.';
 
@@ -43,7 +45,7 @@ Future<void> _pumpQuiz(WidgetTester tester) async {
       overrides: [
         quizRepositoryProvider.overrideWithValue(_FakeQuizRepository()),
       ],
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           routes: [

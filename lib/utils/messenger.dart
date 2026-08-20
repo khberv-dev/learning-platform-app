@@ -1,7 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:student/l10n/app_localizations.dart';
 
-String apiErrorMessage(Object error) {
+/// The message to show for a failed request: the API's own wording when it
+/// sent one, and a translated fallback when it did not.
+///
+/// Takes a context for the fallback — server-sent messages come through in
+/// whatever language the API wrote them in, which is not ours to fix here.
+String apiErrorMessage(BuildContext context, Object error) {
   if (error is DioException) {
     final data = error.response?.data;
     if (data is Map) {
@@ -10,7 +16,7 @@ String apiErrorMessage(Object error) {
       if (msg is List && msg.isNotEmpty) return msg.first.toString();
     }
   }
-  return 'Something went wrong. Please try again.';
+  return AppLocalizations.of(context).commonSomethingWentWrong;
 }
 
 void showErrorMessage(BuildContext context, String message) {

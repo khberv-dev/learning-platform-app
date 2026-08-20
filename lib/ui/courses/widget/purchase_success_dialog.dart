@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 
 /// Congratulates the student on a course that appeared after checkout.
@@ -27,10 +28,10 @@ Future<void> showPurchaseSuccessDialog(
               fit: BoxFit.contain,
             ),
             const SizedBox(height: AppSpacing.lg),
-            const Text(
-              'You’re in!',
+            Text(
+              AppLocalizations.of(ctx).purchaseSuccessTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
@@ -39,7 +40,7 @@ Future<void> showPurchaseSuccessDialog(
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              '$courseTitle is now yours. Time to start learning.',
+              AppLocalizations.of(ctx).purchaseSuccessBody(courseTitle),
               textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Color(0xff8a949b),
@@ -50,7 +51,7 @@ Future<void> showPurchaseSuccessDialog(
             ),
             const SizedBox(height: AppSpacing.xl),
             AppButton.filled(
-              label: 'Start learning',
+              label: AppLocalizations.of(ctx).purchaseSuccessButton,
               fontSize: 15,
               height: 48,
               onTap: () {

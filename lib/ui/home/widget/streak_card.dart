@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_panel.dart';
-import 'package:student/utils/lib.dart';
 
 /// Day initials, Monday first, matching the order of [StreakCard.week].
 const _weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -48,7 +48,7 @@ class StreakCard extends StatelessWidget {
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '${formatNumber(days)} day',
+                          AppLocalizations.of(context).homeStreakDays(days),
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 28,
@@ -61,9 +61,9 @@ class StreakCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
-                  "Don't forget me!",
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context).homeDontForgetMe,
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

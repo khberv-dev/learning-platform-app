@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/tutors/presentation/tutors_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/tutors/widget/tutor_card.dart';
@@ -12,6 +13,7 @@ class TutorsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(tutorsControllerProvider);
+    final l10n = AppLocalizations.of(context);
 
     Future<void> refresh() async {
       ref.invalidate(tutorsControllerProvider);
@@ -28,7 +30,7 @@ class TutorsPage extends ConsumerWidget {
             AppSpacing.xl,
             AppSpacing.lg,
           ),
-          child: const SectionTitle(title: 'Find a tutor', fontSize: 30),
+          child: SectionTitle(title: l10n.tutorsTitle, fontSize: 30),
         ),
         Expanded(
           child: RefreshIndicator(
@@ -38,18 +40,18 @@ class TutorsPage extends ConsumerWidget {
               error: (e, _) => _Scrollable(
                 child: AppEmptyState(
                   imagePath: 'assets/images/no_recorded_sessions_puppet.png',
-                  title: "Couldn't load tutors",
-                  subtitle: 'Pull down to try again',
+                  title: l10n.tutorsLoadFailed,
+                  subtitle: l10n.tutorsPullToRetry,
                 ),
               ),
               data: (tutors) {
                 if (tutors.isEmpty) {
-                  return const _Scrollable(
+                  return _Scrollable(
                     child: AppEmptyState(
                       imagePath:
                           'assets/images/no_recorded_sessions_puppet.png',
-                      title: 'No tutors yet',
-                      subtitle: 'Tutors will appear here once they join',
+                      title: l10n.tutorsEmptyTitle,
+                      subtitle: l10n.tutorsEmptySubtitle,
                     ),
                   );
                 }
@@ -66,10 +68,7 @@ class TutorsPage extends ConsumerWidget {
                   separatorBuilder: (_, _) =>
                       const SizedBox(height: AppSpacing.lg),
                   itemBuilder: (_, i) => i == 0
-                      ? const SectionTitle(
-                          title: 'Available tutors',
-                          fontSize: 22,
-                        )
+                      ? SectionTitle(title: l10n.tutorsAvailable, fontSize: 22)
                       : TutorCard(tutor: tutors[i - 1]),
                 );
               },

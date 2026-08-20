@@ -3,6 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/app.dart';
+import 'package:student/app/locale/locale_controller.dart';
+import 'package:student/app/locale/locale_storage.dart';
 import 'package:student/core/notifications/presentation/push_messaging_service.dart';
 
 Future<void> main() async {
@@ -20,5 +22,14 @@ Future<void> main() async {
     debugPrint('[push] Firebase unavailable: $e');
   }
 
-  runApp(ProviderScope(child: App()));
+  // Read before the first frame: starting in one language and swapping to the
+  // stored one a frame later would be visible on the splash screen.
+  final language = await LocaleStorage().getLanguage();
+
+  runApp(
+    ProviderScope(
+      overrides: [startupLanguageProvider.overrideWithValue(language)],
+      child: App(),
+    ),
+  );
 }

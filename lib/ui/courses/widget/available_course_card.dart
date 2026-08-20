@@ -5,6 +5,7 @@ import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 
 /// Grid tile for a purchasable course: cover art on a dark card, with the
@@ -51,7 +52,9 @@ class AvailableCourseCard extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              '${course.lessonsCount} lessons',
+              AppLocalizations.of(
+                context,
+              ).courseLessonCount(course.lessonsCount),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -62,7 +65,7 @@ class AvailableCourseCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             AppButton.filled(
-              label: 'Learn more',
+              label: AppLocalizations.of(context).courseLearnMore,
               onTap: open,
               height: 40,
               depth: 4,

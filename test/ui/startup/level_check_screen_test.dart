@@ -13,6 +13,8 @@ import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 
+import '../../support/localized_app.dart';
+
 const _yes = 'Yes, I have studied some';
 const _no = 'No, I am starting from zero';
 
@@ -31,7 +33,7 @@ Future<ProviderContainer> _pumpLevelCheck(WidgetTester tester) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           initialLocation: LevelCheckScreen.path,

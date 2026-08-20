@@ -19,6 +19,8 @@ import 'package:student/ui/profile/profile_page.dart';
 import 'package:student/ui/profile/widget/profile_hero.dart';
 import 'package:student/ui/tutors/tutors_page.dart';
 
+import '../../support/localized_app.dart';
+
 const _topInset = 47.0;
 
 const _user = UserEntity(
@@ -62,7 +64,7 @@ Future<void> _pump(WidgetTester tester, Widget page) async {
         tutorsRepositoryProvider.overrideWithValue(empty),
         liveLessonsRepositoryProvider.overrideWithValue(_NoLessons()),
       ],
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           routes: [

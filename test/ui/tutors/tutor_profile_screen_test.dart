@@ -9,6 +9,8 @@ import 'package:student/core/tutors/domain/repository/i_tutors_repository.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/tutors/tutor_profile_screen.dart';
 
+import '../../support/localized_app.dart';
+
 class _Repo implements ITutorsRepository {
   final TutorEntity tutor;
 
@@ -41,7 +43,7 @@ Future<void> _pump(WidgetTester tester, TutorEntity tutor) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [tutorsRepositoryProvider.overrideWithValue(_Repo(tutor))],
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           routes: [

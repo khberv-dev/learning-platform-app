@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/recover_password_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
@@ -45,11 +46,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             context.push('${OtpScreen.path}?phone=998$digits&mode=recover');
           }
         },
-        error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
+        error: (e, _) => showErrorMessage(context, apiErrorMessage(context, e)),
       );
     });
 
     final isLoading = ref.watch(recoverPasswordControllerProvider).isLoading;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: AppGradientBackground(
@@ -72,9 +74,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       children: [
                         const BackIconButton(),
                         const SizedBox(height: AppSpacing.xl),
-                        const Text(
-                          'Reset password',
-                          style: TextStyle(
+                        Text(
+                          l10n.forgotTitle,
+                          style: const TextStyle(
                             color: AppColors.deepGreen,
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
@@ -82,9 +84,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.sm),
-                        const Text(
-                          'Enter your phone number and a new password',
-                          style: TextStyle(
+                        Text(
+                          l10n.forgotSubtitle,
+                          style: const TextStyle(
                             color: AppColors.ink,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -92,7 +94,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         ),
                         const SizedBox(height: AppSpacing.xl),
                         AppTextField(
-                          label: 'Phone number',
+                          label: l10n.fieldPhone,
                           controller: _phoneController,
                           prefixText: '+998 ',
                           keyboardType: TextInputType.number,
@@ -100,31 +102,31 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           validator: (value) {
                             final digits = (value ?? '').replaceAll(' ', '');
                             if (digits.length != 9) {
-                              return 'Enter a valid phone number';
+                              return l10n.validationPhone;
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AppTextField(
-                          label: 'New password',
+                          label: l10n.fieldNewPassword,
                           controller: _newPasswordController,
                           obscureText: true,
                           validator: (value) {
                             if ((value ?? '').length < 8) {
-                              return 'Password must be at least 8 characters';
+                              return l10n.validationPassword;
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AppTextField(
-                          label: 'Confirm password',
+                          label: l10n.fieldConfirmPassword,
                           controller: _confirmPasswordController,
                           obscureText: true,
                           validator: (value) {
                             if (value != _newPasswordController.text) {
-                              return 'Passwords do not match';
+                              return l10n.validationPasswordsMatch;
                             }
                             return null;
                           },
@@ -138,7 +140,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             AppBottomActionBar(
               children: [
                 AppButton.filled(
-                  label: 'Send code',
+                  label: l10n.forgotSubmit,
                   isLoading: isLoading,
                   onTap: _submit,
                 ),

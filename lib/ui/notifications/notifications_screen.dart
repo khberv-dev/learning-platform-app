@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatelessWidget {
   static const path = '/notifications';
@@ -19,9 +20,9 @@ class NotificationsScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           color: const Color(0xFF111827),
         ),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context).notificationsTitle,
+          style: const TextStyle(
             color: Color(0xFF111827),
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -43,18 +44,18 @@ class NotificationsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'No notifications yet',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context).notificationsEmptyTitle,
+              style: const TextStyle(
                 color: Color(0xFF111827),
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
-              "You're all caught up!",
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+            Text(
+              AppLocalizations.of(context).notificationsEmptySubtitle,
+              style: const TextStyle(color: Color(0xFF6B7280), fontSize: 14),
             ),
           ],
         ),

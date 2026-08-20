@@ -1,33 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
+import 'package:student/l10n/app_localizations.dart';
+import 'package:student/utils/date_format.dart';
 
 class LiveSessionCard extends StatelessWidget {
   final LiveLessonEntity lesson;
 
   const LiveSessionCard({super.key, required this.lesson});
 
-  String _formatDate(String raw) {
-    try {
-      final dt = DateTime.parse(raw).toLocal();
-      final months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-      return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
-    } catch (_) {
-      return raw;
-    }
+  /// The API sends an ISO string; anything unparseable is shown as it came.
+  String _formatDate(BuildContext context, String raw) {
+    final dt = DateTime.tryParse(raw);
+    return dt == null ? raw : formatShortDate(context, dt.toLocal());
   }
 
   @override
@@ -85,7 +70,7 @@ class LiveSessionCard extends StatelessWidget {
                   ],
                   const SizedBox(height: 4),
                   Text(
-                    _formatDate(lesson.createdAt),
+                    _formatDate(context, lesson.createdAt),
                     style: const TextStyle(
                       color: Color(0xFF9CA3AF),
                       fontSize: 12,
@@ -150,9 +135,9 @@ class _VideoThumbnail extends StatelessWidget {
                 color: const Color(0xFFEF4444).withValues(alpha: 0.85),
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: const Text(
-                'RECORDED',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context).courseRecorded,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,
                   fontWeight: FontWeight.w700,

@@ -1,0 +1,12 @@
+# Generates lib/l10n/app_localizations.dart (plus one file per locale) from
+# the .arb files next to it. The generated files are checked in, so `flutter
+# analyze` and the tests work on a fresh clone without a build first.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+# Strings missing from a translation fall back to the English template rather
+# than throwing, so a half-finished translation still ships a usable app.
+untranslated-messages-file: l10n_untranslated.txt
+# `AppLocalizations.of(context)` returns non-null: every screen sits under
+# MaterialApp, so there is never a sensible null branch to write.
+nullable-getter: false

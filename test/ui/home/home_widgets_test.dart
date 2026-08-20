@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:student/l10n/app_localizations_en.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/home/widget/home_promo_card.dart';
 import 'package:student/ui/home/widget/home_topbar.dart';
 import 'package:student/ui/home/widget/stats_row.dart';
 import 'package:student/ui/home/widget/streak_card.dart';
 
-Widget _host(Widget child) => MaterialApp(
+import '../../support/localized_app.dart';
+
+final _l10n = AppLocalizationsEn();
+
+Widget _host(Widget child) => localizedHome(
   home: Scaffold(body: Center(child: child)),
 );
 
 void main() {
   group('levelLabel', () {
     test('maps CEFR levels to plain language', () {
-      expect(levelLabel('A1'), 'Beginner');
-      expect(levelLabel('a2'), 'Beginner');
-      expect(levelLabel('B1'), 'Intermediate');
-      expect(levelLabel('B2'), 'Intermediate');
-      expect(levelLabel('C1'), 'Advanced');
-      expect(levelLabel('C2'), 'Advanced');
+      expect(levelLabel(_l10n, 'A1'), 'Beginner');
+      expect(levelLabel(_l10n, 'a2'), 'Beginner');
+      expect(levelLabel(_l10n, 'B1'), 'Intermediate');
+      expect(levelLabel(_l10n, 'B2'), 'Intermediate');
+      expect(levelLabel(_l10n, 'C1'), 'Advanced');
+      expect(levelLabel(_l10n, 'C2'), 'Advanced');
     });
 
     test('passes through anything unrecognised', () {
-      expect(levelLabel(''), '');
-      expect(levelLabel('D9'), 'D9');
+      expect(levelLabel(_l10n, ''), '');
+      expect(levelLabel(_l10n, 'D9'), 'D9');
     });
   });
 
@@ -141,7 +146,8 @@ void main() {
         _host(const StreakCard(days: 1200, week: StreakCard.emptyWeek)),
       );
 
-      expect(find.text('1 200 day'), findsOneWidget);
+      // Grouped by the locale now — a comma in English, a space in uz/ru.
+      expect(find.text('1,200 days'), findsOneWidget);
     });
   });
 }

@@ -1,32 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
+import 'package:student/l10n/app_localizations.dart';
+import 'package:student/utils/date_format.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LiveLessonCard extends StatelessWidget {
   final LiveLessonScheduledEntity lesson;
 
   const LiveLessonCard({super.key, required this.lesson});
-
-  String _formatDate(DateTime dt) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final hour = dt.hour > 12 ? dt.hour - 12 : (dt.hour == 0 ? 12 : dt.hour);
-    final minute = dt.minute.toString().padLeft(2, '0');
-    final period = dt.hour >= 12 ? 'PM' : 'AM';
-    return '${months[dt.month - 1]} ${dt.day} · $hour:$minute $period';
-  }
 
   Future<void> _join() async {
     final uri = Uri.tryParse(lesson.meetLink);
@@ -82,7 +63,7 @@ class LiveLessonCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  _formatDate(local),
+                  formatMonthDayTime(context, local),
                   style: const TextStyle(
                     color: Color(0xFF9CA3AF),
                     fontSize: 12,
@@ -113,7 +94,7 @@ class LiveLessonCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isOngoing ? 'Join' : 'Join',
+                AppLocalizations.of(context).commonJoin,
                 style: TextStyle(
                   color: isOngoing ? Colors.white : const Color(0xFF3B82F6),
                   fontSize: 13,

@@ -11,6 +11,7 @@ import 'package:student/core/payments/domain/entity/payment_type_entity.dart';
 import 'package:student/core/payments/domain/usecase/use_select_payment_type.dart';
 import 'package:student/core/payments/presentation/payment_request_controller.dart';
 import 'package:student/core/payments/presentation/purchase_watcher.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/url_launcher.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/back_icon_button.dart';
@@ -59,7 +60,10 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
       if (!mounted) return;
 
       if (uri == null || !uri.hasScheme) {
-        showErrorMessage(context, '${type.title} has no checkout link yet');
+        showErrorMessage(
+          context,
+          AppLocalizations.of(context).paymentNoLink(type.title),
+        );
         return;
       }
 
@@ -76,6 +80,10 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
       // on to for any failure reported after the hand-off.
       final messenger = ScaffoldMessenger.of(context);
       final errorColour = Theme.of(context).colorScheme.error;
+      // Read before the screen goes away; its context is unusable after.
+      final openFailed = AppLocalizations.of(
+        context,
+      ).paymentOpenFailed(type.title);
 
       // Land on Courses first, so returning from the provider shows the
       // library rather than a stale checkout screen.
@@ -85,14 +93,10 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
       final opened = await ref.read(urlLauncherProvider)(uri);
       if (!opened) {
         ref.read(purchaseWatchProvider.notifier).stop();
-        showErrorOn(
-          messenger,
-          "Couldn't open ${type.title}",
-          background: errorColour,
-        );
+        showErrorOn(messenger, openFailed, background: errorColour);
       }
     } catch (e) {
-      if (mounted) showErrorMessage(context, apiErrorMessage(e));
+      if (mounted) showErrorMessage(context, apiErrorMessage(context, e));
     } finally {
       if (mounted) setState(() => _busyTypeId = null);
     }
@@ -112,6 +116,7 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(paymentRequestControllerProvider(widget.planId));
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       backgroundColor: const Color(0xfff6f7fa),
@@ -119,8 +124,8 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg,
                 AppSpacing.sm,
                 AppSpacing.lg,
@@ -128,10 +133,10 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
               ),
               child: Row(
                 children: [
-                  BackIconButton(),
-                  SizedBox(width: AppSpacing.md),
+                  const BackIconButton(),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: SectionTitle(title: 'Payment method', fontSize: 24),
+                    child: SectionTitle(title: l10n.paymentTitle, fontSize: 24),
                   ),
                 ],
               ),
@@ -150,14 +155,14 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   error: (e, _) => _Placeholder(
-                    title: "Couldn't start the payment",
-                    subtitle: apiErrorMessage(e),
+                    title: l10n.paymentLoadFailed,
+                    subtitle: apiErrorMessage(context, e),
                   ),
                   data: (request) {
                     if (request.paymentTypes.isEmpty) {
-                      return const _Placeholder(
-                        title: 'No payment methods',
-                        subtitle: 'None are set up yet',
+                      return _Placeholder(
+                        title: l10n.paymentEmptyTitle,
+                        subtitle: l10n.paymentEmptySubtitle,
                       );
                     }
                     return ListView.separated(

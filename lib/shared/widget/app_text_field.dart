@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/l10n/app_localizations.dart';
 
 /// Labelled pill input — a caption above a borderless white field.
 ///
@@ -111,7 +112,9 @@ class _AppTextFieldState extends State<AppTextField> {
                     style: IconButton.styleFrom(
                       backgroundColor: Colors.transparent,
                     ),
-                    tooltip: _obscured ? 'Show password' : 'Hide password',
+                    tooltip: _obscured
+                        ? AppLocalizations.of(context).commonShowPassword
+                        : AppLocalizations.of(context).commonHidePassword,
                     icon: Icon(
                       _obscured
                           ? Icons.visibility_off_outlined

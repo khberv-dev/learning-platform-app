@@ -9,19 +9,20 @@ import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/ui/auth/register_screen.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
-import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/courses/image_viewer_screen.dart';
+import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/courses/live_session_screen.dart';
 import 'package:student/ui/courses/pdf_viewer_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/courses/unit_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
-import 'package:student/ui/payments/payment_types_screen.dart';
-import 'package:student/ui/plans/plans_screen.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
+import 'package:student/ui/payments/payment_types_screen.dart';
+import 'package:student/ui/plans/plans_screen.dart';
 import 'package:student/ui/roadmap/roadmap_screen.dart';
+import 'package:student/ui/startup/language_screen.dart';
 import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/no_connection_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
@@ -40,6 +41,12 @@ final _appRouter = GoRouter(
     GoRoute(
       path: NoConnectionScreen.path,
       builder: (_, _) => NoConnectionScreen(),
+    ),
+    GoRoute(
+      path: LanguageScreen.path,
+      builder: (_, state) => LanguageScreen(
+        next: state.uri.queryParameters['next'] ?? languageDefaultNext,
+      ),
     ),
     GoRoute(path: OnboardingScreen.path, builder: (_, _) => OnboardingScreen()),
     GoRoute(path: WelcomeScreen.path, builder: (_, _) => WelcomeScreen()),

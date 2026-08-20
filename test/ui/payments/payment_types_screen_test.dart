@@ -17,6 +17,8 @@ import 'package:student/shared/url_launcher.dart';
 import 'package:student/shared/widget/back_icon_button.dart';
 import 'package:student/ui/payments/payment_types_screen.dart';
 
+import '../../support/localized_app.dart';
+
 const _payme = PaymentTypeEntity(
   id: 'pt1',
   title: 'Payme',
@@ -118,7 +120,7 @@ Future<ProviderContainer> _pump(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(
+      child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
           routes: [

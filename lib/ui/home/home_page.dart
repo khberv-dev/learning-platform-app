@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/home/widget/ai_test_card.dart';
 import 'package:student/ui/home/widget/continue_learning_card.dart';
 import 'package:student/ui/home/widget/home_topbar.dart';
@@ -25,11 +26,11 @@ class HomePage extends StatelessWidget {
         children: [
           const HomeTopbar(),
           const SizedBox(height: AppSpacing.xxl),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             child: Text(
-              "You're on fire",
-              style: TextStyle(
+              AppLocalizations.of(context).homeOnFire,
+              style: const TextStyle(
                 color: Colors.black,
                 fontSize: 24,
                 fontWeight: FontWeight.w800,

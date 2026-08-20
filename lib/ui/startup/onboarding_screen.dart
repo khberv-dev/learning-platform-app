@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/auth/login_screen.dart';
@@ -131,18 +132,22 @@ class _Heading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text.rich(
+    final l10n = AppLocalizations.of(context);
+
+    // Split into three so the middle word keeps its accent colour. Word order
+    // differs by language, which is why the lead can be empty.
+    return Text.rich(
       TextSpan(
         children: [
-          TextSpan(text: 'Learn '),
+          TextSpan(text: l10n.onboardingHeadlineLead),
           TextSpan(
-            text: 'English',
-            style: TextStyle(color: AppColors.deepGreen),
+            text: l10n.onboardingHeadlineHighlight,
+            style: const TextStyle(color: AppColors.deepGreen),
           ),
-          TextSpan(text: '\nFaster than ever'),
+          TextSpan(text: l10n.onboardingHeadlineTail),
         ],
       ),
-      style: TextStyle(
+      style: const TextStyle(
         color: AppColors.ink,
         fontSize: 28,
         fontWeight: FontWeight.w800,
@@ -158,16 +163,18 @@ class _ActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     void onFreshStartClick() => context.push(SurveyScreen.path);
     void onResumeClick() => context.push(LoginScreen.path);
 
     return AppBottomActionBar(
       children: [
         AppButton.filled(
-          label: "Let's Get a Fresh Start",
+          label: l10n.onboardingFreshStart,
           onTap: onFreshStartClick,
         ),
-        AppButton.outlined(label: 'Resume Journey', onTap: onResumeClick),
+        AppButton.outlined(label: l10n.onboardingResume, onTap: onResumeClick),
       ],
     );
   }

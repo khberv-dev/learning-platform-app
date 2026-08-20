@@ -8,6 +8,7 @@ import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/otp_controller.dart';
 import 'package:student/core/auth/presentation/recover_password_controller.dart';
 import 'package:student/core/auth/presentation/register_controller.dart';
+import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/utils/messenger.dart';
@@ -94,7 +95,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         if (prev?.isLoading != true) return;
         next.whenOrNull(
           data: (_) => context.go(AppScreen.path),
-          error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
+          error: (e, _) =>
+              showErrorMessage(context, apiErrorMessage(context, e)),
         );
       });
     } else {
@@ -106,15 +108,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         next.whenOrNull(
           data: (_) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Password updated successfully')),
+              SnackBar(
+                content: Text(AppLocalizations.of(context).otpPasswordUpdated),
+              ),
             );
             context.go(LoginScreen.path);
           },
-          error: (e, _) => showErrorMessage(context, apiErrorMessage(e)),
+          error: (e, _) =>
+              showErrorMessage(context, apiErrorMessage(context, e)),
         );
       });
     }
 
+    final l10n = AppLocalizations.of(context);
     final isLoading = widget.mode == OtpMode.register
         ? ref.watch(registerControllerProvider).isLoading
         : ref.watch(recoverPasswordControllerProvider).isLoading;
@@ -133,14 +139,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                'Verify Your\nPhone Number',
+                l10n.otpTitle,
                 style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                   fontWeight: FontWeight.w900,
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                'We sent a 6-digit code to $_formattedPhone',
+                l10n.otpSubtitle(_formattedPhone),
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -156,14 +162,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               Center(
                 child: _secondsLeft > 0
                     ? Text(
-                        'Resend code in ${_secondsLeft}s',
+                        l10n.otpResendIn(_secondsLeft),
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       )
                     : TextButton(
                         onPressed: isLoading ? null : _resend,
-                        child: const Text('Resend code'),
+                        child: Text(l10n.otpResend),
                       ),
               ),
               const Spacer(),

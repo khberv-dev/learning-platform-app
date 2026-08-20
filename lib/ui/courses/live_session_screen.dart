@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
+import 'package:student/l10n/app_localizations.dart';
+import 'package:student/utils/date_format.dart';
 import 'package:video_player/video_player.dart';
 
 class LiveSessionScreen extends StatefulWidget {
@@ -67,27 +69,10 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> {
     });
   }
 
-  String _formatDate(String raw) {
-    try {
-      final dt = DateTime.parse(raw).toLocal();
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-      return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
-    } catch (_) {
-      return raw;
-    }
+  /// The API sends an ISO string; anything unparseable is shown as it came.
+  String _formatDate(BuildContext context, String raw) {
+    final dt = DateTime.tryParse(raw);
+    return dt == null ? raw : formatShortDate(context, dt.toLocal());
   }
 
   @override
@@ -130,9 +115,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        const Text(
-                          'RECORDED SESSION',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context).courseRecordedSession,
+                          style: const TextStyle(
                             color: Color(0xFFEF4444),
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -181,7 +166,7 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        _formatDate(session.createdAt),
+                        _formatDate(context, session.createdAt),
                         style: const TextStyle(
                           color: Color(0xFF9CA3AF),
                           fontSize: 13,
