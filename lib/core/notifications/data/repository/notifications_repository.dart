@@ -58,4 +58,19 @@ class NotificationsRepository implements INotificationsRepository {
       totalPages: (json['totalPages'] as num?)?.toInt() ?? 0,
     );
   }
+
+  @override
+  Future<int> getUnreadCount() async {
+    final response = await _dio.get(
+      'notifications/unread',
+      queryParameters: {'page': 1, 'limit': 1},
+    );
+    final json = response.data as Map<String, dynamic>;
+    return (json['total'] as num?)?.toInt() ?? 0;
+  }
+
+  @override
+  Future<void> markAsRead(String id) async {
+    await _dio.patch('notifications/$id/read');
+  }
 }

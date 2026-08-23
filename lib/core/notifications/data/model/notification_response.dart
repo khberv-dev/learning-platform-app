@@ -6,12 +6,14 @@ class NotificationResponse {
   final String body;
   final Map<String, String>? data;
   final DateTime createdAt;
+  final bool isRead;
 
   const NotificationResponse({
     required this.id,
     required this.title,
     required this.body,
     required this.createdAt,
+    required this.isRead,
     this.data,
   });
 
@@ -21,6 +23,7 @@ class NotificationResponse {
       id: json['id'].toString(),
       title: json['title'] as String? ?? '',
       body: json['body'] as String? ?? '',
+      isRead: json['isRead'] as bool? ?? false,
       data: rawData is Map
           ? rawData.map(
               (key, value) => MapEntry(key.toString(), value.toString()),
@@ -38,5 +41,6 @@ class NotificationResponse {
     body: body,
     data: data,
     createdAt: createdAt,
+    isRead: isRead,
   );
 }

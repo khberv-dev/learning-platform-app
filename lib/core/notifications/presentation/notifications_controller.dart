@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/notifications/domain/entity/notifications_page_entity.dart';
 import 'package:student/core/notifications/domain/usecase/use_get_notifications.dart';
+import 'package:student/core/notifications/domain/usecase/use_mark_notification_as_read.dart';
+import 'package:student/core/notifications/presentation/unread_notifications_count_provider.dart';
 
 final notificationsProvider =
     AsyncNotifierProvider<NotificationsController, NotificationsPageEntity>(
@@ -38,5 +40,24 @@ class NotificationsController extends AsyncNotifier<NotificationsPageEntity> {
     } finally {
       _loadingMore = false;
     }
+  }
+
+  Future<void> markAsRead(String id) async {
+    final current = state.value;
+    if (current == null) return;
+    final index = current.notifications.indexWhere((item) => item.id == id);
+    if (index < 0 || current.notifications[index].isRead) return;
+
+    await ref.read(useMarkNotificationAsReadProvider).call(id);
+    final notifications = [...current.notifications];
+    notifications[index] = notifications[index].copyWith(isRead: true);
+    state = AsyncData(
+      NotificationsPageEntity(
+        notifications: notifications,
+        page: current.page,
+        totalPages: current.totalPages,
+      ),
+    );
+    ref.invalidate(unreadNotificationsCountProvider);
   }
 }

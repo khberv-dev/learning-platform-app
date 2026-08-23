@@ -10,4 +10,8 @@ abstract class INotificationsRepository {
   Future<void> deleteSession(String id);
 
   Future<NotificationsPageEntity> getMine({required int page, int limit = 20});
+
+  Future<int> getUnreadCount();
+
+  Future<void> markAsRead(String id);
 }

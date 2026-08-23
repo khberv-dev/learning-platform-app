@@ -94,87 +94,113 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         )
                       : _NotificationCard(
                           notification: page.notifications[index],
+                          onTap: () => _markAsRead(page.notifications[index]),
                         ),
                 ),
         ),
       ),
     );
   }
+
+  Future<void> _markAsRead(NotificationEntity notification) async {
+    if (notification.isRead) return;
+    try {
+      await ref
+          .read(notificationsProvider.notifier)
+          .markAsRead(notification.id);
+    } catch (error) {
+      if (mounted) showErrorMessage(context, apiErrorMessage(context, error));
+    }
+  }
 }
 
 class _NotificationCard extends StatelessWidget {
   final NotificationEntity notification;
-  const _NotificationCard({required this.notification});
+  final VoidCallback onTap;
+
+  const _NotificationCard({required this.notification, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final date = notification.createdAt.toLocal();
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: Colors.white,
+    return Material(
+      color: notification.isRead ? Colors.white : const Color(0xFFF0FDF4),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        side: BorderSide(
+          color: notification.isRead
+              ? const Color(0xFFE5E7EB)
+              : Theme.of(context).colorScheme.primary.withValues(alpha: .35),
+        ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            padding: const EdgeInsets.all(11),
-            decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: .12),
-              shape: BoxShape.circle,
-            ),
-            child: SvgPicture.asset(
-              'assets/icons/bell.svg',
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.primary,
-                BlendMode.srcIn,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                padding: const EdgeInsets.all(11),
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: .12),
+                  shape: BoxShape.circle,
+                ),
+                child: SvgPicture.asset(
+                  'assets/icons/bell.svg',
+                  colorFilter: ColorFilter.mode(
+                    Theme.of(context).colorScheme.primary,
+                    BlendMode.srcIn,
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  notification.title,
-                  style: const TextStyle(
-                    color: Color(0xFF111827),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    height: 1.25,
-                  ),
-                ),
-                if (notification.body.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    notification.body,
-                    style: const TextStyle(
-                      color: Color(0xFF6B7280),
-                      fontSize: 14,
-                      height: 1.4,
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      notification.title,
+                      style: TextStyle(
+                        color: const Color(0xFF111827),
+                        fontSize: 16,
+                        fontWeight: notification.isRead
+                            ? FontWeight.w600
+                            : FontWeight.w800,
+                        height: 1.25,
+                      ),
                     ),
-                  ),
-                ],
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  '${formatShortDate(context, date)} · ${formatTime(context, date)}',
-                  style: const TextStyle(
-                    color: Color(0xFF9CA3AF),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
+                    if (notification.body.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        notification.body,
+                        style: const TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      '${formatShortDate(context, date)} · ${formatTime(context, date)}',
+                      style: const TextStyle(
+                        color: Color(0xFF9CA3AF),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

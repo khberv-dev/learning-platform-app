@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/core/notifications/presentation/unread_notifications_count_provider.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/notification_icon_button.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
@@ -23,6 +24,7 @@ class HomeTopbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
+    final unreadCount = ref.watch(unreadNotificationsCountProvider).value ?? 0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
@@ -73,6 +75,7 @@ class HomeTopbar extends ConsumerWidget {
           ),
           const SizedBox(width: AppSpacing.sm),
           NotificationIconButton(
+            badgeCount: unreadCount,
             onTap: () => context.push(NotificationsScreen.path),
           ),
         ],
