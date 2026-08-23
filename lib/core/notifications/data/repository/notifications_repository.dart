@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/data/network/dio_client.dart';
+import 'package:student/core/notifications/data/model/notification_response.dart';
 import 'package:student/core/notifications/data/model/session_response.dart';
+import 'package:student/core/notifications/domain/entity/notifications_page_entity.dart';
 import 'package:student/core/notifications/domain/entity/session_entity.dart';
 import 'package:student/core/notifications/domain/repository/i_notifications_repository.dart';
 
@@ -31,5 +33,29 @@ class NotificationsRepository implements INotificationsRepository {
   @override
   Future<void> deleteSession(String id) async {
     await _dio.delete('sessions/$id');
+  }
+
+  @override
+  Future<NotificationsPageEntity> getMine({
+    required int page,
+    int limit = 20,
+  }) async {
+    final response = await _dio.get(
+      'notifications',
+      queryParameters: {'page': page, 'limit': limit},
+    );
+    final json = response.data as Map<String, dynamic>;
+    final rows = json['data'] as List<dynamic>? ?? const [];
+    return NotificationsPageEntity(
+      notifications: rows
+          .map(
+            (row) => NotificationResponse.fromJson(
+              row as Map<String, dynamic>,
+            ).toEntity(),
+          )
+          .toList(),
+      page: (json['page'] as num?)?.toInt() ?? page,
+      totalPages: (json['totalPages'] as num?)?.toInt() ?? 0,
+    );
   }
 }
