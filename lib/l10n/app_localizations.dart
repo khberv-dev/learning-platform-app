@@ -190,6 +190,30 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get commonSomethingWentWrong;
 
+  /// No description provided for @authUsePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get authUsePhone;
+
+  /// No description provided for @authUseEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get authUseEmail;
+
+  /// No description provided for @fieldEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get fieldEmail;
+
+  /// No description provided for @validationEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get validationEmail;
+
   /// No description provided for @commonOpenOutsideApp.
   ///
   /// In en, this message translates to:
@@ -1042,6 +1066,18 @@ abstract class AppLocalizations {
   /// **'We sent a 6-digit code to {phone}'**
   String otpSubtitle(String phone);
 
+  /// No description provided for @otpEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Your\nEmail Address'**
+  String get otpEmailTitle;
+
+  /// No description provided for @otpEmailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We emailed a 6-digit code to {email}'**
+  String otpEmailSubtitle(String email);
+
   /// No description provided for @otpResendIn.
   ///
   /// In en, this message translates to:
@@ -1065,6 +1101,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Phone number'**
   String get profilePhone;
+
+  /// No description provided for @profileEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get profileEmail;
 
   /// No description provided for @profilePassword.
   ///

@@ -22,9 +22,15 @@ class OtpScreen extends ConsumerStatefulWidget {
   static const path = '/otp';
 
   final String phoneNumber;
+  final String? email;
   final OtpMode mode;
 
-  const OtpScreen({super.key, required this.phoneNumber, required this.mode});
+  const OtpScreen({
+    super.key,
+    required this.phoneNumber,
+    required this.mode,
+    this.email,
+  });
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
@@ -71,9 +77,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       : OtpPurpose.recover;
 
   void _resend() {
-    ref
-        .read(otpControllerProvider.notifier)
-        .sendOtp(phoneNumber: widget.phoneNumber, purpose: _purpose);
+    final controller = ref.read(otpControllerProvider.notifier);
+    if (widget.email != null) {
+      controller.sendEmailOtp(email: widget.email!, purpose: _purpose);
+    } else {
+      controller.sendOtp(phoneNumber: widget.phoneNumber, purpose: _purpose);
+    }
     // Started even if the request fails: the API's own cooldown has begun
     // either way, and the countdown is what tells the student to wait.
     _startResendTimer();
@@ -97,6 +106,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     }
     return '+$digits';
   }
+
+  String get _destination => widget.email ?? _formattedPhone;
 
   @override
   Widget build(BuildContext context) {
@@ -159,14 +170,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                l10n.otpTitle,
+                widget.email == null ? l10n.otpTitle : l10n.otpEmailTitle,
                 style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                   fontWeight: FontWeight.w900,
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
-                l10n.otpSubtitle(_formattedPhone),
+                widget.email == null
+                    ? l10n.otpSubtitle(_destination)
+                    : l10n.otpEmailSubtitle(_destination),
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

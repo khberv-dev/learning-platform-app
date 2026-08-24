@@ -26,4 +26,18 @@ class UseSignUp {
     code: code,
     level: level,
   );
+
+  Future<AuthEntity> callEmail({
+    required String firstName,
+    required String email,
+    required String password,
+    required String code,
+    StudentLevel? level,
+  }) => (_repository as IEmailAuthRepository).signUpWithEmail(
+    firstName: firstName,
+    email: email,
+    password: password,
+    code: code,
+    level: level,
+  );
 }

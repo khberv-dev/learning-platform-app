@@ -64,6 +64,7 @@ final _appRouter = GoRouter(
       path: OtpScreen.path,
       builder: (_, state) => OtpScreen(
         phoneNumber: state.uri.queryParameters['phone'] ?? '',
+        email: state.uri.queryParameters['email'],
         mode: state.uri.queryParameters['mode'] == 'recover'
             ? OtpMode.recoverPassword
             : OtpMode.register,

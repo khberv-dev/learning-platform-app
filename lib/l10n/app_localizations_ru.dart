@@ -55,6 +55,18 @@ class AppLocalizationsRu extends AppLocalizations {
       'Что-то пошло не так. Попробуйте ещё раз.';
 
   @override
+  String get authUsePhone => 'Телефон';
+
+  @override
+  String get authUseEmail => 'Email';
+
+  @override
+  String get fieldEmail => 'Электронная почта';
+
+  @override
+  String get validationEmail => 'Введите корректный email';
+
+  @override
   String get commonOpenOutsideApp => 'Открыть вне приложения';
 
   @override
@@ -542,6 +554,14 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get otpEmailTitle => 'Подтвердите адрес\nэлектронной почты';
+
+  @override
+  String otpEmailSubtitle(String email) {
+    return 'Мы отправили 6-значный код на email $email';
+  }
+
+  @override
   String otpResendIn(int seconds) {
     return 'Отправить код повторно через $seconds с';
   }
@@ -554,6 +574,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profilePhone => 'Номер телефона';
+
+  @override
+  String get profileEmail => 'Электронная почта';
 
   @override
   String get profilePassword => 'Пароль';

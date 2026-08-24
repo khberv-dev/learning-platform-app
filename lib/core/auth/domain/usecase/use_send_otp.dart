@@ -16,4 +16,12 @@ class UseSendOtp {
     required String phoneNumber,
     required OtpPurpose purpose,
   }) => _repository.sendOtp(phoneNumber: phoneNumber, purpose: purpose);
+
+  Future<void> callEmail({
+    required String email,
+    required OtpPurpose purpose,
+  }) => (_repository as IEmailAuthRepository).sendEmailOtp(
+    email: email,
+    purpose: purpose,
+  );
 }

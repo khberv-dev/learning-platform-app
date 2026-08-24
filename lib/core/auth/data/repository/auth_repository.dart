@@ -15,7 +15,7 @@ final authRepositoryProvider = Provider<IAuthRepository>(
   ),
 );
 
-class AuthRepository implements IAuthRepository {
+class AuthRepository implements IAuthRepository, IEmailAuthRepository {
   final Dio _dio;
   final TokenStorage _tokenStorage;
 
@@ -31,6 +31,18 @@ class AuthRepository implements IAuthRepository {
     final response = await _dio.post(
       'auth/sign-in',
       data: {'phoneNumber': phoneNumber, 'password': password},
+    );
+    return _saveAndReturn(response.data as Map<String, dynamic>);
+  }
+
+  @override
+  Future<AuthEntity> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    final response = await _dio.post(
+      'auth/sign-in',
+      data: {'email': email.trim().toLowerCase(), 'password': password},
     );
     return _saveAndReturn(response.data as Map<String, dynamic>);
   }
@@ -59,6 +71,27 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
+  Future<AuthEntity> signUpWithEmail({
+    required String firstName,
+    required String email,
+    required String password,
+    required String code,
+    StudentLevel? level,
+  }) async {
+    final response = await _dio.post(
+      'auth/sign-up',
+      data: {
+        'firstName': firstName,
+        'email': email.trim().toLowerCase(),
+        'password': password,
+        'code': code,
+        if (level != null) 'level': level.code,
+      },
+    );
+    return _saveAndReturn(response.data as Map<String, dynamic>);
+  }
+
+  @override
   Future<void> sendOtp({
     required String phoneNumber,
     required OtpPurpose purpose,
@@ -66,6 +99,17 @@ class AuthRepository implements IAuthRepository {
     await _dio.post(
       'auth/otp/send',
       data: {'phoneNumber': phoneNumber, 'purpose': purpose.value},
+    );
+  }
+
+  @override
+  Future<void> sendEmailOtp({
+    required String email,
+    required OtpPurpose purpose,
+  }) async {
+    await _dio.post(
+      'auth/otp/send',
+      data: {'email': email.trim().toLowerCase(), 'purpose': purpose.value},
     );
   }
 

@@ -3,6 +3,7 @@ class UserEntity {
   final String firstName;
   final String? lastName;
   final String phoneNumber;
+  final String? email;
   final int points;
   final int coins;
   final String level;
@@ -17,6 +18,7 @@ class UserEntity {
     required this.level,
     required this.balance,
     this.lastName,
+    this.email,
   });
 
   String get fullName {

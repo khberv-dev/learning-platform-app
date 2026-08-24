@@ -16,4 +16,12 @@ class UseSignIn {
     required String phoneNumber,
     required String password,
   }) => _repository.signIn(phoneNumber: phoneNumber, password: password);
+
+  Future<AuthEntity> callEmail({
+    required String email,
+    required String password,
+  }) => (_repository as IEmailAuthRepository).signInWithEmail(
+    email: email,
+    password: password,
+  );
 }

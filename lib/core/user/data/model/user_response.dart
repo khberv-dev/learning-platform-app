@@ -5,6 +5,7 @@ class UserResponse {
   final String firstName;
   final String? lastName;
   final String phoneNumber;
+  final String? email;
   final int points;
   final int coins;
   final String level;
@@ -19,6 +20,7 @@ class UserResponse {
     required this.level,
     required this.balance,
     this.lastName,
+    this.email,
   });
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class UserResponse {
       firstName: user['firstName'] as String? ?? '',
       lastName: user['lastName'] as String?,
       phoneNumber: user['phoneNumber'] as String? ?? '',
+      email: user['email'] as String?,
       points: (json['points'] ?? 0) as int,
       coins: (json['coins'] ?? 0) as int,
       level: json['level'] as String? ?? '—',
@@ -40,6 +43,7 @@ class UserResponse {
     firstName: firstName,
     lastName: lastName,
     phoneNumber: phoneNumber,
+    email: email,
     points: points,
     coins: coins,
     level: level,

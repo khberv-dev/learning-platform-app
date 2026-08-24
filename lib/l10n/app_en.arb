@@ -20,6 +20,10 @@
   "commonJoin": "Join",
   "commonLoading": "Loading…",
   "commonSomethingWentWrong": "Something went wrong. Please try again.",
+  "authUsePhone": "Phone",
+  "authUseEmail": "Email",
+  "fieldEmail": "Email address",
+  "validationEmail": "Enter a valid email address",
   "commonOpenOutsideApp": "Open outside the app",
   "commonShowPassword": "Show password",
   "commonHidePassword": "Hide password",
@@ -245,6 +249,11 @@
   "@otpSubtitle": {
     "placeholders": { "phone": { "type": "String" } }
   },
+  "otpEmailTitle": "Verify Your\nEmail Address",
+  "otpEmailSubtitle": "We emailed a 6-digit code to {email}",
+  "@otpEmailSubtitle": {
+    "placeholders": { "email": { "type": "String" } }
+  },
   "otpResendIn": "Resend code in {seconds}s",
   "@otpResendIn": {
     "placeholders": { "seconds": { "type": "int" } }
@@ -253,6 +262,7 @@
   "otpPasswordUpdated": "Password updated successfully",
 
   "profilePhone": "Phone number",
+  "profileEmail": "Email address",
   "profilePassword": "Password",
   "profileUpdatePassword": "Update password",
   "settingsPrivacyPolicy": "Privacy Policy",

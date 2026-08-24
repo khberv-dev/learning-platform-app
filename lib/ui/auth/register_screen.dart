@@ -10,6 +10,7 @@ import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_text_field.dart';
+import 'package:student/shared/widget/auth_identity_switch.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/utils/messenger.dart';
@@ -28,8 +29,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _otpSent = false;
+  AuthIdentityType _identityType = AuthIdentityType.phone;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +42,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         data: (_) {
           if (!_otpSent) {
             _otpSent = true;
-            final digits = _phoneController.text.replaceAll(' ', '');
-            context.push('${OtpScreen.path}?phone=998$digits&mode=register');
+            final query = _identityType == AuthIdentityType.phone
+                ? {
+                    'phone': '998${_phoneController.text.replaceAll(' ', '')}',
+                    'mode': 'register',
+                  }
+                : {
+                    'email': _emailController.text.trim().toLowerCase(),
+                    'mode': 'register',
+                  };
+            context.push(
+              Uri(path: OtpScreen.path, queryParameters: query).toString(),
+            );
           }
         },
         error: (e, _) => showErrorMessage(context, apiErrorMessage(context, e)),
@@ -92,20 +105,41 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           },
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                        AppTextField(
-                          label: l10n.fieldPhone,
-                          controller: _phoneController,
-                          prefixText: '+998 ',
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [UzPhoneFormatter()],
-                          validator: (value) {
-                            final digits = (value ?? '').replaceAll(' ', '');
-                            if (digits.length != 9) {
-                              return l10n.validationPhone;
-                            }
-                            return null;
-                          },
+                        AuthIdentitySwitch(
+                          value: _identityType,
+                          phoneLabel: l10n.authUsePhone,
+                          emailLabel: l10n.authUseEmail,
+                          onChanged: (value) => setState(() {
+                            _identityType = value;
+                            _formKey.currentState?.reset();
+                          }),
                         ),
+                        const SizedBox(height: AppSpacing.lg),
+                        if (_identityType == AuthIdentityType.phone)
+                          AppTextField(
+                            key: const ValueKey('register-phone'),
+                            label: l10n.fieldPhone,
+                            controller: _phoneController,
+                            prefixText: '+998 ',
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [UzPhoneFormatter()],
+                            validator: (value) {
+                              final digits = (value ?? '').replaceAll(' ', '');
+                              return digits.length == 9
+                                  ? null
+                                  : l10n.validationPhone;
+                            },
+                          )
+                        else
+                          AppTextField(
+                            key: const ValueKey('register-email'),
+                            label: l10n.fieldEmail,
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) => _isValidEmail(value ?? '')
+                                ? null
+                                : l10n.validationEmail,
+                          ),
                         const SizedBox(height: AppSpacing.lg),
                         AppTextField(
                           label: l10n.fieldPassword,
@@ -148,6 +182,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     _otpSent = false;
+    if (_identityType == AuthIdentityType.email) {
+      ref
+          .read(registerControllerProvider.notifier)
+          .prepareEmailAndSendOtp(
+            firstName: _fullNameController.text.trim(),
+            email: _emailController.text.trim().toLowerCase(),
+            password: _passwordController.text,
+            level: ref.read(skillQuizResultProvider),
+          );
+      return;
+    }
     final digits = _phoneController.text.replaceAll(' ', '');
     ref
         .read(registerControllerProvider.notifier)
@@ -165,10 +210,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void dispose() {
     _fullNameController.dispose();
     _phoneController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 }
+
+bool _isValidEmail(String value) =>
+    RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value.trim());
 
 class _LegalNotice extends StatelessWidget {
   const _LegalNotice();

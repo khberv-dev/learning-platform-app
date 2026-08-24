@@ -55,6 +55,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong. Please try again.';
 
   @override
+  String get authUsePhone => 'Phone';
+
+  @override
+  String get authUseEmail => 'Email';
+
+  @override
+  String get fieldEmail => 'Email address';
+
+  @override
+  String get validationEmail => 'Enter a valid email address';
+
+  @override
   String get commonOpenOutsideApp => 'Open outside the app';
 
   @override
@@ -537,6 +549,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get otpEmailTitle => 'Verify Your\nEmail Address';
+
+  @override
+  String otpEmailSubtitle(String email) {
+    return 'We emailed a 6-digit code to $email';
+  }
+
+  @override
   String otpResendIn(int seconds) {
     return 'Resend code in ${seconds}s';
   }
@@ -549,6 +569,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profilePhone => 'Phone number';
+
+  @override
+  String get profileEmail => 'Email address';
 
   @override
   String get profilePassword => 'Password';

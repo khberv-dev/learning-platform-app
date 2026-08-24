@@ -25,4 +25,16 @@ class OtpController extends AsyncNotifier<void> {
           .call(phoneNumber: phoneNumber, purpose: purpose),
     );
   }
+
+  Future<void> sendEmailOtp({
+    required String email,
+    required OtpPurpose purpose,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref
+          .read(useSendOtpProvider)
+          .callEmail(email: email, purpose: purpose),
+    );
+  }
 }

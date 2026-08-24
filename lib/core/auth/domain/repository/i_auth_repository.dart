@@ -33,3 +33,26 @@ abstract class IAuthRepository {
     required String newPassword,
   });
 }
+
+/// Email capabilities added alongside the original phone authentication
+/// contract. Kept separate so existing phone-only repository substitutes stay
+/// valid while the production repository supports both identities.
+abstract class IEmailAuthRepository {
+  Future<AuthEntity> signInWithEmail({
+    required String email,
+    required String password,
+  });
+
+  Future<AuthEntity> signUpWithEmail({
+    required String firstName,
+    required String email,
+    required String password,
+    required String code,
+    StudentLevel? level,
+  });
+
+  Future<void> sendEmailOtp({
+    required String email,
+    required OtpPurpose purpose,
+  });
+}

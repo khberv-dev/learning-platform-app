@@ -26,4 +26,18 @@ class LoginController extends AsyncNotifier<void> {
       ref.read(currentUserProvider.notifier).state = user;
     });
   }
+
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(useSignInProvider)
+          .callEmail(email: email, password: password);
+      final user = await ref.read(useGetMeProvider).call();
+      ref.read(currentUserProvider.notifier).state = user;
+    });
+  }
 }

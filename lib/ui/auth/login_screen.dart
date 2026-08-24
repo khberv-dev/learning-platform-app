@@ -9,6 +9,7 @@ import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_text_field.dart';
+import 'package:student/shared/widget/auth_identity_switch.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
@@ -27,7 +28,9 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  AuthIdentityType _identityType = AuthIdentityType.phone;
 
   @override
   Widget build(BuildContext context) {
@@ -72,20 +75,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xxl),
-                        AppTextField(
-                          label: l10n.fieldPhone,
-                          controller: _phoneController,
-                          prefixText: '+998 ',
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [UzPhoneFormatter()],
-                          validator: (value) {
-                            final digits = (value ?? '').replaceAll(' ', '');
-                            if (digits.length != 9) {
-                              return l10n.validationPhone;
-                            }
-                            return null;
-                          },
+                        AuthIdentitySwitch(
+                          value: _identityType,
+                          phoneLabel: l10n.authUsePhone,
+                          emailLabel: l10n.authUseEmail,
+                          onChanged: (value) => setState(() {
+                            _identityType = value;
+                            _formKey.currentState?.reset();
+                          }),
                         ),
+                        const SizedBox(height: AppSpacing.lg),
+                        if (_identityType == AuthIdentityType.phone)
+                          AppTextField(
+                            key: const ValueKey('login-phone'),
+                            label: l10n.fieldPhone,
+                            controller: _phoneController,
+                            prefixText: '+998 ',
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [UzPhoneFormatter()],
+                            validator: (value) {
+                              final digits = (value ?? '').replaceAll(' ', '');
+                              return digits.length == 9
+                                  ? null
+                                  : l10n.validationPhone;
+                            },
+                          )
+                        else
+                          AppTextField(
+                            key: const ValueKey('login-email'),
+                            label: l10n.fieldEmail,
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) => _isValidEmail(value ?? '')
+                                ? null
+                                : l10n.validationEmail,
+                          ),
                         const SizedBox(height: AppSpacing.lg),
                         AppTextField(
                           label: l10n.fieldPassword,
@@ -141,6 +165,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
+    if (_identityType == AuthIdentityType.email) {
+      ref
+          .read(loginControllerProvider.notifier)
+          .signInWithEmail(
+            email: _emailController.text.trim().toLowerCase(),
+            password: _passwordController.text,
+          );
+      return;
+    }
     final digits = _phoneController.text.replaceAll(' ', '');
     ref
         .read(loginControllerProvider.notifier)
@@ -150,7 +183,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void dispose() {
     _phoneController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 }
+
+bool _isValidEmail(String value) =>
+    RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value.trim());

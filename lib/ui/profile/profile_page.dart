@@ -38,6 +38,11 @@ class ProfilePage extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 ProfileField(
+                  label: l10n.profileEmail,
+                  value: user?.email?.isNotEmpty == true ? user!.email! : '—',
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                ProfileField(
                   label: l10n.profilePassword,
                   value: l10n.profileUpdatePassword,
                   // Reuses the recovery flow — it verifies by OTP and sets a

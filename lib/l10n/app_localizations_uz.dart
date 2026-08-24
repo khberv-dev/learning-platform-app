@@ -56,6 +56,18 @@ class AppLocalizationsUz extends AppLocalizations {
       'Nimadir xato ketdi. Qayta urinib ko\'ring.';
 
   @override
+  String get authUsePhone => 'Telefon';
+
+  @override
+  String get authUseEmail => 'Email';
+
+  @override
+  String get fieldEmail => 'Email manzil';
+
+  @override
+  String get validationEmail => 'To\'g\'ri email manzilini kiriting';
+
+  @override
   String get commonOpenOutsideApp => 'Ilovadan tashqarida ochish';
 
   @override
@@ -538,6 +550,14 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get otpEmailTitle => 'Email manzilingizni\ntasdiqlang';
+
+  @override
+  String otpEmailSubtitle(String email) {
+    return '$email email manziliga 6 xonali kod yubordik';
+  }
+
+  @override
   String otpResendIn(int seconds) {
     return 'Kodni qayta yuborish: $seconds s';
   }
@@ -550,6 +570,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profilePhone => 'Telefon raqami';
+
+  @override
+  String get profileEmail => 'Email manzil';
 
   @override
   String get profilePassword => 'Parol';
