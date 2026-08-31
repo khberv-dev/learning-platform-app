@@ -802,6 +802,12 @@ abstract class AppLocalizations {
   /// **'In this unit'**
   String get lessonInThisUnit;
 
+  /// No description provided for @lessonNoContent.
+  ///
+  /// In en, this message translates to:
+  /// **'No content'**
+  String get lessonNoContent;
+
   /// No description provided for @materialsTitle.
   ///
   /// In en, this message translates to:

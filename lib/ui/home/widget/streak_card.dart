@@ -9,8 +9,7 @@ import 'package:student/shared/widget/app_panel.dart';
 const _weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 class StreakCard extends StatelessWidget {
-  /// A week with nothing completed — the placeholder until the API reports
-  /// real streak data.
+  /// A week with nothing completed, used while streak data is loading.
   static const emptyWeek = [false, false, false, false, false, false, false];
 
   /// Consecutive days practised.

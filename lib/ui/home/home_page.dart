@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/core/user/presentation/streak_provider.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
@@ -12,11 +14,12 @@ import 'package:student/ui/home/widget/stats_row.dart';
 import 'package:student/ui/home/widget/streak_card.dart';
 import 'package:student/ui/home/widget/upcoming_section.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final streak = ref.watch(streakProvider).value;
     return SingleChildScrollView(
       padding: EdgeInsets.only(
         top: AppSpacing.xxl + MediaQuery.paddingOf(context).top,
@@ -39,11 +42,12 @@ class HomePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          // TODO(api): streak length and the week's completed days aren't on
-          // /me yet, so these are placeholders.
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: StreakCard(days: 0, week: StreakCard.emptyWeek),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            child: StreakCard(
+              days: streak?.currentStreak ?? 0,
+              week: streak?.week() ?? StreakCard.emptyWeek,
+            ),
           ),
           const SizedBox(height: AppSpacing.md),
           const StatsRow(),

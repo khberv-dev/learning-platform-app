@@ -404,6 +404,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lessonInThisUnit => 'В этом разделе';
 
   @override
+  String get lessonNoContent => 'Нет контента';
+
+  @override
   String get materialsTitle => 'Материалы';
 
   @override

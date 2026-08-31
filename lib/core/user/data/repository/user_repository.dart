@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/data/network/dio_client.dart';
 import 'package:student/core/user/data/model/user_response.dart';
+import 'package:student/core/user/data/model/streak_response.dart';
+import 'package:student/core/user/domain/entity/streak_entity.dart';
 import 'package:student/core/user/domain/entity/user_entity.dart';
 import 'package:student/core/user/domain/repository/i_user_repository.dart';
 
@@ -18,6 +20,14 @@ class UserRepository implements IUserRepository {
   Future<UserEntity> getMe() async {
     final response = await _dio.get('students/me');
     return UserResponse.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
+  }
+
+  @override
+  Future<StreakEntity> getStreak() async {
+    final response = await _dio.get('user/me/streak');
+    return StreakResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();
   }

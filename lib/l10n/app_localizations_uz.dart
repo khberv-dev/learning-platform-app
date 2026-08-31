@@ -401,6 +401,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get lessonInThisUnit => 'Shu bo\'limda';
 
   @override
+  String get lessonNoContent => 'Kontent yo\'q';
+
+  @override
   String get materialsTitle => 'Materiallar';
 
   @override

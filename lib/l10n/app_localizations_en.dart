@@ -400,6 +400,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lessonInThisUnit => 'In this unit';
 
   @override
+  String get lessonNoContent => 'No content';
+
+  @override
   String get materialsTitle => 'Materials';
 
   @override

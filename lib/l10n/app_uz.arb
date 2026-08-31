@@ -131,6 +131,7 @@
   "lessonScore": "{total} tadan {correct} ta to'g'ri · {percent}%",
   "lessonRetake": "Qayta ishlash",
   "lessonInThisUnit": "Shu bo'limda",
+  "lessonNoContent": "Kontent yo'q",
 
   "materialsTitle": "Materiallar",
   "materialsFileCount": "{count, plural, one{{count} ta fayl} other{{count} ta fayl}}",

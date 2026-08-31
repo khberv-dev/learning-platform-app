@@ -68,12 +68,14 @@ class UnitScreen extends ConsumerWidget {
                             child: _LessonCard(
                               lesson: unit.lessons[i],
                               index: i,
-                              onTap: () => context.push(
-                                '${LessonScreen.path}'
-                                '?courseId=$courseId'
-                                '&unitIndex=$unitIndex'
-                                '&lessonIndex=$i',
-                              ),
+                              onTap: unit.lessons[i].isLocked
+                                  ? null
+                                  : () => context.push(
+                                      '${LessonScreen.path}'
+                                      '?courseId=$courseId'
+                                      '&unitIndex=$unitIndex'
+                                      '&lessonIndex=$i',
+                                    ),
                             ),
                           );
                         }),
@@ -188,7 +190,7 @@ class _UnitSummary extends StatelessWidget {
 class _LessonCard extends StatelessWidget {
   final LessonEntity lesson;
   final int index;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _LessonCard({
     required this.lesson,
@@ -204,7 +206,7 @@ class _LessonCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: lesson.isLocked ? const Color(0xFFF3F4F6) : Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -213,14 +215,18 @@ class _LessonCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
+                color: lesson.isLocked
+                    ? const Color(0xFFE5E7EB)
+                    : const Color(0xFFF0FDF4),
                 borderRadius: BorderRadius.circular(12),
               ),
               alignment: Alignment.center,
               child: Text(
                 (index + 1).toString().padLeft(2, '0'),
-                style: const TextStyle(
-                  color: Color(0xFF18C96A),
+                style: TextStyle(
+                  color: lesson.isLocked
+                      ? const Color(0xFF9CA3AF)
+                      : const Color(0xFF18C96A),
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
@@ -235,8 +241,10 @@ class _LessonCard extends StatelessWidget {
                     lesson.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color(0xFF111827),
+                    style: TextStyle(
+                      color: lesson.isLocked
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF111827),
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -248,8 +256,10 @@ class _LessonCard extends StatelessWidget {
                       lesson.description!,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xFF6B7280),
+                      style: TextStyle(
+                        color: lesson.isLocked
+                            ? const Color(0xFFB6BDC8)
+                            : const Color(0xFF6B7280),
                         fontSize: 12,
                       ),
                     ),
@@ -258,9 +268,11 @@ class _LessonCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: Color(0xFF9CA3AF),
+            Icon(
+              lesson.isLocked
+                  ? Icons.lock_rounded
+                  : Icons.chevron_right_rounded,
+              color: const Color(0xFF9CA3AF),
               size: 22,
             ),
           ],

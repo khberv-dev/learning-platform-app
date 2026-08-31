@@ -131,6 +131,7 @@
   "lessonScore": "{correct} из {total} верно · {percent}%",
   "lessonRetake": "Пройти заново",
   "lessonInThisUnit": "В этом разделе",
+  "lessonNoContent": "Нет контента",
 
   "materialsTitle": "Материалы",
   "materialsFileCount": "{count, plural, one{{count} файл} few{{count} файла} many{{count} файлов} other{{count} файла}}",

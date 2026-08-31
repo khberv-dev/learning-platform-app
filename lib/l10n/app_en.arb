@@ -177,6 +177,7 @@
   },
   "lessonRetake": "Retake",
   "lessonInThisUnit": "In this unit",
+  "lessonNoContent": "No content",
 
   "materialsTitle": "Materials",
   "materialsFileCount": "{count, plural, one{{count} file} other{{count} files}}",

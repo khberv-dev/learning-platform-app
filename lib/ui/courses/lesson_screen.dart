@@ -39,6 +39,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   late int _lessonIndex;
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
+  int _playerGeneration = 0;
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   }
 
   Future<void> _initPlayer(String mediaUrl) async {
+    final generation = ++_playerGeneration;
     _chewieController?.dispose();
     _videoController?.dispose();
 
@@ -66,13 +68,17 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
     await controller.initialize();
 
-    if (!mounted) return;
+    if (!mounted || generation != _playerGeneration) {
+      controller.dispose();
+      return;
+    }
 
     setState(() {
       _chewieController = ChewieController(
         videoPlayerController: controller,
         autoPlay: false,
         allowFullScreen: true,
+        customControls: const _LessonVideoControls(),
         deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
         placeholder: const ColoredBox(color: Color(0xFF0F172A)),
         errorBuilder: (context, msg) => Center(
@@ -87,9 +93,21 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
   void _selectLesson(UnitEntity unit, int index) {
     if (_lessonIndex == index) return;
-    setState(() => _lessonIndex = index);
+    if (unit.lessons[index].isLocked) return;
+    final oldChewieController = _chewieController;
+    final oldVideoController = _videoController;
+    _playerGeneration++;
+    setState(() {
+      _lessonIndex = index;
+      _chewieController = null;
+      _videoController = null;
+    });
+    oldChewieController?.dispose();
+    oldVideoController?.dispose();
+
     final lesson = unit.lessons[index];
-    if (lesson.mediaUrl != null) _initPlayer(lesson.mediaUrl!);
+    final mediaUrl = lesson.mediaUrl?.trim();
+    if (mediaUrl != null && mediaUrl.isNotEmpty) _initPlayer(mediaUrl);
   }
 
   @override
@@ -109,11 +127,13 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             : null;
 
         // Init player on first build if not yet initialised
-        if (lesson?.mediaUrl != null &&
+        final mediaUrl = lesson?.mediaUrl?.trim();
+        if (mediaUrl != null &&
+            mediaUrl.isNotEmpty &&
             _videoController == null &&
             _chewieController == null) {
           WidgetsBinding.instance.addPostFrameCallback(
-            (_) => _initPlayer(lesson!.mediaUrl!),
+            (_) => _initPlayer(mediaUrl),
           );
         }
 
@@ -132,7 +152,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
                   unitNumber: unitNumber,
                   lessonNumber: (_lessonIndex + 1).toString().padLeft(2, '0'),
                 ),
-                _VideoArea(chewieController: _chewieController),
+                _VideoArea(
+                  hasMedia: mediaUrl != null && mediaUrl.isNotEmpty,
+                  chewieController: _chewieController,
+                ),
                 Expanded(
                   child: ListView(
                     padding: EdgeInsets.zero,
@@ -214,17 +237,30 @@ class _TopBar extends StatelessWidget {
 // ── Video area ────────────────────────────────────────────────────────────────
 
 class _VideoArea extends StatelessWidget {
+  final bool hasMedia;
   final ChewieController? chewieController;
 
-  const _VideoArea({this.chewieController});
+  const _VideoArea({required this.hasMedia, this.chewieController});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: const ValueKey('lesson-media-area'),
       height: 200,
       width: double.infinity,
       color: const Color(0xFF0F172A),
-      child: chewieController != null
+      child: !hasMedia
+          ? Center(
+              child: Text(
+                AppLocalizations.of(context).lessonNoContent,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            )
+          : chewieController != null
           ? Chewie(controller: chewieController!)
           : const Center(child: _PlayPlaceholder()),
     );
@@ -247,6 +283,156 @@ class _PlayPlaceholder extends StatelessWidget {
         Icons.play_arrow_rounded,
         color: Colors.white,
         size: 30,
+      ),
+    );
+  }
+}
+
+class _LessonVideoControls extends StatefulWidget {
+  const _LessonVideoControls();
+
+  @override
+  State<_LessonVideoControls> createState() => _LessonVideoControlsState();
+}
+
+class _LessonVideoControlsState extends State<_LessonVideoControls> {
+  ChewieController? _chewieController;
+  VideoPlayerController? _videoController;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final chewieController = ChewieController.of(context);
+    if (_chewieController == chewieController) return;
+
+    _chewieController?.removeListener(_refresh);
+    _videoController?.removeListener(_refresh);
+    _chewieController = chewieController;
+    _videoController = chewieController.videoPlayerController;
+    _chewieController!.addListener(_refresh);
+    _videoController!.addListener(_refresh);
+  }
+
+  @override
+  void dispose() {
+    _chewieController?.removeListener(_refresh);
+    _videoController?.removeListener(_refresh);
+    super.dispose();
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _togglePlayback() async {
+    final controller = _videoController!;
+    if (controller.value.isPlaying) {
+      await controller.pause();
+    } else {
+      if (controller.value.position >= controller.value.duration) {
+        await controller.seekTo(Duration.zero);
+      }
+      await controller.play();
+    }
+  }
+
+  Future<void> _toggleMute() async {
+    final controller = _videoController!;
+    await controller.setVolume(controller.value.volume == 0 ? 1 : 0);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final video = _videoController;
+    final chewie = _chewieController;
+    if (video == null || chewie == null) return const SizedBox.shrink();
+
+    return Stack(
+      children: [
+        Center(
+          child: _VideoControlButton(
+            icon: video.value.isPlaying
+                ? Icons.pause_rounded
+                : Icons.play_arrow_rounded,
+            onPressed: _togglePlayback,
+            size: 56,
+            iconSize: 32,
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Colors.black54],
+              ),
+            ),
+            child: Row(
+              children: [
+                _VideoControlButton(
+                  icon: video.value.volume == 0
+                      ? Icons.volume_off_rounded
+                      : Icons.volume_up_rounded,
+                  onPressed: _toggleMute,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: VideoProgressIndicator(
+                    video,
+                    allowScrubbing: true,
+                    colors: const VideoProgressColors(
+                      playedColor: Colors.white,
+                      bufferedColor: Colors.white54,
+                      backgroundColor: Colors.black38,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                _VideoControlButton(
+                  icon: chewie.isFullScreen
+                      ? Icons.fullscreen_exit_rounded
+                      : Icons.fullscreen_rounded,
+                  onPressed: chewie.isFullScreen
+                      ? chewie.exitFullScreen
+                      : chewie.enterFullScreen,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _VideoControlButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+  final double size;
+  final double iconSize;
+
+  const _VideoControlButton({
+    required this.icon,
+    required this.onPressed,
+    this.size = 38,
+    this.iconSize = 22,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: size,
+      child: IconButton(
+        onPressed: onPressed,
+        padding: EdgeInsets.zero,
+        style: IconButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+        ),
+        icon: Icon(icon, size: iconSize),
       ),
     );
   }
@@ -528,12 +714,13 @@ class _UnitLessonList extends StatelessWidget {
             final number = (i + 1).toString().padLeft(2, '0');
             final lesson = unit.lessons[i];
             return GestureDetector(
-              onTap: () => onTap(i),
+              onTap: lesson.isLocked ? null : () => onTap(i),
               behavior: HitTestBehavior.opaque,
               child: _LessonListItem(
                 number: number,
                 title: lesson.title,
                 isActive: isActive,
+                isLocked: lesson.isLocked,
               ),
             );
           }),
@@ -547,11 +734,13 @@ class _LessonListItem extends StatelessWidget {
   final String number;
   final String title;
   final bool isActive;
+  final bool isLocked;
 
   const _LessonListItem({
     required this.number,
     required this.title,
     required this.isActive,
+    required this.isLocked,
   });
 
   @override
@@ -574,6 +763,8 @@ class _LessonListItem extends StatelessWidget {
               style: TextStyle(
                 color: isActive
                     ? const Color(0xFF18C96A)
+                    : isLocked
+                    ? const Color(0xFFD1D5DB)
                     : const Color(0xFF9CA3AF),
                 fontSize: 12,
                 fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
@@ -586,6 +777,8 @@ class _LessonListItem extends StatelessWidget {
                 style: TextStyle(
                   color: isActive
                       ? const Color(0xFF111827)
+                      : isLocked
+                      ? const Color(0xFF9CA3AF)
                       : const Color(0xFF6B7280),
                   fontSize: 13,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
@@ -594,11 +787,13 @@ class _LessonListItem extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             Icon(
-              isActive ? Icons.play_circle_outline : Icons.play_circle_outline,
-              color: isActive
+              isLocked ? Icons.lock_rounded : Icons.play_circle_outline,
+              color: isLocked
+                  ? const Color(0xFF9CA3AF)
+                  : isActive
                   ? const Color(0xFF18C96A)
                   : const Color(0xFFD1D5DB),
-              size: isActive ? 20 : 16,
+              size: isLocked ? 18 : (isActive ? 20 : 16),
             ),
           ],
         ),
