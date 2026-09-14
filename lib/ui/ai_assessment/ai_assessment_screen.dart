@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:record/record.dart';
 import 'package:student/core/assessments/data/assembly_ai_voice_agent.dart';
 import 'package:student/core/assessments/data/repository/assessment_repository.dart';
+import 'package:student/core/user/presentation/activity_recorder.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/ai_assessment/widget/ai_avatar.dart';
 import 'package:student/ui/ai_assessment/widget/listening_indicator.dart';
@@ -40,6 +41,9 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
       },
       onStateChanged: (state) {
         if (!mounted) return;
+        if (state == AssemblyAiAgentState.listening) {
+          unawaited(ref.read(activityRecorderProvider).record());
+        }
         setState(() {
           if (state == AssemblyAiAgentState.idle) _sessionStarted = false;
           if (state == AssemblyAiAgentState.listening) _sessionStarted = true;

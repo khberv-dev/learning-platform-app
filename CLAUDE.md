@@ -161,6 +161,10 @@ In `main`, `Firebase.initializeApp()` runs inside a try/catch, so a device witho
 
 Checkout happens on the payment provider's website, so the app is never told the result. Before handing off, `purchaseWatchProvider` records which course ids the student already owns. On each app resume, `AppScreen` refetches `myCoursesControllerProvider` and compares. A new course means the purchase succeeded: it shows `showPurchaseSuccessDialog` and stops the watch. Otherwise it keeps watching until the next resume.
 
+### Streak activity
+
+The streak counts UTC days on which `POST user/me/activity` was called. Study actions call `ref.read(activityRecorderProvider).record()` (`core/user/presentation/activity_recorder.dart`): the AI speaking partner starting to listen, a lesson video's first play, and opening a lesson's tasks. The recorder skips calls once today has succeeded, swallows failures, and invalidates `streakProvider` when the API says the day was newly recorded. Hook new study features into it the same way.
+
 ### App updates
 
 `AppUpgradeAlert` wraps the app (from `MaterialApp.router`'s `builder`, so it has a Navigator and localizations) and shows `upgrader`'s store prompt once the splash screen is gone. Setting `minSupportedAppVersion` in `app_upgrade_alert.dart` makes the prompt unskippable for older builds. Use that when an API change breaks old clients.

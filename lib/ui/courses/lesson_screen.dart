@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +13,7 @@ import 'package:student/core/courses/presentation/course_detail_controller.dart'
     show courseDetailControllerProvider;
 import 'package:student/core/courses/presentation/tasks_controller.dart'
     show lessonTaskResultsProvider;
+import 'package:student/core/user/presentation/activity_recorder.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
@@ -41,6 +44,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
   int _playerGeneration = 0;
+  VideoPlayerController? _activityRecordedFor;
 
   @override
   void initState() {
@@ -66,6 +70,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
     _videoController = controller;
+    controller.addListener(() => _onVideoChanged(controller));
 
     await controller.initialize();
 
@@ -90,6 +95,14 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         ),
       );
     });
+  }
+
+  /// The first time a lesson's video starts playing counts as study activity.
+  void _onVideoChanged(VideoPlayerController controller) {
+    if (!mounted || !controller.value.isPlaying) return;
+    if (_activityRecordedFor == controller) return;
+    _activityRecordedFor = controller;
+    unawaited(ref.read(activityRecorderProvider).record());
   }
 
   void _selectLesson(UnitEntity unit, int index) {
@@ -386,7 +399,7 @@ class _LessonInfo extends StatelessWidget {
 
 // ── Tasks section ─────────────────────────────────────────────────────────────
 
-class _TasksSection extends StatelessWidget {
+class _TasksSection extends ConsumerWidget {
   final LessonEntity lesson;
   final String courseId;
   final String unitId;
@@ -399,7 +412,8 @@ class _TasksSection extends StatelessWidget {
     required this.taskResults,
   });
 
-  void _goToTasks(BuildContext context) {
+  void _goToTasks(BuildContext context, WidgetRef ref) {
+    unawaited(ref.read(activityRecorderProvider).record());
     context.push(
       '${TasksScreen.path}'
       '?courseId=$courseId'
@@ -410,7 +424,7 @@ class _TasksSection extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final answered = taskResults.where((r) => r.isAnswered).length;
 
     if (answered == 0) {
@@ -421,7 +435,7 @@ class _TasksSection extends StatelessWidget {
           icon: const Icon(Icons.task_alt_rounded),
           fontSize: 15,
           height: 48,
-          onTap: () => _goToTasks(context),
+          onTap: () => _goToTasks(context, ref),
         ),
       );
     }
@@ -511,7 +525,7 @@ class _TasksSection extends StatelessWidget {
               fontSize: 13,
               height: 42,
               depth: 4,
-              onTap: () => _goToTasks(context),
+              onTap: () => _goToTasks(context, ref),
             ),
           ),
         ],

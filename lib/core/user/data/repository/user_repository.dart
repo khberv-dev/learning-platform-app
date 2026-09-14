@@ -31,4 +31,11 @@ class UserRepository implements IUserRepository {
       response.data as Map<String, dynamic>,
     ).toEntity();
   }
+
+  @override
+  Future<bool> recordActivity() async {
+    final response = await _dio.post('user/me/activity');
+    final data = response.data;
+    return data is Map<String, dynamic> && data['recorded'] == true;
+  }
 }
