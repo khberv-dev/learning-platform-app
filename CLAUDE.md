@@ -28,7 +28,7 @@ dart run flutter_launcher_icons
 flutter gen-l10n
 ```
 
-Test coverage is minimal — `test/` mirrors `lib/` (currently only `test/shared/widget/app_button_test.dart`). `flutter analyze` is the main automated check.
+`test/` mirrors `lib/` (`test/ui/<feature>/`, `test/core/<domain>/`, `test/shared/widget/`). Most tests are widget tests of screens, plus `fromJson`/`toEntity` parsing tests for response models. `flutter analyze` and `flutter test` are the automated checks.
 
 ```bash
 flutter test                              # all tests
@@ -44,20 +44,23 @@ lib/
 ├── app/               # App-wide infrastructure
 │   ├── app.dart       # MaterialApp.router root
 │   ├── data/network/  # Dio client, AuthInterceptor, TokenStorage, config.dart
+│   ├── locale/        # AppLanguage, LocaleStorage, localeControllerProvider
 │   ├── router/        # GoRouter setup (app_router.dart)
-│   └── theme/         # AppTheme, AppRadius, AppSpacing
+│   ├── theme/         # AppTheme, AppColors, AppRadius, AppSpacing
+│   └── upgrade/       # AppUpgradeAlert (store update prompt)
 ├── core/<domain>/     # One folder per feature domain
 │   ├── data/          # model/ (*Response with fromJson/toEntity), repository/ (impls)
 │   ├── domain/        # entity/, repository/ (I*Repository), usecase/
 │   └── presentation/  # Riverpod controllers
+├── l10n/              # .arb files + checked-in generated AppLocalizations
 ├── shared/widget/     # Cross-feature widgets (AppHeader, BackIconButton, OtpField, …)
 ├── ui/<feature>/      # Screens + feature-local widget/ subfolder
-└── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, uz_phone_formatter.dart
+└── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, date_format.dart, uz_phone_formatter.dart
 ```
 
-**Domains:** `assessments`, `assignments`, `auth`, `chat`, `courses`, `live_lessons`, `main`, `p2p`, `startup`, `tutors`, `user`
+**Domains:** `assessments`, `assignments`, `auth`, `chat`, `courses`, `live_lessons`, `main`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `tutors`, `user`
 
-Not every domain has all three layers — `p2p` is socket/WebRTC-only (no data layer), `main` is just `navbar_controller.dart`, and `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
+Not every domain has all three layers. `assessments` has no presentation layer, since `AiAssessmentScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
 
 Shared widgets live in `lib/shared/widget/`, **not** under `lib/ui/`. A widget graduates there once a second feature needs it; otherwise it stays in `lib/ui/<feature>/widget/`.
 
@@ -83,7 +86,7 @@ List endpoints often return an envelope — `response.data['data'] as List` — 
 - `AsyncNotifierProvider` / `NotifierProvider` — stateful controllers (`MyLiveLessonsController`, `P2pController`, `SkillQuestionsNotifier`)
 - `StateProvider` / `StateNotifierProvider` — simple shared state (`currentUserProvider`, `navbarControllerProvider`, `chatMessagesProvider`)
 
-**Gotcha:** in Riverpod 3 the legacy APIs (`StateProvider`, `StateNotifierProvider`, `StateNotifier`) require an extra `import 'package:flutter_riverpod/legacy.dart';`. Four files currently do this — new code should prefer `Notifier`/`AsyncNotifier`.
+**Gotcha:** in Riverpod 3 the legacy APIs (`StateProvider`, `StateNotifierProvider`, `StateNotifier`) require an extra `import 'package:flutter_riverpod/legacy.dart';`. Three files currently do this — new code should prefer `Notifier`/`AsyncNotifier`.
 
 Controllers live in `core/<domain>/presentation/` and are consumed by screens in `ui/`.
 
@@ -96,10 +99,10 @@ Controllers live in `core/<domain>/presentation/` and are consumed by screens in
 
 JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `refresh_token`). The refresh response is read tolerantly (`accessToken` or `access_token`).
 
-**Local dev:** set `devHostUrl` in `lib/app/data/network/config.dart` to your machine's LAN IP (currently `http://192.168.0.2:8000`). Prod is `https://cp.i-teach.uz`. `kDebugMode` picks between them.
+**Host selection:** `lib/app/data/network/config.dart` currently hardcodes `hostUrl = mainHostUrl` (prod, `https://cp.i-teach.uz`), so **debug builds hit production**. The `kDebugMode ? devHostUrl : mainHostUrl` switch is commented out. For a local API, set `devHostUrl` to your machine's LAN IP (currently `http://192.168.0.2:8000`), then point `hostUrl` at it. Don't commit that change.
 
-**Media URLs:** the API returns relative paths. The convention everywhere is
-`url.startsWith('http') ? url : '$baseCdnUrl/$url'` where `baseCdnUrl = $hostUrl/public`.
+**Media URLs:** the API returns relative paths. The usual pattern is
+`url.startsWith('http') ? url : '$baseCdnUrl/$url'`. `baseCdnUrl` is `'$hostUrl/public/'` and already ends in a slash, so that pattern produces `public//path`. `tutor_profile_screen.dart` omits the extra slash in one place. `LiveSessionScreen` prefixes `hostUrl` instead of the CDN URL.
 
 ### Error handling
 
@@ -111,11 +114,19 @@ All routes are registered flat in `app_router.dart`. Each screen declares its ow
 
 Parameter passing is inconsistent by design of the individual routes — some use `pathParameters` (`CourseDetailScreen`, `TutorProfileScreen`), most use `uri.queryParameters` (`OtpScreen`, `TasksScreen`, `LessonScreen`, `ChatRoomScreen`), and `LiveSessionScreen` takes the whole entity via `state.extra`. Follow whatever the existing route does.
 
-`SplashScreen` (`/`) is the auth gate: it plays a 4-second animation, then routes to `OnboardingScreen` (no token), `AppScreen` (token + `/me` succeeds, seeding `currentUserProvider`), `NoConnectionScreen` (5xx or network error) or `LoginScreen` (anything else).
+`SplashScreen` (`/`) is the auth gate. After its animation it routes to one of:
+- `OnboardingScreen` if there is no token
+- `AppScreen` if the token is valid and `/me` succeeds (this seeds `currentUserProvider`)
+- `NoConnectionScreen` on a 5xx or network error
+- `LoginScreen` otherwise
+
+If no language has been chosen yet, it goes through `LanguageScreen` first.
+
+Auth works with either a phone number or an email, toggled by `AuthIdentitySwitch` (`AuthIdentityType.phone`/`.email`).
 
 ### Main shell
 
-`AppScreen` (`/app`) is an `IndexedStack` of four tabs — Home, Courses, Tutors, Profile — driven by `navbarControllerProvider`.
+`AppScreen` (`/app`) is an `IndexedStack` of four tabs — Home, Courses, Tutors, Profile — driven by `navbarControllerProvider`. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
 
 **Gotcha:** the navbar always has four items, but when `hasChatRoomsProvider` is true item **index 2** swaps from *Mentor* (the Tutors tab) to *Chat*, and tapping it pushes `ChatRoomScreen` for the first room instead of changing `navbarIndex` — so the Tutors tab is unreachable from the navbar for students who have a chat room. Any change to nav item order must keep `AppNavbar`'s list and `AppScreen.onNavItemClick`'s index-2 special case in sync.
 
@@ -136,6 +147,24 @@ Chat messages are kept **newest-first** in state to pair with `ListView(reverse:
 
 Create a conversation via `POST assessments/conversations`, then record audio locally with the `record` package and upload each turn as `multipart/form-data` (field `audio`, `turn.m4a`, `audio/mp4`) to `assessments/conversations/{id}/messages`. The backend returns the assessment turn with feedback.
 
+### Push notifications
+
+In `main`, `Firebase.initializeApp()` runs inside a try/catch, so a device without Play Services still starts the app and only loses push. Options come from the native `GoogleService-Info.plist` / `google-services.json`. `lib/firebase_options.dart` exists but isn't used.
+
+`PushMessagingService` (`core/notifications/presentation/`) owns the FCM lifecycle:
+- `start()` requests permission, registers the device as a session via the API, and shows foreground pushes through `LocalNotifications`.
+- `signOut()` deletes that session. It needs the bearer token, so it **must run before tokens are cleared**.
+- A push's `data.route` names the screen to open on tap.
+- The background handler must stay top-level with `@pragma('vm:entry-point')`.
+
+### Payments
+
+Checkout happens on the payment provider's website, so the app is never told the result. Before handing off, `purchaseWatchProvider` records which course ids the student already owns. On each app resume, `AppScreen` refetches `myCoursesControllerProvider` and compares. A new course means the purchase succeeded: it shows `showPurchaseSuccessDialog` and stops the watch. Otherwise it keeps watching until the next resume.
+
+### App updates
+
+`AppUpgradeAlert` wraps the app (from `MaterialApp.router`'s `builder`, so it has a Navigator and localizations) and shows `upgrader`'s store prompt once the splash screen is gone. Setting `minSupportedAppVersion` in `app_upgrade_alert.dart` makes the prompt unskippable for older builds. Use that when an API change breaks old clients.
+
 ### Live lessons
 
 Two distinct concepts with confusingly similar names:
@@ -144,7 +173,7 @@ Two distinct concepts with confusingly similar names:
 
 ### Localization
 
-The app ships in **Uzbek, Russian and English**, via `flutter_localizations` + `gen-l10n`. Strings live in `lib/l10n/app_{en,ru,uz}.arb`; `app_en.arb` is the template (add a key there first, then translate it in the other two). The generated `app_localizations*.dart` files sit next to them and **are checked in** — regenerate with `flutter gen-l10n` after any `.arb` edit.
+The app ships in **Uzbek, Russian and English**, via `flutter_localizations` + `gen-l10n`. Strings live in `lib/l10n/app_{en,ru,uz}.arb`; `app_en.arb` is the template (add a key there first, then translate it in the other two). The generated `app_localizations*.dart` files sit next to them and **are checked in** — regenerate with `flutter gen-l10n` after any `.arb` edit. Missing translations fall back to the English template instead of throwing, and are listed in `l10n_untranslated.txt` (`{}` means complete).
 
 - Screens read `AppLocalizations.of(context)` — non-null, since everything is under `MaterialApp`. Convention is `final l10n = AppLocalizations.of(context);` at the top of `build` when a screen uses more than one or two strings.
 - Anything shown to a student belongs in the `.arb`, including empty states, validation messages and semantics labels. Keys are screen-prefixed camelCase (`coursesMyCourses`, `otpResendIn`); shared wording goes under `common*`.
@@ -157,7 +186,7 @@ The app ships in **Uzbek, Russian and English**, via `flutter_localizations` + `
 
 ### Theme
 
-Material 3. Seed/primary `#18c96a` (green), scaffold background `#f6f7fa`, `onSurface` `#111827`, `onSurfaceVariant` `#6b7280`. Light mode only — there is no dark theme. Spacing constants in `AppSpacing` (4/8/12/16/24/32), radii in `AppRadius` (8/12/16/9999).
+Material 3. Seed/primary `#18c96a` (green), scaffold background `#f6f7fa`, `onSurface` `#111827`, `onSurfaceVariant` `#6b7280`. Light mode only — there is no dark theme. Brand colours outside the `ColorScheme` (dark-teal `ink`, panel/streak/promo fills) live in `AppColors`; add new ones there rather than inlining hex values. Spacing constants in `AppSpacing` (4/8/12/16/24/32), radii in `AppRadius` (8/12/16/9999).
 
 **Typography is deliberately not set.** `app_theme.dart` overrides no `textTheme`/`fontFamily`, so `ThemeData` resolves the platform system font — SF Pro on iOS/macOS, Roboto on Android. Apple's font licence forbids embedding SF Pro in an app bundle, so it must come from the OS; don't add it to `assets/` or set a `fontFamily`.
 

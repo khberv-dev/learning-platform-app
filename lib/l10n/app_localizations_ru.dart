@@ -407,6 +407,30 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lessonNoContent => 'Нет контента';
 
   @override
+  String get lessonVideoPlay => 'Воспроизвести';
+
+  @override
+  String get lessonVideoPause => 'Пауза';
+
+  @override
+  String get lessonVideoRewind => 'Назад на 15 секунд';
+
+  @override
+  String get lessonVideoForward => 'Вперёд на 15 секунд';
+
+  @override
+  String get lessonVideoMute => 'Выключить звук';
+
+  @override
+  String get lessonVideoUnmute => 'Включить звук';
+
+  @override
+  String get lessonVideoFullscreen => 'Полноэкранный режим';
+
+  @override
+  String get lessonVideoExitFullscreen => 'Выйти из полноэкранного режима';
+
+  @override
   String get materialsTitle => 'Материалы';
 
   @override
@@ -504,13 +528,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get registerLegalLead => 'Создавая аккаунт, вы принимаете\n';
 
   @override
-  String get registerLegalTerms => 'Условия использования';
+  String get registerLegalOffer => 'Публичную оферту';
 
   @override
   String get registerLegalAnd => ' и ';
 
   @override
   String get registerLegalPrivacy => 'Политику конфиденциальности';
+
+  @override
+  String get registerLegalTail => '';
+
+  @override
+  String get registerLegalOpenFailed => 'Не удалось открыть документ';
 
   @override
   String get forgotTitle => 'Сброс пароля';

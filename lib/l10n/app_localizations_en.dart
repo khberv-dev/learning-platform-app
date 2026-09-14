@@ -403,6 +403,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lessonNoContent => 'No content';
 
   @override
+  String get lessonVideoPlay => 'Play';
+
+  @override
+  String get lessonVideoPause => 'Pause';
+
+  @override
+  String get lessonVideoRewind => 'Back 15 seconds';
+
+  @override
+  String get lessonVideoForward => 'Forward 15 seconds';
+
+  @override
+  String get lessonVideoMute => 'Mute';
+
+  @override
+  String get lessonVideoUnmute => 'Unmute';
+
+  @override
+  String get lessonVideoFullscreen => 'Full screen';
+
+  @override
+  String get lessonVideoExitFullscreen => 'Exit full screen';
+
+  @override
   String get materialsTitle => 'Materials';
 
   @override
@@ -499,13 +523,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerLegalLead => 'By creating an account you agree to our\n';
 
   @override
-  String get registerLegalTerms => 'Terms of Use';
+  String get registerLegalOffer => 'Public Offer';
 
   @override
   String get registerLegalAnd => ' and ';
 
   @override
   String get registerLegalPrivacy => 'Privacy Policy';
+
+  @override
+  String get registerLegalTail => '';
+
+  @override
+  String get registerLegalOpenFailed => 'Couldn\'t open the document';
 
   @override
   String get forgotTitle => 'Reset password';

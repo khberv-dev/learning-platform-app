@@ -808,6 +808,54 @@ abstract class AppLocalizations {
   /// **'No content'**
   String get lessonNoContent;
 
+  /// No description provided for @lessonVideoPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get lessonVideoPlay;
+
+  /// No description provided for @lessonVideoPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get lessonVideoPause;
+
+  /// No description provided for @lessonVideoRewind.
+  ///
+  /// In en, this message translates to:
+  /// **'Back 15 seconds'**
+  String get lessonVideoRewind;
+
+  /// No description provided for @lessonVideoForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward 15 seconds'**
+  String get lessonVideoForward;
+
+  /// No description provided for @lessonVideoMute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get lessonVideoMute;
+
+  /// No description provided for @lessonVideoUnmute.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute'**
+  String get lessonVideoUnmute;
+
+  /// No description provided for @lessonVideoFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Full screen'**
+  String get lessonVideoFullscreen;
+
+  /// No description provided for @lessonVideoExitFullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit full screen'**
+  String get lessonVideoExitFullscreen;
+
   /// No description provided for @materialsTitle.
   ///
   /// In en, this message translates to:
@@ -970,11 +1018,11 @@ abstract class AppLocalizations {
   /// **'By creating an account you agree to our\n'**
   String get registerLegalLead;
 
-  /// No description provided for @registerLegalTerms.
+  /// No description provided for @registerLegalOffer.
   ///
   /// In en, this message translates to:
-  /// **'Terms of Use'**
-  String get registerLegalTerms;
+  /// **'Public Offer'**
+  String get registerLegalOffer;
 
   /// No description provided for @registerLegalAnd.
   ///
@@ -987,6 +1035,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get registerLegalPrivacy;
+
+  /// Text after the privacy link, for languages whose verb follows the objects. Empty in English.
+  ///
+  /// In en, this message translates to:
+  /// **''**
+  String get registerLegalTail;
+
+  /// No description provided for @registerLegalOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the document'**
+  String get registerLegalOpenFailed;
 
   /// No description provided for @forgotTitle.
   ///

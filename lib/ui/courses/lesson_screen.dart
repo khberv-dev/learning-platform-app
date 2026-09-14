@@ -15,6 +15,7 @@ import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/courses/widget/lesson_materials_section.dart';
+import 'package:student/ui/courses/widget/lesson_video_controls.dart';
 import 'package:video_player/video_player.dart';
 
 class LessonScreen extends ConsumerStatefulWidget {
@@ -78,7 +79,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         videoPlayerController: controller,
         autoPlay: false,
         allowFullScreen: true,
-        customControls: const _LessonVideoControls(),
+        customControls: const LessonVideoControls(),
         deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
         placeholder: const ColoredBox(color: Color(0xFF0F172A)),
         errorBuilder: (context, msg) => Center(
@@ -283,156 +284,6 @@ class _PlayPlaceholder extends StatelessWidget {
         Icons.play_arrow_rounded,
         color: Colors.white,
         size: 30,
-      ),
-    );
-  }
-}
-
-class _LessonVideoControls extends StatefulWidget {
-  const _LessonVideoControls();
-
-  @override
-  State<_LessonVideoControls> createState() => _LessonVideoControlsState();
-}
-
-class _LessonVideoControlsState extends State<_LessonVideoControls> {
-  ChewieController? _chewieController;
-  VideoPlayerController? _videoController;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final chewieController = ChewieController.of(context);
-    if (_chewieController == chewieController) return;
-
-    _chewieController?.removeListener(_refresh);
-    _videoController?.removeListener(_refresh);
-    _chewieController = chewieController;
-    _videoController = chewieController.videoPlayerController;
-    _chewieController!.addListener(_refresh);
-    _videoController!.addListener(_refresh);
-  }
-
-  @override
-  void dispose() {
-    _chewieController?.removeListener(_refresh);
-    _videoController?.removeListener(_refresh);
-    super.dispose();
-  }
-
-  void _refresh() {
-    if (mounted) setState(() {});
-  }
-
-  Future<void> _togglePlayback() async {
-    final controller = _videoController!;
-    if (controller.value.isPlaying) {
-      await controller.pause();
-    } else {
-      if (controller.value.position >= controller.value.duration) {
-        await controller.seekTo(Duration.zero);
-      }
-      await controller.play();
-    }
-  }
-
-  Future<void> _toggleMute() async {
-    final controller = _videoController!;
-    await controller.setVolume(controller.value.volume == 0 ? 1 : 0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final video = _videoController;
-    final chewie = _chewieController;
-    if (video == null || chewie == null) return const SizedBox.shrink();
-
-    return Stack(
-      children: [
-        Center(
-          child: _VideoControlButton(
-            icon: video.value.isPlaying
-                ? Icons.pause_rounded
-                : Icons.play_arrow_rounded,
-            onPressed: _togglePlayback,
-            size: 56,
-            iconSize: 32,
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black54],
-              ),
-            ),
-            child: Row(
-              children: [
-                _VideoControlButton(
-                  icon: video.value.volume == 0
-                      ? Icons.volume_off_rounded
-                      : Icons.volume_up_rounded,
-                  onPressed: _toggleMute,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: VideoProgressIndicator(
-                    video,
-                    allowScrubbing: true,
-                    colors: const VideoProgressColors(
-                      playedColor: Colors.white,
-                      bufferedColor: Colors.white54,
-                      backgroundColor: Colors.black38,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                _VideoControlButton(
-                  icon: chewie.isFullScreen
-                      ? Icons.fullscreen_exit_rounded
-                      : Icons.fullscreen_rounded,
-                  onPressed: chewie.isFullScreen
-                      ? chewie.exitFullScreen
-                      : chewie.enterFullScreen,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _VideoControlButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
-  final double size;
-  final double iconSize;
-
-  const _VideoControlButton({
-    required this.icon,
-    required this.onPressed,
-    this.size = 38,
-    this.iconSize = 22,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: size,
-      child: IconButton(
-        onPressed: onPressed,
-        padding: EdgeInsets.zero,
-        style: IconButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-        ),
-        icon: Icon(icon, size: iconSize),
       ),
     );
   }

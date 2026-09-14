@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_theme.dart';
+import 'package:student/shared/url_launcher.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/auth/login_screen.dart';
+import 'package:student/ui/auth/register_screen.dart';
 
 import '../../support/localized_app.dart';
 
-Future<void> _pump(WidgetTester tester, Widget screen) async {
+Future<void> _pump(
+  WidgetTester tester,
+  Widget screen, {
+  List<Override> overrides = const [],
+}) async {
   tester.view.physicalSize = const Size(390, 844) * 2;
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
@@ -18,6 +25,7 @@ Future<void> _pump(WidgetTester tester, Widget screen) async {
 
   await tester.pumpWidget(
     ProviderScope(
+      overrides: overrides,
       child: localizedApp(
         theme: container.read(appThemeProvider),
         routerConfig: GoRouter(
@@ -97,6 +105,53 @@ void main() {
       await _pump(tester, const ForgotPasswordScreen());
 
       expect(find.byIcon(Icons.visibility_off_outlined), findsNWidgets(2));
+    });
+  });
+
+  group('RegisterScreen legal notice', () {
+    Future<List<Uri>> pumpRegister(
+      WidgetTester tester, {
+      bool launchSucceeds = true,
+    }) async {
+      final opened = <Uri>[];
+      await _pump(
+        tester,
+        const RegisterScreen(),
+        overrides: [
+          inAppBrowserLauncherProvider.overrideWithValue((uri) async {
+            opened.add(uri);
+            return launchSucceeds;
+          }),
+        ],
+      );
+      return opened;
+    }
+
+    testWidgets('opens the public offer', (tester) async {
+      final opened = await pumpRegister(tester);
+
+      await tester.tapOnText(find.textRange.ofSubstring('Public Offer'));
+      await tester.pumpAndSettle();
+
+      expect(opened, [Uri.parse(publicOfferUrl)]);
+    });
+
+    testWidgets('opens the privacy policy', (tester) async {
+      final opened = await pumpRegister(tester);
+
+      await tester.tapOnText(find.textRange.ofSubstring('Privacy Policy'));
+      await tester.pumpAndSettle();
+
+      expect(opened, [Uri.parse(privacyPolicyUrl)]);
+    });
+
+    testWidgets('reports a document that could not be opened', (tester) async {
+      await pumpRegister(tester, launchSucceeds: false);
+
+      await tester.tapOnText(find.textRange.ofSubstring('Privacy Policy'));
+      await tester.pumpAndSettle();
+
+      expect(find.text("Couldn't open the document"), findsOneWidget);
     });
   });
 }

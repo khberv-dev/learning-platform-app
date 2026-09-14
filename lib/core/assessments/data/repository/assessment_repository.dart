@@ -17,6 +17,17 @@ class AssessmentRepository implements IAssessmentRepository {
   const AssessmentRepository({required Dio dio}) : _dio = dio;
 
   @override
+  Future<String> getAssemblyAiKey() async {
+    final response = await _dio.get('assessments/assembly-ai-key');
+    final data = response.data as Map<String, dynamic>;
+    final apiKey = data['apiKey'] as String?;
+    if (apiKey == null || apiKey.trim().isEmpty) {
+      throw const FormatException('AssemblyAI API key is missing');
+    }
+    return apiKey;
+  }
+
+  @override
   Future<ConversationEntity> createConversation() async {
     final response = await _dio.post('assessments/conversations');
     return ConversationResponse.fromJson(

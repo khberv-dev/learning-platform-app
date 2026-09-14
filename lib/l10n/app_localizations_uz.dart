@@ -404,6 +404,30 @@ class AppLocalizationsUz extends AppLocalizations {
   String get lessonNoContent => 'Kontent yo\'q';
 
   @override
+  String get lessonVideoPlay => 'Ijro etish';
+
+  @override
+  String get lessonVideoPause => 'Pauza';
+
+  @override
+  String get lessonVideoRewind => '15 soniya orqaga';
+
+  @override
+  String get lessonVideoForward => '15 soniya oldinga';
+
+  @override
+  String get lessonVideoMute => 'Ovozni o\'chirish';
+
+  @override
+  String get lessonVideoUnmute => 'Ovozni yoqish';
+
+  @override
+  String get lessonVideoFullscreen => 'To\'liq ekran';
+
+  @override
+  String get lessonVideoExitFullscreen => 'To\'liq ekrandan chiqish';
+
+  @override
   String get materialsTitle => 'Materiallar';
 
   @override
@@ -500,13 +524,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get registerLegalLead => 'Hisob yaratish orqali siz\n';
 
   @override
-  String get registerLegalTerms => 'Foydalanish shartlari';
+  String get registerLegalOffer => 'Ommaviy oferta';
 
   @override
   String get registerLegalAnd => ' va ';
 
   @override
-  String get registerLegalPrivacy => 'Maxfiylik siyosatiga rozilik bildirasiz';
+  String get registerLegalPrivacy => 'Maxfiylik siyosatiga';
+
+  @override
+  String get registerLegalTail => ' rozilik bildirasiz';
+
+  @override
+  String get registerLegalOpenFailed => 'Hujjatni ochib bo\'lmadi';
 
   @override
   String get forgotTitle => 'Parolni tiklash';

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +11,7 @@ import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_text_field.dart';
+import 'package:student/shared/url_launcher.dart';
 import 'package:student/shared/widget/auth_identity_switch.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
@@ -219,8 +221,38 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 bool _isValidEmail(String value) =>
     RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value.trim());
 
-class _LegalNotice extends StatelessWidget {
+const publicOfferUrl = 'https://i-teach.uz/docs/public_agreement.html';
+const privacyPolicyUrl = 'https://i-teach.uz/docs/privacy-policy.html';
+
+class _LegalNotice extends ConsumerStatefulWidget {
   const _LegalNotice();
+
+  @override
+  ConsumerState<_LegalNotice> createState() => _LegalNoticeState();
+}
+
+class _LegalNoticeState extends ConsumerState<_LegalNotice> {
+  late final _offerTap = TapGestureRecognizer()
+    ..onTap = () => _open(publicOfferUrl);
+  late final _privacyTap = TapGestureRecognizer()
+    ..onTap = () => _open(privacyPolicyUrl);
+
+  Future<void> _open(String url) async {
+    final opened = await ref.read(inAppBrowserLauncherProvider)(Uri.parse(url));
+    if (!opened && mounted) {
+      showErrorMessage(
+        context,
+        AppLocalizations.of(context).registerLegalOpenFailed,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _offerTap.dispose();
+    _privacyTap.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +262,11 @@ class _LegalNotice extends StatelessWidget {
       fontWeight: FontWeight.w500,
       height: 1.4,
     );
-    const emphasis = TextStyle(fontWeight: FontWeight.w800);
+    const link = TextStyle(
+      fontWeight: FontWeight.w800,
+      decoration: TextDecoration.underline,
+      decorationColor: AppColors.ink,
+    );
 
     final l10n = AppLocalizations.of(context);
 
@@ -240,9 +276,18 @@ class _LegalNotice extends StatelessWidget {
         TextSpan(
           children: [
             TextSpan(text: l10n.registerLegalLead),
-            TextSpan(text: l10n.registerLegalTerms, style: emphasis),
+            TextSpan(
+              text: l10n.registerLegalOffer,
+              style: link,
+              recognizer: _offerTap,
+            ),
             TextSpan(text: l10n.registerLegalAnd),
-            TextSpan(text: l10n.registerLegalPrivacy, style: emphasis),
+            TextSpan(
+              text: l10n.registerLegalPrivacy,
+              style: link,
+              recognizer: _privacyTap,
+            ),
+            TextSpan(text: l10n.registerLegalTail),
           ],
         ),
         textAlign: TextAlign.center,

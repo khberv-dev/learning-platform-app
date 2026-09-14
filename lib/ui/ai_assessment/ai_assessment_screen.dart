@@ -1,18 +1,17 @@
-import 'package:audioplayers/audioplayers.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
-import 'package:student/app/data/network/config.dart';
-import 'package:student/core/assessments/domain/usecase/use_create_conversation.dart';
-import 'package:student/core/assessments/domain/usecase/use_send_assessment_turn.dart';
+import 'package:student/core/assessments/data/assembly_ai_voice_agent.dart';
+import 'package:student/core/assessments/data/repository/assessment_repository.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/ai_assessment/widget/ai_avatar.dart';
 import 'package:student/ui/ai_assessment/widget/listening_indicator.dart';
 import 'package:student/ui/ai_assessment/widget/mic_button.dart';
 
-enum _RecordState { idle, recording, uploading, playingFeedback }
+enum _RecordState { idle, connecting, recording, processing, playingFeedback }
 
 class AiAssessmentScreen extends ConsumerStatefulWidget {
   static const path = '/ai-assessment';
@@ -25,122 +24,95 @@ class AiAssessmentScreen extends ConsumerStatefulWidget {
 
 class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
   final AudioRecorder _recorder = AudioRecorder();
-  final AudioPlayer _player = AudioPlayer();
+  late final AssemblyAiVoiceAgent _voiceAgent;
   _RecordState _state = _RecordState.idle;
-  String? _conversationId;
+  String? _apiKey;
   String? _feedbackText;
-  String? _error;
+  bool _sessionStarted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _voiceAgent = AssemblyAiVoiceAgent(
+      recorder: _recorder,
+      onAgentText: (text) {
+        if (mounted) setState(() => _feedbackText = text);
+      },
+      onStateChanged: (state) {
+        if (!mounted) return;
+        setState(() {
+          if (state == AssemblyAiAgentState.idle) _sessionStarted = false;
+          if (state == AssemblyAiAgentState.listening) _sessionStarted = true;
+          _state = switch (state) {
+            AssemblyAiAgentState.connecting => _RecordState.connecting,
+            AssemblyAiAgentState.listening => _RecordState.recording,
+            AssemblyAiAgentState.thinking => _RecordState.processing,
+            AssemblyAiAgentState.speaking => _RecordState.playingFeedback,
+            AssemblyAiAgentState.idle => _RecordState.idle,
+          };
+        });
+      },
+      onError: (_) {
+        if (mounted) {
+          setState(() => _sessionStarted = false);
+          _showError(AppLocalizations.of(context).aiUploadFailed);
+        }
+      },
+    );
+  }
 
   @override
   void dispose() {
-    _recorder.dispose();
-    _player.dispose();
+    unawaited(_voiceAgent.dispose());
     super.dispose();
   }
 
   Future<void> _onMicTap() async {
-    if (_state == _RecordState.idle) {
-      await _startRecording();
-    } else if (_state == _RecordState.recording) {
-      await _stopAndSubmit();
+    if (!_sessionStarted && _state == _RecordState.idle) {
+      await _startRealtimeSession();
     }
   }
 
-  Future<void> _startRecording() async {
-    setState(() {
-      _error = null;
-      _feedbackText = null;
-    });
+  Future<void> _startRealtimeSession() async {
+    setState(() => _feedbackText = null);
 
     if (!await _recorder.hasPermission()) {
-      setState(() => _error = AppLocalizations.of(context).aiMicDenied);
-      return;
-    }
-
-    final dir = await getTemporaryDirectory();
-    final path =
-        '${dir.path}/assessment_${DateTime.now().millisecondsSinceEpoch}.m4a';
-
-    await _recorder.start(
-      const RecordConfig(encoder: AudioEncoder.aacLc),
-      path: path,
-    );
-
-    if (!mounted) return;
-    setState(() => _state = _RecordState.recording);
-  }
-
-  Future<void> _stopAndSubmit() async {
-    setState(() => _state = _RecordState.uploading);
-
-    final path = await _recorder.stop();
-    if (path == null) {
-      if (!mounted) return;
-      setState(() {
-        _state = _RecordState.idle;
-        _error = AppLocalizations.of(context).aiRecordFailed;
-      });
+      if (mounted) _showError(AppLocalizations.of(context).aiMicDenied);
       return;
     }
 
     try {
-      final conversationId = _conversationId ??=
-          (await ref.read(useCreateConversationProvider).call()).id;
-
-      final turn = await ref
-          .read(useSendAssessmentTurnProvider)
-          .call(conversationId: conversationId, audioFilePath: path);
-
-      if (!mounted) return;
-      setState(() => _feedbackText = turn.assistantMessage.text);
-
-      final audio = turn.assistantMessage.audioPath;
-      if (audio != null && audio.isNotEmpty) {
-        await _playFeedback(audio);
-        if (!mounted) return;
+      if (_apiKey == null) {
+        setState(() => _state = _RecordState.connecting);
+        _apiKey = await ref
+            .read(assessmentRepositoryProvider)
+            .getAssemblyAiKey();
       }
-      setState(() => _state = _RecordState.idle);
+      await _voiceAgent.connect(_apiKey!);
+      await _voiceAgent.startListening();
     } catch (_) {
       if (!mounted) return;
       setState(() {
+        _apiKey = null;
         _state = _RecordState.idle;
-        _error = AppLocalizations.of(context).aiUploadFailed;
       });
+      _showError(AppLocalizations.of(context).aiUploadFailed);
     }
   }
 
-  Future<void> _playFeedback(String relativeUrl) async {
-    setState(() => _state = _RecordState.playingFeedback);
-    final fullUrl = relativeUrl.startsWith('http')
-        ? relativeUrl
-        : '$baseCdnUrl$relativeUrl';
-    try {
-      await _player.play(UrlSource(fullUrl));
-      await _player.onPlayerComplete.first;
-    } catch (_) {
-      // Ignore playback errors and return to idle.
-    }
+  void _showError(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
     final isRecording = _state == _RecordState.recording;
-    final isUploading = _state == _RecordState.uploading;
-    final isPlayingFeedback = _state == _RecordState.playingFeedback;
-    final isBusy = isUploading || isPlayingFeedback;
+    final isBusy = _state == _RecordState.connecting;
 
     final l10n = AppLocalizations.of(context);
     final cardText = _feedbackText ?? l10n.aiInitialPrompt;
-    final hint =
-        _error ??
-        (isUploading
-            ? l10n.aiUploading
-            : isPlayingFeedback
-            ? l10n.aiPlayingFeedback
-            : isRecording
-            ? l10n.aiTapToStop
-            : l10n.aiTapToSpeak);
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -168,24 +140,9 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
                   left: 143,
                   top: 576,
                   child: MicButton(
-                    active: isRecording,
+                    active: _sessionStarted,
                     busy: isBusy,
                     onTap: _onMicTap,
-                  ),
-                ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 696,
-                  child: Text(
-                    hint,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: _error != null
-                          ? const Color(0xFFDC2626)
-                          : const Color(0xFF9CA3AF),
-                      fontSize: 13,
-                    ),
                   ),
                 ),
               ],

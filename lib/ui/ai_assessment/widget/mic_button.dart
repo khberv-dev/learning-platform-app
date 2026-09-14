@@ -43,7 +43,7 @@ class MicButton extends StatelessWidget {
                   ),
                 )
               : Icon(
-                  active ? Icons.stop_rounded : Icons.mic_none_rounded,
+                  active ? Icons.graphic_eq_rounded : Icons.mic_none_rounded,
                   color: Colors.white,
                   size: 30,
                 ),
