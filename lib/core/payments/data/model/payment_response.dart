@@ -39,12 +39,18 @@ class PaymentEnrollmentResponse {
 class PaymentResponse {
   final String id;
   final String? status;
+  final int amount;
+  final String? planTitle;
+  final String createdAt;
   final PaymentTypeResponse? paymentType;
   final PaymentEnrollmentResponse? enrollment;
 
   const PaymentResponse({
     required this.id,
     this.status,
+    this.amount = 0,
+    this.planTitle,
+    this.createdAt = '',
     this.paymentType,
     this.enrollment,
   });
@@ -52,9 +58,13 @@ class PaymentResponse {
   factory PaymentResponse.fromJson(Map<String, dynamic> json) {
     final type = json['paymentType'] as Map<String, dynamic>?;
     final enrollment = json['enrollment'] as Map<String, dynamic>?;
+    final plan = json['plan'] as Map<String, dynamic>?;
     return PaymentResponse(
       id: json['id'].toString(),
       status: json['status'] as String?,
+      amount: (json['amount'] as num?)?.toInt() ?? 0,
+      planTitle: plan?['title'] as String?,
+      createdAt: json['createdAt'] as String? ?? '',
       paymentType: type == null ? null : PaymentTypeResponse.fromJson(type),
       enrollment: enrollment == null
           ? null
@@ -65,6 +75,9 @@ class PaymentResponse {
   PaymentEntity toEntity() => PaymentEntity(
     id: id,
     status: PaymentStatus.parse(status),
+    amount: amount,
+    planTitle: planTitle,
+    createdAt: createdAt,
     paymentType: paymentType?.toEntity(),
     enrollment: enrollment?.toEntity(),
   );

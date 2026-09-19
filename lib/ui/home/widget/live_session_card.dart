@@ -125,7 +125,7 @@ class _NextLessonCard extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          if (lesson.teacherName.isNotEmpty) ...[
+          if (lesson.mentorName.isNotEmpty) ...[
             const SizedBox(height: 4),
             Row(
               children: [
@@ -136,7 +136,7 @@ class _NextLessonCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  lesson.teacherName,
+                  lesson.mentorName,
                   style: const TextStyle(
                     color: Color(0xFF6B7280),
                     fontSize: 13,

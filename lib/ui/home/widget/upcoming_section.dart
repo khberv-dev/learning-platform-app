@@ -117,10 +117,10 @@ class _LessonItem extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (lesson.teacherName.isNotEmpty) ...[
+                if (lesson.mentorName.isNotEmpty) ...[
                   const SizedBox(height: 3),
                   Text(
-                    lesson.teacherName,
+                    lesson.mentorName,
                     style: const TextStyle(
                       color: Color(0xFF9CA3AF),
                       fontSize: 12,

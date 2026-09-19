@@ -49,6 +49,7 @@ class _FakeAuthRepository implements IAuthRepository {
   @override
   Future<AuthEntity> signUp({
     required String firstName,
+    String? lastName,
     required String phoneNumber,
     required String password,
     required String code,

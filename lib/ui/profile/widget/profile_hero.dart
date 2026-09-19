@@ -11,8 +11,8 @@ class ProfileHero extends StatelessWidget {
 
   final UserEntity? user;
 
-  /// Absolute URL of the user's photo. [UserEntity] has no avatar field yet,
-  /// so this is normally null and the gradient fallback shows instead.
+  /// The user's photo, resolved against the CDN. Null shows the gradient
+  /// fallback with initials instead.
   final String? photoUrl;
 
   const ProfileHero({super.key, required this.user, this.photoUrl});

@@ -18,7 +18,7 @@ class UserRepository implements IUserRepository {
 
   @override
   Future<UserEntity> getMe() async {
-    final response = await _dio.get('students/me');
+    final response = await _dio.get('student/me');
     return UserResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();
@@ -26,7 +26,7 @@ class UserRepository implements IUserRepository {
 
   @override
   Future<StreakEntity> getStreak() async {
-    final response = await _dio.get('user/me/streak');
+    final response = await _dio.get('student/me/streak');
     return StreakResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();
@@ -34,8 +34,19 @@ class UserRepository implements IUserRepository {
 
   @override
   Future<bool> recordActivity() async {
-    final response = await _dio.post('user/me/activity');
+    final response = await _dio.post('student/me/activity');
     final data = response.data;
     return data is Map<String, dynamic> && data['recorded'] == true;
+  }
+
+  @override
+  Future<UserEntity> uploadAvatar(String imagePath) async {
+    final form = FormData.fromMap({
+      'avatar': await MultipartFile.fromFile(imagePath),
+    });
+    final response = await _dio.patch('student/me/avatar', data: form);
+    return UserResponse.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
   }
 }

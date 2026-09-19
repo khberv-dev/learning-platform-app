@@ -20,7 +20,7 @@ class PaymentsRepository implements IPaymentsRepository {
   @override
   Future<PaymentRequestEntity> requestPayment(String planId) async {
     final response = await _dio.post(
-      'payments/request',
+      'student/payments/request',
       data: {'planId': planId},
     );
     return PaymentRequestResponse.fromJson(
@@ -34,9 +34,40 @@ class PaymentsRepository implements IPaymentsRepository {
     required String paymentTypeId,
   }) async {
     final response = await _dio.patch(
-      'payments/$paymentId/payment-type',
+      'student/payments/$paymentId/payment-type',
       data: {'paymentTypeId': paymentTypeId},
     );
+    return PaymentResponse.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
+  }
+
+  @override
+  Future<PaymentsPageEntity> getMyPayments({
+    required int page,
+    int limit = 10,
+  }) async {
+    final response = await _dio.get(
+      'student/payments/me',
+      queryParameters: {'page': page, 'limit': limit},
+    );
+    final json = response.data as Map<String, dynamic>;
+    final rows = json['data'] as List<dynamic>? ?? const [];
+    return PaymentsPageEntity(
+      payments: rows
+          .map(
+            (e) =>
+                PaymentResponse.fromJson(e as Map<String, dynamic>).toEntity(),
+          )
+          .toList(),
+      page: (json['page'] as num?)?.toInt() ?? page,
+      totalPages: (json['totalPages'] as num?)?.toInt() ?? 0,
+    );
+  }
+
+  @override
+  Future<PaymentEntity> getPayment(String id) async {
+    final response = await _dio.get('student/payments/$id');
     return PaymentResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();

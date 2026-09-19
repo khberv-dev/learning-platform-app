@@ -29,7 +29,8 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -96,15 +97,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         ),
                         const SizedBox(height: AppSpacing.xxl),
                         AppTextField(
-                          label: l10n.fieldFullName,
-                          controller: _fullNameController,
+                          label: l10n.fieldFirstName,
+                          controller: _firstNameController,
                           textCapitalization: TextCapitalization.words,
                           validator: (value) {
                             if ((value ?? '').trim().isEmpty) {
-                              return l10n.validationFullName;
+                              return l10n.validationFirstName;
                             }
                             return null;
                           },
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        AppTextField(
+                          label: l10n.fieldLastName,
+                          controller: _lastNameController,
+                          textCapitalization: TextCapitalization.words,
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AuthIdentitySwitch(
@@ -184,11 +191,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     _otpSent = false;
+    final lastName = _lastNameController.text.trim();
     if (_identityType == AuthIdentityType.email) {
       ref
           .read(registerControllerProvider.notifier)
           .prepareEmailAndSendOtp(
-            firstName: _fullNameController.text.trim(),
+            firstName: _firstNameController.text.trim(),
+            lastName: lastName.isEmpty ? null : lastName,
             email: _emailController.text.trim().toLowerCase(),
             password: _passwordController.text,
             level: ref.read(skillQuizResultProvider),
@@ -199,7 +208,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ref
         .read(registerControllerProvider.notifier)
         .prepareAndSendOtp(
-          firstName: _fullNameController.text.trim(),
+          firstName: _firstNameController.text.trim(),
+          lastName: lastName.isEmpty ? null : lastName,
           phoneNumber: '998$digits',
           password: _passwordController.text,
           // Null when the placement quiz was skipped or closed early, which
@@ -210,7 +220,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   void dispose() {
-    _fullNameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
     _passwordController.dispose();

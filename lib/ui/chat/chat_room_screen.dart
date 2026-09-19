@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/chat/domain/entity/chat_message_entity.dart';
@@ -5,6 +6,7 @@ import 'package:student/core/chat/presentation/chat_messages_controller.dart';
 import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/l10n/app_localizations.dart';
+import 'package:student/utils/messenger.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   static const path = '/chat/room';
@@ -19,6 +21,7 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 
 class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   final _textController = TextEditingController();
+  bool _attaching = false;
 
   @override
   void dispose() {
@@ -31,6 +34,25 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     if (text.isEmpty) return;
     _textController.clear();
     ref.read(chatMessagesProvider(widget.roomId).notifier).sendMessage(text);
+  }
+
+  Future<void> _attachFile() async {
+    if (_attaching) return;
+
+    final picked = await FilePicker.pickFile();
+    final path = picked?.path;
+    if (path == null || !mounted) return;
+
+    setState(() => _attaching = true);
+    try {
+      await ref
+          .read(chatMessagesProvider(widget.roomId).notifier)
+          .sendFile(path);
+    } catch (e) {
+      if (mounted) showErrorMessage(context, apiErrorMessage(context, e));
+    } finally {
+      if (mounted) setState(() => _attaching = false);
+    }
   }
 
   @override
@@ -84,6 +106,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
               controller: _textController,
               isSending: state.isSending,
               onSend: _send,
+              isAttaching: _attaching,
+              onAttach: _attachFile,
             ),
           ],
         ),
@@ -287,11 +311,15 @@ class _InputBar extends StatefulWidget {
   final TextEditingController controller;
   final bool isSending;
   final VoidCallback onSend;
+  final bool isAttaching;
+  final VoidCallback onAttach;
 
   const _InputBar({
     required this.controller,
     required this.isSending,
     required this.onSend,
+    required this.isAttaching,
+    required this.onAttach,
   });
 
   @override
@@ -325,6 +353,23 @@ class _InputBarState extends State<_InputBar> {
       color: Colors.white,
       child: Row(
         children: [
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: widget.isAttaching
+                ? const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: widget.onAttach,
+                    icon: const Icon(
+                      Icons.attach_file_rounded,
+                      color: Color(0xFF6B7280),
+                    ),
+                  ),
+          ),
           Expanded(
             child: TextField(
               controller: widget.controller,

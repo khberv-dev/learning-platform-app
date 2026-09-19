@@ -13,6 +13,7 @@ final registerControllerProvider =
 
 class RegisterController extends AsyncNotifier<void> {
   String? _firstName;
+  String? _lastName;
   String? _phoneNumber;
   String? _email;
   String? _password;
@@ -26,11 +27,13 @@ class RegisterController extends AsyncNotifier<void> {
   /// [level] comes from the placement quiz and is null when it was skipped.
   Future<void> prepareAndSendOtp({
     required String firstName,
+    String? lastName,
     required String phoneNumber,
     required String password,
     StudentLevel? level,
   }) async {
     _firstName = firstName;
+    _lastName = lastName;
     _phoneNumber = phoneNumber;
     _email = null;
     _password = password;
@@ -45,11 +48,13 @@ class RegisterController extends AsyncNotifier<void> {
 
   Future<void> prepareEmailAndSendOtp({
     required String firstName,
+    String? lastName,
     required String email,
     required String password,
     StudentLevel? level,
   }) async {
     _firstName = firstName;
+    _lastName = lastName;
     _phoneNumber = null;
     _email = email.trim().toLowerCase();
     _password = password;
@@ -70,6 +75,7 @@ class RegisterController extends AsyncNotifier<void> {
       if (_email != null) {
         await signUp.callEmail(
           firstName: _firstName!,
+          lastName: _lastName,
           email: _email!,
           password: _password!,
           code: code,
@@ -78,6 +84,7 @@ class RegisterController extends AsyncNotifier<void> {
       } else {
         await signUp.call(
           firstName: _firstName!,
+          lastName: _lastName,
           phoneNumber: _phoneNumber!,
           password: _password!,
           code: code,

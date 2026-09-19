@@ -49,6 +49,9 @@ class PaymentEnrollmentEntity {
 class PaymentEntity {
   final String id;
   final PaymentStatus status;
+  final int amount;
+  final String? planTitle;
+  final String createdAt;
 
   /// Null until the student picks a method.
   final PaymentTypeEntity? paymentType;
@@ -58,6 +61,9 @@ class PaymentEntity {
   const PaymentEntity({
     required this.id,
     required this.status,
+    this.amount = 0,
+    this.planTitle,
+    this.createdAt = '',
     this.paymentType,
     this.enrollment,
   });
@@ -74,4 +80,18 @@ class PaymentRequestEntity {
     required this.payment,
     required this.paymentTypes,
   });
+}
+
+class PaymentsPageEntity {
+  final List<PaymentEntity> payments;
+  final int page;
+  final int totalPages;
+
+  const PaymentsPageEntity({
+    required this.payments,
+    required this.page,
+    required this.totalPages,
+  });
+
+  bool get hasMore => page < totalPages;
 }

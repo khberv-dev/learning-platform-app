@@ -14,7 +14,7 @@ import 'package:student/ui/courses/widget/purchase_success_dialog.dart';
 import 'package:student/ui/home/home_page.dart';
 import 'package:student/ui/main/widget/app_navbar.dart';
 import 'package:student/ui/profile/profile_page.dart';
-import 'package:student/ui/tutors/tutors_page.dart';
+import 'package:student/ui/mentors/mentors_page.dart';
 
 class AppScreen extends ConsumerStatefulWidget {
   static const path = '/app';
@@ -129,7 +129,7 @@ class _AppScreenState extends ConsumerState<AppScreen>
         children: const [
           HomePage(),
           CoursesPage(),
-          TutorsPage(),
+          MentorsPage(),
           ProfilePage(),
         ],
       ),

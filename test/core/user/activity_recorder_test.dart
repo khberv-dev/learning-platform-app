@@ -22,6 +22,10 @@ class _FakeUserRepository implements IUserRepository {
 
   @override
   Future<StreakEntity> getStreak() => throw UnimplementedError();
+
+  @override
+  Future<UserEntity> uploadAvatar(String imagePath) =>
+      throw UnimplementedError();
 }
 
 void main() {

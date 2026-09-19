@@ -559,7 +559,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldConfirmPassword => 'Confirm password';
 
   @override
-  String get fieldFullName => 'Full name';
+  String get fieldFirstName => 'First name';
+
+  @override
+  String get fieldLastName => 'Last name';
 
   @override
   String get validationPhone => 'Enter a valid phone number';
@@ -571,7 +574,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationPasswordsMatch => 'Passwords do not match';
 
   @override
-  String get validationFullName => 'Enter your full name';
+  String get validationFirstName => 'Enter your first name';
 
   @override
   String get otpTitle => 'Verify Your\nPhone Number';
@@ -654,48 +657,88 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatEmptySubtitle => 'Send a message to start the conversation.';
 
   @override
-  String get tutorsTitle => 'Find a tutor';
+  String get mentorsTitle => 'Find a mentor';
 
   @override
-  String get tutorsLoadFailed => 'Couldn\'t load tutors';
+  String get mentorsLoadFailed => 'Couldn\'t load mentors';
 
   @override
-  String get tutorsPullToRetry => 'Pull down to try again';
+  String get mentorsPullToRetry => 'Pull down to try again';
 
   @override
-  String get tutorsEmptyTitle => 'No tutors yet';
+  String get mentorsEmptyTitle => 'No mentors yet';
 
   @override
-  String get tutorsEmptySubtitle => 'Tutors will appear here once they join';
+  String get mentorsEmptySubtitle => 'Mentors will appear here once they join';
 
   @override
-  String get tutorsAvailable => 'Available tutors';
+  String get mentorsAvailable => 'Available mentors';
 
   @override
-  String get tutorHeader => 'Tutor';
+  String get mentorHeader => 'Mentor';
 
   @override
-  String get tutorReviewsTitle => 'Student reviews';
+  String get mentorReviewsTitle => 'Student reviews';
 
   @override
-  String get tutorNoReviews => 'No reviews yet';
+  String get mentorNoReviews => 'No reviews yet';
 
   @override
-  String get tutorBook => 'Book tutor';
+  String get mentorBook => 'Book mentor';
 
   @override
-  String get tutorBookingSent => 'Booking request sent';
+  String get mentorBookingSent => 'Booking request sent';
 
   @override
-  String tutorRatingReviews(String rating, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count reviews',
-      one: '$count review',
-    );
-    return '$rating  ·  $_temp0';
+  String get mentorLeaveReview => 'Leave a review';
+
+  @override
+  String get mentorReviewHint => 'Share your experience with this mentor...';
+
+  @override
+  String get mentorReviewSubmit => 'Submit review';
+
+  @override
+  String get mentorReviewSent => 'Thanks for your feedback!';
+
+  @override
+  String get mentorReviewRatingRequired => 'Please select a rating';
+
+  @override
+  String get purchaseHistoryTitle => 'Purchase history';
+
+  @override
+  String get purchaseHistoryPayments => 'Payments';
+
+  @override
+  String get purchaseHistoryEnrollments => 'Enrollments';
+
+  @override
+  String get purchaseHistoryLoadFailed =>
+      'Couldn\'t load your purchase history';
+
+  @override
+  String get purchaseHistoryEmptyPayments => 'No payments yet';
+
+  @override
+  String get purchaseHistoryEmptyEnrollments => 'No enrollments yet';
+
+  @override
+  String get purchaseHistoryStatusCreated => 'Pending';
+
+  @override
+  String get purchaseHistoryStatusPaid => 'Paid';
+
+  @override
+  String get purchaseHistoryStatusCancelled => 'Cancelled';
+
+  @override
+  String purchaseHistoryPeriod(String start, String end) {
+    return '$start – $end';
   }
+
+  @override
+  String get settingsPurchaseHistory => 'Purchase history';
 
   @override
   String get bookTitle => 'Select Schedule';
@@ -710,7 +753,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookNoAvailability =>
-      'This tutor hasn\'t set availability yet.\nYou can still send a booking request.';
+      'This mentor hasn\'t set availability yet.\nYou can still send a booking request.';
 
   @override
   String bookSlotsSelected(int count) {

@@ -58,7 +58,7 @@ lib/
 └── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, date_format.dart, uz_phone_formatter.dart
 ```
 
-**Domains:** `assessments`, `assignments`, `auth`, `chat`, `courses`, `live_lessons`, `main`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `tutors`, `user`
+**Domains:** `assessments`, `assignments`, `auth`, `chat`, `courses`, `live_lessons`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
 
 Not every domain has all three layers. `assessments` has no presentation layer, since `AiAssessmentScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
 
@@ -102,7 +102,7 @@ JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `ref
 **Host selection:** `lib/app/data/network/config.dart` currently hardcodes `hostUrl = mainHostUrl` (prod, `https://cp.i-teach.uz`), so **debug builds hit production**. The `kDebugMode ? devHostUrl : mainHostUrl` switch is commented out. For a local API, set `devHostUrl` to your machine's LAN IP (currently `http://192.168.0.2:8000`), then point `hostUrl` at it. Don't commit that change.
 
 **Media URLs:** the API returns relative paths. The usual pattern is
-`url.startsWith('http') ? url : '$baseCdnUrl/$url'`. `baseCdnUrl` is `'$hostUrl/public/'` and already ends in a slash, so that pattern produces `public//path`. `tutor_profile_screen.dart` omits the extra slash in one place. `LiveSessionScreen` prefixes `hostUrl` instead of the CDN URL.
+`url.startsWith('http') ? url : '$baseCdnUrl/$url'`. `baseCdnUrl` is `'$hostUrl/public/'` and already ends in a slash, so that pattern produces `public//path`. `mentor_profile_screen.dart` omits the extra slash in one place. `LiveSessionScreen` prefixes `hostUrl` instead of the CDN URL.
 
 ### Error handling
 
@@ -112,7 +112,7 @@ JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `ref
 
 All routes are registered flat in `app_router.dart`. Each screen declares its own `static const path`. Navigate with `context.go(Screen.path)` / `context.push(...)`.
 
-Parameter passing is inconsistent by design of the individual routes — some use `pathParameters` (`CourseDetailScreen`, `TutorProfileScreen`), most use `uri.queryParameters` (`OtpScreen`, `TasksScreen`, `LessonScreen`, `ChatRoomScreen`), and `LiveSessionScreen` takes the whole entity via `state.extra`. Follow whatever the existing route does.
+Parameter passing is inconsistent by design of the individual routes — some use `pathParameters` (`CourseDetailScreen`, `MentorProfileScreen`), most use `uri.queryParameters` (`OtpScreen`, `TasksScreen`, `LessonScreen`, `ChatRoomScreen`), and `LiveSessionScreen` takes the whole entity via `state.extra`. Follow whatever the existing route does.
 
 `SplashScreen` (`/`) is the auth gate. After its animation it routes to one of:
 - `OnboardingScreen` if there is no token
@@ -126,9 +126,9 @@ Auth works with either a phone number or an email, toggled by `AuthIdentitySwitc
 
 ### Main shell
 
-`AppScreen` (`/app`) is an `IndexedStack` of four tabs — Home, Courses, Tutors, Profile — driven by `navbarControllerProvider`. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
+`AppScreen` (`/app`) is an `IndexedStack` of four tabs — Home, Courses, Mentors, Profile — driven by `navbarControllerProvider`. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
 
-**Gotcha:** the navbar always has four items, but when `hasChatRoomsProvider` is true item **index 2** swaps from *Mentor* (the Tutors tab) to *Chat*, and tapping it pushes `ChatRoomScreen` for the first room instead of changing `navbarIndex` — so the Tutors tab is unreachable from the navbar for students who have a chat room. Any change to nav item order must keep `AppNavbar`'s list and `AppScreen.onNavItemClick`'s index-2 special case in sync.
+**Gotcha:** the navbar always has four items, but when `hasChatRoomsProvider` is true item **index 2** swaps from *Mentor* (the Mentors tab) to *Chat*, and tapping it pushes `ChatRoomScreen` for the first room instead of changing `navbarIndex` — so the Mentors tab is unreachable from the navbar for students who have a chat room. Any change to nav item order must keep `AppNavbar`'s list and `AppScreen.onNavItemClick`'s index-2 special case in sync.
 
 ### Realtime (Socket.IO)
 

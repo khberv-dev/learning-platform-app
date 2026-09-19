@@ -92,6 +92,15 @@ class _Repo implements IPaymentsRepository {
             ),
     );
   }
+
+  @override
+  Future<PaymentsPageEntity> getMyPayments({
+    required int page,
+    int limit = 10,
+  }) async => const PaymentsPageEntity(payments: [], page: 1, totalPages: 0);
+
+  @override
+  Future<PaymentEntity> getPayment(String id) async => _pending;
 }
 
 Future<ProviderContainer> _pump(

@@ -6,6 +6,8 @@ class ChatMessageResponse {
   final String? text;
   final String? filePath;
   final String? fileName;
+  final int? fileSize;
+  final String? fileMimeType;
   final String senderId;
   final String senderName;
   final String createdAt;
@@ -19,10 +21,17 @@ class ChatMessageResponse {
     this.text,
     this.filePath,
     this.fileName,
+    this.fileSize,
+    this.fileMimeType,
   });
 
   factory ChatMessageResponse.fromJson(Map<String, dynamic> json) {
-    final sender = json['sender'] as Map<String, dynamic>? ?? {};
+    // Exactly one of student/mentor/admin is non-null — that's the sender.
+    final sender =
+        json['student'] as Map<String, dynamic>? ??
+        json['mentor'] as Map<String, dynamic>? ??
+        json['admin'] as Map<String, dynamic>? ??
+        {};
     final firstName = sender['firstName'] as String? ?? '';
     final lastName = sender['lastName'] as String?;
     final senderName = (lastName != null && lastName.isNotEmpty)
@@ -35,6 +44,8 @@ class ChatMessageResponse {
       text: json['text'] as String?,
       filePath: json['filePath'] as String?,
       fileName: json['fileName'] as String?,
+      fileSize: (json['fileSize'] as num?)?.toInt(),
+      fileMimeType: json['fileMimeType'] as String?,
       senderId: sender['id'] as String? ?? '',
       senderName: senderName,
       createdAt: json['createdAt'] as String? ?? '',
@@ -47,6 +58,8 @@ class ChatMessageResponse {
     text: text,
     filePath: filePath,
     fileName: fileName,
+    fileSize: fileSize,
+    fileMimeType: fileMimeType,
     senderId: senderId,
     senderName: senderName,
     createdAt: createdAt,

@@ -4,6 +4,8 @@ class ChatMessageEntity {
   final String? text;
   final String? filePath;
   final String? fileName;
+  final int? fileSize;
+  final String? fileMimeType;
   final String senderId;
   final String senderName;
   final String createdAt;
@@ -17,6 +19,8 @@ class ChatMessageEntity {
     this.text,
     this.filePath,
     this.fileName,
+    this.fileSize,
+    this.fileMimeType,
   });
 
   bool get isText => type == 'text';

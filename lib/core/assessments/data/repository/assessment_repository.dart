@@ -18,7 +18,7 @@ class AssessmentRepository implements IAssessmentRepository {
 
   @override
   Future<String> getAssemblyAiKey() async {
-    final response = await _dio.get('assessments/assembly-ai-key');
+    final response = await _dio.get('student/assessments/assembly-ai-key');
     final data = response.data as Map<String, dynamic>;
     final apiKey = data['apiKey'] as String?;
     if (apiKey == null || apiKey.trim().isEmpty) {
@@ -29,7 +29,7 @@ class AssessmentRepository implements IAssessmentRepository {
 
   @override
   Future<ConversationEntity> createConversation() async {
-    final response = await _dio.post('assessments/conversations');
+    final response = await _dio.post('student/assessments/conversations');
     return ConversationResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();
@@ -49,7 +49,7 @@ class AssessmentRepository implements IAssessmentRepository {
     });
 
     final response = await _dio.post(
-      'assessments/conversations/$conversationId/messages',
+      'student/assessments/conversations/$conversationId/messages',
       data: form,
     );
 

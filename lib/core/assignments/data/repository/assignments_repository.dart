@@ -16,18 +16,18 @@ class AssignmentsRepository implements IAssignmentsRepository {
 
   @override
   Future<AssignmentEntity> createAssignment({
-    required String teacherId,
+    required String mentorId,
     required DateTime startDate,
     Map<String, List<String>>? selectedSchedule,
   }) async {
     final body = <String, dynamic>{
-      'teacherId': teacherId,
+      'mentorId': mentorId,
       'startDate': startDate.toUtc().toIso8601String(),
       if (selectedSchedule != null && selectedSchedule.isNotEmpty)
         'selectedSchedule': selectedSchedule,
     };
 
-    final response = await _dio.post('assignments', data: body);
+    final response = await _dio.post('student/assignments', data: body);
 
     return AssignmentResponse.fromJson(
       response.data as Map<String, dynamic>,

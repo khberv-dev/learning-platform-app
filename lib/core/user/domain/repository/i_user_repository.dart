@@ -7,4 +7,8 @@ abstract class IUserRepository {
 
   /// Marks today (UTC) as active. True only for the first call of the day.
   Future<bool> recordActivity();
+
+  /// Uploads [imagePath] as the student's avatar, returning the updated
+  /// profile.
+  Future<UserEntity> uploadAvatar(String imagePath);
 }

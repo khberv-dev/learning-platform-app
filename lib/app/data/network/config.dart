@@ -1,8 +1,12 @@
-const devHostUrl = 'http://192.168.0.2:8000';
+import 'package:flutter/foundation.dart';
+
+const devHostUrl = 'http://192.168.0.43:8000';
 const mainHostUrl = 'https://cp.i-teach.uz';
 
-// const hostUrl = kDebugMode ? devHostUrl : mainHostUrl;
-const hostUrl = mainHostUrl;
+const hostUrl = kDebugMode ? devHostUrl : mainHostUrl;
+// const hostUrl = mainHostUrl;
 
-const baseApiUrl = '$hostUrl/api/';
+const apiVersion = 2;
+
+const baseApiUrl = '$hostUrl/api/v$apiVersion/';
 const baseCdnUrl = '$hostUrl/public/';

@@ -8,16 +8,16 @@ import 'package:student/core/courses/domain/repository/i_courses_repository.dart
 import 'package:student/core/live_lessons/data/repository/live_lessons_repository.dart';
 import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
 import 'package:student/core/live_lessons/domain/repository/i_live_lessons_repository.dart';
-import 'package:student/core/tutors/data/repository/tutors_repository.dart';
-import 'package:student/core/tutors/domain/entity/tutor_entity.dart';
-import 'package:student/core/tutors/domain/repository/i_tutors_repository.dart';
+import 'package:student/core/mentors/data/repository/mentors_repository.dart';
+import 'package:student/core/mentors/domain/entity/mentor_entity.dart';
+import 'package:student/core/mentors/domain/repository/i_mentors_repository.dart';
 import 'package:student/core/user/domain/entity/user_entity.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/courses/courses_page.dart';
 import 'package:student/ui/profile/profile_page.dart';
 import 'package:student/ui/profile/widget/profile_hero.dart';
-import 'package:student/ui/tutors/tutors_page.dart';
+import 'package:student/ui/mentors/mentors_page.dart';
 
 import '../../support/localized_app.dart';
 
@@ -30,12 +30,11 @@ const _user = UserEntity(
   points: 0,
   coins: 0,
   level: 'B1',
-  balance: 0,
 );
 
-class _Empty implements ICoursesRepository, ITutorsRepository {
+class _Empty implements ICoursesRepository, IMentorsRepository {
   @override
-  Future<List<TutorEntity>> getTutors() async => [];
+  Future<List<MentorEntity>> getMentors() async => [];
 
   @override
   dynamic noSuchMethod(Invocation invocation) async => <Never>[];
@@ -61,7 +60,7 @@ Future<void> _pump(WidgetTester tester, Widget page) async {
       overrides: [
         currentUserProvider.overrideWith((ref) => _user),
         coursesRepositoryProvider.overrideWithValue(empty),
-        tutorsRepositoryProvider.overrideWithValue(empty),
+        mentorsRepositoryProvider.overrideWithValue(empty),
         liveLessonsRepositoryProvider.overrideWithValue(_NoLessons()),
       ],
       child: localizedApp(
@@ -101,12 +100,12 @@ void main() {
     );
   });
 
-  testWidgets('the tutors title clears the status bar', (tester) async {
-    await _pump(tester, const TutorsPage());
+  testWidgets('the mentors title clears the status bar', (tester) async {
+    await _pump(tester, const MentorsPage());
 
     expect(tester.takeException(), isNull);
     expect(
-      tester.getTopLeft(find.text('Find a tutor')).dy,
+      tester.getTopLeft(find.text('Find a mentor')).dy,
       greaterThanOrEqualTo(_topInset),
     );
   });

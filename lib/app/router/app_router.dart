@@ -20,6 +20,7 @@ import 'package:student/ui/notifications/notifications_screen.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
 import 'package:student/ui/payments/payment_types_screen.dart';
+import 'package:student/ui/payments/purchase_history_screen.dart';
 import 'package:student/ui/plans/plans_screen.dart';
 import 'package:student/ui/roadmap/roadmap_screen.dart';
 import 'package:student/ui/startup/language_screen.dart';
@@ -30,7 +31,7 @@ import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 import 'package:student/ui/startup/splash_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 import 'package:student/ui/startup/welcome_screen.dart';
-import 'package:student/ui/tutors/tutor_profile_screen.dart';
+import 'package:student/ui/mentors/mentor_profile_screen.dart';
 
 final appRouterProvider = Provider((ref) => _appRouter);
 
@@ -92,6 +93,10 @@ final _appRouter = GoRouter(
           PaymentTypesScreen(planId: state.uri.queryParameters['planId']!),
     ),
     GoRoute(
+      path: PurchaseHistoryScreen.path,
+      builder: (_, _) => const PurchaseHistoryScreen(),
+    ),
+    GoRoute(
       path: AiAssessmentScreen.path,
       builder: (_, _) => AiAssessmentScreen(),
     ),
@@ -109,9 +114,9 @@ final _appRouter = GoRouter(
       ),
     ),
     GoRoute(
-      path: TutorProfileScreen.path,
+      path: MentorProfileScreen.path,
       builder: (_, state) =>
-          TutorProfileScreen(tutorId: state.pathParameters['id']!),
+          MentorProfileScreen(mentorId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: ChatRoomScreen.path,

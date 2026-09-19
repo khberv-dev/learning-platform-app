@@ -17,10 +17,9 @@ class LiveLessonResponse {
 
   factory LiveLessonResponse.fromJson(Map<String, dynamic> json) {
     final assignment = json['assignment'] as Map<String, dynamic>?;
-    final teacher = assignment?['teacher'] as Map<String, dynamic>?;
-    final user = teacher?['user'] as Map<String, dynamic>?;
-    final firstName = user?['firstName'] as String? ?? '';
-    final lastName = user?['lastName'] as String? ?? '';
+    final mentor = assignment?['mentor'] as Map<String, dynamic>?;
+    final firstName = mentor?['firstName'] as String? ?? '';
+    final lastName = mentor?['lastName'] as String? ?? '';
     final mentorName = [
       firstName,
       lastName,
@@ -29,7 +28,7 @@ class LiveLessonResponse {
     return LiveLessonResponse(
       id: json['id'] as String,
       title: json['title'] as String? ?? '',
-      videoPath: json['videoPath'] as String? ?? '',
+      videoPath: json['videoUrl'] as String? ?? '',
       mentorName: mentorName,
       createdAt: json['createdAt'] as String? ?? '',
     );

@@ -2,12 +2,12 @@ class UserEntity {
   final String id;
   final String firstName;
   final String? lastName;
+  final String? avatar;
   final String phoneNumber;
   final String? email;
   final int points;
   final int coins;
   final String level;
-  final int balance;
 
   const UserEntity({
     required this.id,
@@ -16,8 +16,8 @@ class UserEntity {
     required this.points,
     required this.coins,
     required this.level,
-    required this.balance,
     this.lastName,
+    this.avatar,
     this.email,
   });
 
@@ -35,4 +35,16 @@ class UserEntity {
     }
     return firstName.isNotEmpty ? firstName[0].toUpperCase() : '?';
   }
+
+  UserEntity copyWith({String? avatar}) => UserEntity(
+    id: id,
+    firstName: firstName,
+    lastName: lastName,
+    avatar: avatar ?? this.avatar,
+    phoneNumber: phoneNumber,
+    email: email,
+    points: points,
+    coins: coins,
+    level: level,
+  );
 }

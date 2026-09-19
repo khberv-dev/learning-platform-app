@@ -22,7 +22,7 @@ class NotificationsRepository implements INotificationsRepository {
     required String fcmToken,
   }) async {
     final response = await _dio.post(
-      'sessions',
+      'student/sessions',
       data: {'os': os.value, 'fcmToken': fcmToken},
     );
     return SessionResponse.fromJson(
@@ -32,7 +32,7 @@ class NotificationsRepository implements INotificationsRepository {
 
   @override
   Future<void> deleteSession(String id) async {
-    await _dio.delete('sessions/$id');
+    await _dio.delete('student/sessions/$id');
   }
 
   @override
@@ -41,7 +41,7 @@ class NotificationsRepository implements INotificationsRepository {
     int limit = 20,
   }) async {
     final response = await _dio.get(
-      'notifications',
+      'student/notifications',
       queryParameters: {'page': page, 'limit': limit},
     );
     final json = response.data as Map<String, dynamic>;
@@ -62,7 +62,7 @@ class NotificationsRepository implements INotificationsRepository {
   @override
   Future<int> getUnreadCount() async {
     final response = await _dio.get(
-      'notifications/unread',
+      'student/notifications/unread',
       queryParameters: {'page': 1, 'limit': 1},
     );
     final json = response.data as Map<String, dynamic>;
@@ -71,6 +71,6 @@ class NotificationsRepository implements INotificationsRepository {
 
   @override
   Future<void> markAsRead(String id) async {
-    await _dio.patch('notifications/$id/read');
+    await _dio.patch('student/notifications/$id/read');
   }
 }

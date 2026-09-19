@@ -9,4 +9,6 @@ abstract class IChatRepository {
   Future<List<ChatMessageEntity>> getMessages(String roomId);
 
   Future<ChatMessageEntity> sendMessage(String roomId, String text);
+
+  Future<ChatMessageEntity> sendFile(String roomId, String filePath);
 }

@@ -7,6 +7,7 @@ import 'package:student/core/notifications/presentation/unread_notifications_cou
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/notification_icon_button.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
+import 'package:student/utils/lib.dart';
 
 /// Plain-language name for a CEFR level, which is what the design shows under
 /// the user's name rather than the raw "B1".
@@ -25,23 +26,26 @@ class HomeTopbar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final unreadCount = ref.watch(unreadNotificationsCountProvider).value ?? 0;
+    final avatarUrl = resolveMediaUrl(user?.avatar);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Row(
         children: [
-          // UserEntity carries no avatar URL, so fall back to initials.
           CircleAvatar(
             radius: 27,
             backgroundColor: Theme.of(context).colorScheme.primary,
-            child: Text(
-              user?.initials ?? '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
+            backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+            child: avatarUrl == null
+                ? Text(
+                    user?.initials ?? '?',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  )
+                : null,
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(

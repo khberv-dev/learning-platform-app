@@ -13,6 +13,7 @@ import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/url_launcher.dart';
 import 'package:student/ui/auth/login_screen.dart';
+import 'package:student/ui/payments/purchase_history_screen.dart';
 import 'package:student/ui/profile/widget/profile_pill.dart';
 
 const _privacyPolicyUrl = 'https://i-teach.uz/web/privacy_policy.html';
@@ -52,6 +53,12 @@ class SettingsCard extends ConsumerWidget {
               showChevron: true,
             ),
             onTap: () => _showLanguagePicker(context, ref, language),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ProfileSettingRow(
+            label: l10n.settingsPurchaseHistory,
+            trailing: const ProfileSettingValue(showChevron: true),
+            onTap: () => context.push(PurchaseHistoryScreen.path),
           ),
           const SizedBox(height: AppSpacing.md),
           ProfileSettingRow(

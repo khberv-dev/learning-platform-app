@@ -6,7 +6,7 @@ class LiveLessonScheduledResponse {
   final String meetLink;
   final DateTime startTime;
   final DateTime endTime;
-  final String teacherName;
+  final String mentorName;
 
   const LiveLessonScheduledResponse({
     required this.id,
@@ -14,20 +14,18 @@ class LiveLessonScheduledResponse {
     required this.meetLink,
     required this.startTime,
     required this.endTime,
-    required this.teacherName,
+    required this.mentorName,
   });
 
   factory LiveLessonScheduledResponse.fromJson(Map<String, dynamic> json) {
-    // Teacher user is at lesson.teacher.user OR lesson.assignment.teacher.user
-    final directTeacher = json['teacher'] as Map<String, dynamic>?;
+    // The mentor is flat — firstName/lastName sit directly on it, either at
+    // lesson.mentor or lesson.assignment.mentor.
     final assignment = json['assignment'] as Map<String, dynamic>?;
-    final assignmentTeacher = assignment?['teacher'] as Map<String, dynamic>?;
-    final user =
-        (directTeacher?['user'] ?? assignmentTeacher?['user'])
-            as Map<String, dynamic>?;
-    final firstName = user?['firstName'] as String? ?? '';
-    final lastName = user?['lastName'] as String? ?? '';
-    final teacherName = [
+    final mentor =
+        (json['mentor'] ?? assignment?['mentor']) as Map<String, dynamic>?;
+    final firstName = mentor?['firstName'] as String? ?? '';
+    final lastName = mentor?['lastName'] as String? ?? '';
+    final mentorName = [
       firstName,
       lastName,
     ].where((s) => s.isNotEmpty).join(' ');
@@ -38,7 +36,7 @@ class LiveLessonScheduledResponse {
       meetLink: json['meetLink'] as String? ?? '',
       startTime: DateTime.parse(json['startTime'] as String),
       endTime: DateTime.parse(json['endTime'] as String),
-      teacherName: teacherName,
+      mentorName: mentorName,
     );
   }
 
@@ -48,6 +46,6 @@ class LiveLessonScheduledResponse {
     meetLink: meetLink,
     startTime: startTime,
     endTime: endTime,
-    teacherName: teacherName,
+    mentorName: mentorName,
   );
 }

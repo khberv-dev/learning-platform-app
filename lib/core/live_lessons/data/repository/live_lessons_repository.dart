@@ -17,7 +17,7 @@ class LiveLessonsRepository implements ILiveLessonsRepository {
   @override
   Future<List<LiveLessonScheduledEntity>> getMyLessons() async {
     final response = await _dio.get(
-      'live-lessons/my',
+      'student/live-lessons',
       queryParameters: {'limit': 100},
     );
     final envelope = response.data as Map<String, dynamic>;

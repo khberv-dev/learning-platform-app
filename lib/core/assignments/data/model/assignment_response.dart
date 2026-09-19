@@ -4,14 +4,14 @@ class AssignmentResponse {
   final String id;
   final String status;
   final String startDate;
-  final Map<String, dynamic>? teacher;
+  final Map<String, dynamic>? mentor;
   final Map<String, dynamic>? student;
 
   const AssignmentResponse({
     required this.id,
     required this.status,
     required this.startDate,
-    this.teacher,
+    this.mentor,
     this.student,
   });
 
@@ -20,7 +20,7 @@ class AssignmentResponse {
       id: json['id'] as String,
       status: json['status'] as String,
       startDate: json['startDate'] as String,
-      teacher: json['teacher'] as Map<String, dynamic>?,
+      mentor: json['mentor'] as Map<String, dynamic>?,
       student: json['student'] as Map<String, dynamic>?,
     );
   }
@@ -30,7 +30,7 @@ class AssignmentResponse {
       id: id,
       status: status,
       startDate: DateTime.parse(startDate),
-      teacherId: teacher?['id'] as String? ?? '',
+      mentorId: mentor?['id'] as String? ?? '',
       studentId: student?['id'] as String? ?? '',
     );
   }

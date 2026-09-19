@@ -560,7 +560,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get fieldConfirmPassword => 'Parolni tasdiqlang';
 
   @override
-  String get fieldFullName => 'Ism va familiya';
+  String get fieldFirstName => 'Ism';
+
+  @override
+  String get fieldLastName => 'Familiya';
 
   @override
   String get validationPhone => 'To\'g\'ri telefon raqamini kiriting';
@@ -572,7 +575,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get validationPasswordsMatch => 'Parollar mos kelmadi';
 
   @override
-  String get validationFullName => 'Ism va familiyangizni kiriting';
+  String get validationFirstName => 'Ismingizni kiriting';
 
   @override
   String get otpTitle => 'Telefon raqamingizni\ntasdiqlang';
@@ -655,48 +658,87 @@ class AppLocalizationsUz extends AppLocalizations {
   String get chatEmptySubtitle => 'Suhbatni boshlash uchun xabar yuboring.';
 
   @override
-  String get tutorsTitle => 'O\'qituvchi topish';
+  String get mentorsTitle => 'Mentor topish';
 
   @override
-  String get tutorsLoadFailed => 'O\'qituvchilarni yuklab bo\'lmadi';
+  String get mentorsLoadFailed => 'Mentorlarni yuklab bo\'lmadi';
 
   @override
-  String get tutorsPullToRetry => 'Qayta urinish uchun pastga torting';
+  String get mentorsPullToRetry => 'Qayta urinish uchun pastga torting';
 
   @override
-  String get tutorsEmptyTitle => 'O\'qituvchilar yo\'q';
+  String get mentorsEmptyTitle => 'Mentorlar yo\'q';
 
   @override
-  String get tutorsEmptySubtitle => 'Ular qo\'shilgach shu yerda ko\'rinadi';
+  String get mentorsEmptySubtitle => 'Ular qo\'shilgach shu yerda ko\'rinadi';
 
   @override
-  String get tutorsAvailable => 'Mavjud o\'qituvchilar';
+  String get mentorsAvailable => 'Mavjud mentorlar';
 
   @override
-  String get tutorHeader => 'O\'qituvchi';
+  String get mentorHeader => 'Mentor';
 
   @override
-  String get tutorReviewsTitle => 'Talabalar fikri';
+  String get mentorReviewsTitle => 'Talabalar fikri';
 
   @override
-  String get tutorNoReviews => 'Hozircha fikrlar yo\'q';
+  String get mentorNoReviews => 'Hozircha fikrlar yo\'q';
 
   @override
-  String get tutorBook => 'Band qilish';
+  String get mentorBook => 'Band qilish';
 
   @override
-  String get tutorBookingSent => 'So\'rov yuborildi';
+  String get mentorBookingSent => 'So\'rov yuborildi';
 
   @override
-  String tutorRatingReviews(String rating, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count ta fikr',
-      one: '$count ta fikr',
-    );
-    return '$rating  ·  $_temp0';
+  String get mentorLeaveReview => 'Fikr qoldirish';
+
+  @override
+  String get mentorReviewHint => 'Ushbu mentor haqidagi fikringizni yozing...';
+
+  @override
+  String get mentorReviewSubmit => 'Fikrni yuborish';
+
+  @override
+  String get mentorReviewSent => 'Fikringiz uchun rahmat!';
+
+  @override
+  String get mentorReviewRatingRequired => 'Iltimos, baho tanlang';
+
+  @override
+  String get purchaseHistoryTitle => 'Xaridlar tarixi';
+
+  @override
+  String get purchaseHistoryPayments => 'To\'lovlar';
+
+  @override
+  String get purchaseHistoryEnrollments => 'Yozilishlar';
+
+  @override
+  String get purchaseHistoryLoadFailed => 'Xaridlar tarixini yuklab bo\'lmadi';
+
+  @override
+  String get purchaseHistoryEmptyPayments => 'Hozircha to\'lovlar yo\'q';
+
+  @override
+  String get purchaseHistoryEmptyEnrollments => 'Hozircha yozilishlar yo\'q';
+
+  @override
+  String get purchaseHistoryStatusCreated => 'Kutilmoqda';
+
+  @override
+  String get purchaseHistoryStatusPaid => 'To\'landi';
+
+  @override
+  String get purchaseHistoryStatusCancelled => 'Bekor qilindi';
+
+  @override
+  String purchaseHistoryPeriod(String start, String end) {
+    return '$start – $end';
   }
+
+  @override
+  String get settingsPurchaseHistory => 'Xaridlar tarixi';
 
   @override
   String get bookTitle => 'Jadvalni tanlang';
@@ -711,7 +753,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get bookNoAvailability =>
-      'O\'qituvchi hali bo\'sh vaqtini kiritmagan.\nShunda ham so\'rov yuborishingiz mumkin.';
+      'Mentor hali bo\'sh vaqtini kiritmagan.\nShunda ham so\'rov yuborishingiz mumkin.';
 
   @override
   String bookSlotsSelected(int count) {

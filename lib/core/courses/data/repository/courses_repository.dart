@@ -28,7 +28,7 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<List<CourseEntity>> getAvailable() async {
-    final response = await _dio.get('courses/available');
+    final response = await _dio.get('student/courses/available');
     final list = response.data as List<dynamic>;
     return list
         .map(
@@ -39,7 +39,7 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<List<MyCourseEntity>> getMyCourses() async {
-    final response = await _dio.get('courses/me');
+    final response = await _dio.get('student/courses/me');
     final list = response.data as List<dynamic>;
     return list
         .map(
@@ -51,7 +51,7 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<List<LiveLessonEntity>> getLiveLessons() async {
-    final response = await _dio.get('live-sessions/my');
+    final response = await _dio.get('student/live-lesson-recordings/my');
     final list = response.data as List<dynamic>;
     return list
         .map(
@@ -63,7 +63,7 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<CourseDetailEntity> getCourseDetail(String id) async {
-    final response = await _dio.get('courses/$id');
+    final response = await _dio.get('student/courses/$id');
     return CourseDetailResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();
@@ -76,7 +76,7 @@ class CoursesRepository implements ICoursesRepository {
     required String lessonId,
   }) async {
     final response = await _dio.get(
-      'courses/$courseId/units/$unitId/lessons/$lessonId/tasks',
+      'student/courses/$courseId/units/$unitId/lessons/$lessonId/tasks',
     );
     final list = response.data as List<dynamic>;
     return list
@@ -87,12 +87,12 @@ class CoursesRepository implements ICoursesRepository {
   @override
   Future<void> submitTasks(Map<String, List<String>> answers) async {
     // One answer string per question of the task, in question order.
-    await _dio.post('task-submissions', data: answers);
+    await _dio.post('student/task-submissions', data: answers);
   }
 
   @override
   Future<List<LessonMaterialEntity>> getLessonMaterials(String lessonId) async {
-    final response = await _dio.get('lessons/$lessonId/materials');
+    final response = await _dio.get('student/lessons/$lessonId/materials');
     final list = response.data as List<dynamic>;
     return list
         .map(
@@ -105,7 +105,9 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<List<TaskResultEntity>> getLessonResults(String lessonId) async {
-    final response = await _dio.get('task-submissions/lessons/$lessonId');
+    final response = await _dio.get(
+      'student/task-submissions/lessons/$lessonId',
+    );
     final list = response.data as List<dynamic>;
     return list
         .map(

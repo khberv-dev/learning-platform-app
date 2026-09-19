@@ -12,4 +12,9 @@ abstract class IPaymentsRepository {
     required String paymentId,
     required String paymentTypeId,
   });
+
+  /// This student's payments, newest activity first.
+  Future<PaymentsPageEntity> getMyPayments({required int page, int limit});
+
+  Future<PaymentEntity> getPayment(String id);
 }

@@ -16,7 +16,7 @@ class PlansRepository implements IPlansRepository {
 
   @override
   Future<List<PlanEntity>> getCoursePlans(String courseId) async {
-    final response = await _dio.get('courses/$courseId/plans');
+    final response = await _dio.get('student/courses/$courseId/plans');
     final list = response.data as List<dynamic>;
     return list
         .map((e) => PlanResponse.fromJson(e as Map<String, dynamic>).toEntity())

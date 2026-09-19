@@ -19,7 +19,7 @@ class ChatRepository implements IChatRepository {
   @override
   Future<List<ChatRoomEntity>> listRooms() async {
     final response = await _dio.get(
-      'chat/rooms',
+      'student/chat/rooms',
       queryParameters: {'page': 1, 'limit': 50},
     );
     final data = response.data as Map<String, dynamic>;
@@ -34,7 +34,7 @@ class ChatRepository implements IChatRepository {
 
   @override
   Future<ChatRoomEntity> getRoom(String roomId) async {
-    final response = await _dio.get('chat/rooms/$roomId');
+    final response = await _dio.get('student/chat/rooms/$roomId');
     return ChatRoomResponse.fromJson(
       response.data as Map<String, dynamic>,
     ).toEntity();
@@ -43,7 +43,7 @@ class ChatRepository implements IChatRepository {
   @override
   Future<List<ChatMessageEntity>> getMessages(String roomId) async {
     final response = await _dio.get(
-      'chat/rooms/$roomId/messages',
+      'student/chat/rooms/$roomId/messages',
       queryParameters: {'page': 1, 'limit': 50},
     );
     final data = response.data as Map<String, dynamic>;
@@ -60,8 +60,22 @@ class ChatRepository implements IChatRepository {
   @override
   Future<ChatMessageEntity> sendMessage(String roomId, String text) async {
     final response = await _dio.post(
-      'chat/rooms/$roomId/messages',
+      'student/chat/rooms/$roomId/messages',
       data: {'text': text},
+    );
+    return ChatMessageResponse.fromJson(
+      response.data as Map<String, dynamic>,
+    ).toEntity();
+  }
+
+  @override
+  Future<ChatMessageEntity> sendFile(String roomId, String filePath) async {
+    final form = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    final response = await _dio.post(
+      'student/chat/rooms/$roomId/messages/file',
+      data: form,
     );
     return ChatMessageResponse.fromJson(
       response.data as Map<String, dynamic>,

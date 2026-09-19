@@ -113,6 +113,22 @@ class ChatMessagesNotifier extends StateNotifier<ChatMessagesState> {
     }
   }
 
+  /// Throws on failure so the screen can surface the error — unlike
+  /// [sendMessage], there's no text left in a box to silently keep.
+  Future<void> sendFile(String filePath) async {
+    state = state.copyWith(isSending: true);
+    try {
+      final msg = await _ref
+          .read(chatRepositoryProvider)
+          .sendFile(roomId, filePath);
+      if (!mounted) return;
+      state = state.addMessage(msg).copyWith(isSending: false);
+    } catch (e) {
+      if (mounted) state = state.copyWith(isSending: false);
+      rethrow;
+    }
+  }
+
   @override
   void dispose() {
     _socket?.disconnect();

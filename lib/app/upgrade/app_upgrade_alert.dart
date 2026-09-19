@@ -35,6 +35,7 @@ class AppUpgradeAlert extends StatefulWidget {
 
 class _AppUpgradeAlertState extends State<AppUpgradeAlert> {
   late final Upgrader _upgrader = Upgrader(
+    messages: _UpdateAvailableMessages(context: context),
     minAppVersion: minSupportedAppVersion,
     debugLogging: kDebugMode,
     // Bypasses the "have we asked recently" and "did they ignore this version"
@@ -124,6 +125,26 @@ class _AppUpgradeAlertState extends State<AppUpgradeAlert> {
           ),
       ],
     );
+  }
+}
+
+/// Drops `upgrader`'s default version numbers from the prompt body — the
+/// student doesn't need to see "1.2 is now available, you have 1.0", just
+/// that an update exists.
+class _UpdateAvailableMessages extends UpgraderMessages {
+  _UpdateAvailableMessages({super.context});
+
+  @override
+  String get body {
+    switch (languageCode) {
+      case 'ru':
+        return 'Доступна новая версия приложения {{appName}}!';
+      case 'uz':
+        return 'Ilova {{appName}} uchun yangi versiya mavjud!';
+      case 'en':
+      default:
+        return 'A new version of {{appName}} is available!';
+    }
   }
 }
 

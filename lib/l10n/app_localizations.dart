@@ -1090,11 +1090,17 @@ abstract class AppLocalizations {
   /// **'Confirm password'**
   String get fieldConfirmPassword;
 
-  /// No description provided for @fieldFullName.
+  /// No description provided for @fieldFirstName.
   ///
   /// In en, this message translates to:
-  /// **'Full name'**
-  String get fieldFullName;
+  /// **'First name'**
+  String get fieldFirstName;
+
+  /// No description provided for @fieldLastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get fieldLastName;
 
   /// No description provided for @validationPhone.
   ///
@@ -1114,11 +1120,11 @@ abstract class AppLocalizations {
   /// **'Passwords do not match'**
   String get validationPasswordsMatch;
 
-  /// No description provided for @validationFullName.
+  /// No description provided for @validationFirstName.
   ///
   /// In en, this message translates to:
-  /// **'Enter your full name'**
-  String get validationFullName;
+  /// **'Enter your first name'**
+  String get validationFirstName;
 
   /// No description provided for @otpTitle.
   ///
@@ -1264,77 +1270,167 @@ abstract class AppLocalizations {
   /// **'Send a message to start the conversation.'**
   String get chatEmptySubtitle;
 
-  /// No description provided for @tutorsTitle.
+  /// No description provided for @mentorsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Find a tutor'**
-  String get tutorsTitle;
+  /// **'Find a mentor'**
+  String get mentorsTitle;
 
-  /// No description provided for @tutorsLoadFailed.
+  /// No description provided for @mentorsLoadFailed.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t load tutors'**
-  String get tutorsLoadFailed;
+  /// **'Couldn\'t load mentors'**
+  String get mentorsLoadFailed;
 
-  /// No description provided for @tutorsPullToRetry.
+  /// No description provided for @mentorsPullToRetry.
   ///
   /// In en, this message translates to:
   /// **'Pull down to try again'**
-  String get tutorsPullToRetry;
+  String get mentorsPullToRetry;
 
-  /// No description provided for @tutorsEmptyTitle.
+  /// No description provided for @mentorsEmptyTitle.
   ///
   /// In en, this message translates to:
-  /// **'No tutors yet'**
-  String get tutorsEmptyTitle;
+  /// **'No mentors yet'**
+  String get mentorsEmptyTitle;
 
-  /// No description provided for @tutorsEmptySubtitle.
+  /// No description provided for @mentorsEmptySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Tutors will appear here once they join'**
-  String get tutorsEmptySubtitle;
+  /// **'Mentors will appear here once they join'**
+  String get mentorsEmptySubtitle;
 
-  /// No description provided for @tutorsAvailable.
+  /// No description provided for @mentorsAvailable.
   ///
   /// In en, this message translates to:
-  /// **'Available tutors'**
-  String get tutorsAvailable;
+  /// **'Available mentors'**
+  String get mentorsAvailable;
 
-  /// No description provided for @tutorHeader.
+  /// No description provided for @mentorHeader.
   ///
   /// In en, this message translates to:
-  /// **'Tutor'**
-  String get tutorHeader;
+  /// **'Mentor'**
+  String get mentorHeader;
 
-  /// No description provided for @tutorReviewsTitle.
+  /// No description provided for @mentorReviewsTitle.
   ///
   /// In en, this message translates to:
   /// **'Student reviews'**
-  String get tutorReviewsTitle;
+  String get mentorReviewsTitle;
 
-  /// No description provided for @tutorNoReviews.
+  /// No description provided for @mentorNoReviews.
   ///
   /// In en, this message translates to:
   /// **'No reviews yet'**
-  String get tutorNoReviews;
+  String get mentorNoReviews;
 
-  /// No description provided for @tutorBook.
+  /// No description provided for @mentorBook.
   ///
   /// In en, this message translates to:
-  /// **'Book tutor'**
-  String get tutorBook;
+  /// **'Book mentor'**
+  String get mentorBook;
 
-  /// No description provided for @tutorBookingSent.
+  /// No description provided for @mentorBookingSent.
   ///
   /// In en, this message translates to:
   /// **'Booking request sent'**
-  String get tutorBookingSent;
+  String get mentorBookingSent;
 
-  /// No description provided for @tutorRatingReviews.
+  /// No description provided for @mentorLeaveReview.
   ///
   /// In en, this message translates to:
-  /// **'{rating}  ·  {count, plural, one{{count} review} other{{count} reviews}}'**
-  String tutorRatingReviews(String rating, int count);
+  /// **'Leave a review'**
+  String get mentorLeaveReview;
+
+  /// No description provided for @mentorReviewHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your experience with this mentor...'**
+  String get mentorReviewHint;
+
+  /// No description provided for @mentorReviewSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit review'**
+  String get mentorReviewSubmit;
+
+  /// No description provided for @mentorReviewSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your feedback!'**
+  String get mentorReviewSent;
+
+  /// No description provided for @mentorReviewRatingRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a rating'**
+  String get mentorReviewRatingRequired;
+
+  /// No description provided for @purchaseHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase history'**
+  String get purchaseHistoryTitle;
+
+  /// No description provided for @purchaseHistoryPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get purchaseHistoryPayments;
+
+  /// No description provided for @purchaseHistoryEnrollments.
+  ///
+  /// In en, this message translates to:
+  /// **'Enrollments'**
+  String get purchaseHistoryEnrollments;
+
+  /// No description provided for @purchaseHistoryLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your purchase history'**
+  String get purchaseHistoryLoadFailed;
+
+  /// No description provided for @purchaseHistoryEmptyPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet'**
+  String get purchaseHistoryEmptyPayments;
+
+  /// No description provided for @purchaseHistoryEmptyEnrollments.
+  ///
+  /// In en, this message translates to:
+  /// **'No enrollments yet'**
+  String get purchaseHistoryEmptyEnrollments;
+
+  /// No description provided for @purchaseHistoryStatusCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get purchaseHistoryStatusCreated;
+
+  /// No description provided for @purchaseHistoryStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get purchaseHistoryStatusPaid;
+
+  /// No description provided for @purchaseHistoryStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get purchaseHistoryStatusCancelled;
+
+  /// No description provided for @purchaseHistoryPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end}'**
+  String purchaseHistoryPeriod(String start, String end);
+
+  /// No description provided for @settingsPurchaseHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase history'**
+  String get settingsPurchaseHistory;
 
   /// No description provided for @bookTitle.
   ///
@@ -1357,7 +1453,7 @@ abstract class AppLocalizations {
   /// No description provided for @bookNoAvailability.
   ///
   /// In en, this message translates to:
-  /// **'This tutor hasn\'t set availability yet.\nYou can still send a booking request.'**
+  /// **'This mentor hasn\'t set availability yet.\nYou can still send a booking request.'**
   String get bookNoAvailability;
 
   /// No description provided for @bookSlotsSelected.

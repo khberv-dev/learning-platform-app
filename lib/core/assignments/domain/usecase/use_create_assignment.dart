@@ -13,11 +13,11 @@ class UseCreateAssignment {
   const UseCreateAssignment(this._repository);
 
   Future<AssignmentEntity> call({
-    required String teacherId,
+    required String mentorId,
     required DateTime startDate,
     Map<String, List<String>>? selectedSchedule,
   }) => _repository.createAssignment(
-    teacherId: teacherId,
+    mentorId: mentorId,
     startDate: startDate,
     selectedSchedule: selectedSchedule,
   );

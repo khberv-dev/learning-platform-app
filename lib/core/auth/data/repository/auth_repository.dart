@@ -50,6 +50,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
   @override
   Future<AuthEntity> signUp({
     required String firstName,
+    String? lastName,
     required String phoneNumber,
     required String password,
     required String code,
@@ -62,8 +63,9 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
         'phoneNumber': phoneNumber,
         'password': password,
         'code': code,
-        // Left out rather than sent null: the field is optional, and the API
+        // Left out rather than sent null: both are optional, and the API
         // rejects a null against its enum validator.
+        if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
         if (level != null) 'level': level.code,
       },
     );
@@ -73,6 +75,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
   @override
   Future<AuthEntity> signUpWithEmail({
     required String firstName,
+    String? lastName,
     required String email,
     required String password,
     required String code,
@@ -85,6 +88,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
         'email': email.trim().toLowerCase(),
         'password': password,
         'code': code,
+        if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
         if (level != null) 'level': level.code,
       },
     );

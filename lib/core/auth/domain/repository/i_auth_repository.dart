@@ -9,9 +9,10 @@ abstract class IAuthRepository {
   });
 
   /// [level] is what the placement quiz scored. Omitted when it wasn't taken,
-  /// leaving the API to apply its own default.
+  /// leaving the API to apply its own default. [lastName] is optional.
   Future<AuthEntity> signUp({
     required String firstName,
+    String? lastName,
     required String phoneNumber,
     required String password,
     required String code,
@@ -45,6 +46,7 @@ abstract class IEmailAuthRepository {
 
   Future<AuthEntity> signUpWithEmail({
     required String firstName,
+    String? lastName,
     required String email,
     required String password,
     required String code,

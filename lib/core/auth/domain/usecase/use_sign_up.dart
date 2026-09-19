@@ -15,12 +15,14 @@ class UseSignUp {
 
   Future<AuthEntity> call({
     required String firstName,
+    String? lastName,
     required String phoneNumber,
     required String password,
     required String code,
     StudentLevel? level,
   }) => _repository.signUp(
     firstName: firstName,
+    lastName: lastName,
     phoneNumber: phoneNumber,
     password: password,
     code: code,
@@ -29,12 +31,14 @@ class UseSignUp {
 
   Future<AuthEntity> callEmail({
     required String firstName,
+    String? lastName,
     required String email,
     required String password,
     required String code,
     StudentLevel? level,
   }) => (_repository as IEmailAuthRepository).signUpWithEmail(
     firstName: firstName,
+    lastName: lastName,
     email: email,
     password: password,
     code: code,

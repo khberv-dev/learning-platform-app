@@ -4,7 +4,7 @@ class LiveLessonScheduledEntity {
   final String meetLink;
   final DateTime startTime;
   final DateTime endTime;
-  final String teacherName;
+  final String mentorName;
 
   const LiveLessonScheduledEntity({
     required this.id,
@@ -12,7 +12,7 @@ class LiveLessonScheduledEntity {
     required this.meetLink,
     required this.startTime,
     required this.endTime,
-    required this.teacherName,
+    required this.mentorName,
   });
 
   bool get isUpcoming => startTime.isAfter(DateTime.now());

@@ -564,7 +564,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get fieldConfirmPassword => 'Повторите пароль';
 
   @override
-  String get fieldFullName => 'Имя и фамилия';
+  String get fieldFirstName => 'Имя';
+
+  @override
+  String get fieldLastName => 'Фамилия';
 
   @override
   String get validationPhone => 'Введите корректный номер телефона';
@@ -576,7 +579,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get validationPasswordsMatch => 'Пароли не совпадают';
 
   @override
-  String get validationFullName => 'Введите имя и фамилию';
+  String get validationFirstName => 'Введите имя';
 
   @override
   String get otpTitle => 'Подтвердите\nномер телефона';
@@ -659,51 +662,89 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatEmptySubtitle => 'Напишите первым, чтобы начать разговор.';
 
   @override
-  String get tutorsTitle => 'Найти репетитора';
+  String get mentorsTitle => 'Найти ментора';
 
   @override
-  String get tutorsLoadFailed => 'Не удалось загрузить репетиторов';
+  String get mentorsLoadFailed => 'Не удалось загрузить менторов';
 
   @override
-  String get tutorsPullToRetry => 'Потяните вниз, чтобы повторить';
+  String get mentorsPullToRetry => 'Потяните вниз, чтобы повторить';
 
   @override
-  String get tutorsEmptyTitle => 'Репетиторов пока нет';
+  String get mentorsEmptyTitle => 'Менторов пока нет';
 
   @override
-  String get tutorsEmptySubtitle =>
+  String get mentorsEmptySubtitle =>
       'Они появятся здесь, как только присоединятся';
 
   @override
-  String get tutorsAvailable => 'Доступные репетиторы';
+  String get mentorsAvailable => 'Доступные менторы';
 
   @override
-  String get tutorHeader => 'Репетитор';
+  String get mentorHeader => 'Ментор';
 
   @override
-  String get tutorReviewsTitle => 'Отзывы студентов';
+  String get mentorReviewsTitle => 'Отзывы студентов';
 
   @override
-  String get tutorNoReviews => 'Отзывов пока нет';
+  String get mentorNoReviews => 'Отзывов пока нет';
 
   @override
-  String get tutorBook => 'Записаться';
+  String get mentorBook => 'Записаться';
 
   @override
-  String get tutorBookingSent => 'Заявка отправлена';
+  String get mentorBookingSent => 'Заявка отправлена';
 
   @override
-  String tutorRatingReviews(String rating, int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count отзыва',
-      many: '$count отзывов',
-      few: '$count отзыва',
-      one: '$count отзыв',
-    );
-    return '$rating  ·  $_temp0';
+  String get mentorLeaveReview => 'Оставить отзыв';
+
+  @override
+  String get mentorReviewHint => 'Поделитесь впечатлением об этом менторе...';
+
+  @override
+  String get mentorReviewSubmit => 'Отправить отзыв';
+
+  @override
+  String get mentorReviewSent => 'Спасибо за отзыв!';
+
+  @override
+  String get mentorReviewRatingRequired => 'Пожалуйста, выберите оценку';
+
+  @override
+  String get purchaseHistoryTitle => 'История покупок';
+
+  @override
+  String get purchaseHistoryPayments => 'Платежи';
+
+  @override
+  String get purchaseHistoryEnrollments => 'Записи на курсы';
+
+  @override
+  String get purchaseHistoryLoadFailed =>
+      'Не удалось загрузить историю покупок';
+
+  @override
+  String get purchaseHistoryEmptyPayments => 'Платежей пока нет';
+
+  @override
+  String get purchaseHistoryEmptyEnrollments => 'Записей пока нет';
+
+  @override
+  String get purchaseHistoryStatusCreated => 'Ожидает оплаты';
+
+  @override
+  String get purchaseHistoryStatusPaid => 'Оплачено';
+
+  @override
+  String get purchaseHistoryStatusCancelled => 'Отменено';
+
+  @override
+  String purchaseHistoryPeriod(String start, String end) {
+    return '$start – $end';
   }
+
+  @override
+  String get settingsPurchaseHistory => 'История покупок';
 
   @override
   String get bookTitle => 'Выберите расписание';
@@ -718,7 +759,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get bookNoAvailability =>
-      'Репетитор ещё не указал свободное время.\nВы всё равно можете отправить заявку.';
+      'Ментор ещё не указал свободное время.\nВы всё равно можете отправить заявку.';
 
   @override
   String bookSlotsSelected(int count) {
