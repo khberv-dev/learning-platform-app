@@ -8,7 +8,6 @@ class MentorResponse {
   final String? profession;
   final double rating;
   final String status;
-  final Map<String, List<String>> schedule;
 
   const MentorResponse({
     required this.id,
@@ -18,7 +17,6 @@ class MentorResponse {
     this.avatarUrl,
     this.introVideo,
     this.profession,
-    this.schedule = const {},
   });
 
   // Flat on the wire — firstName/lastName/avatar sit directly on the mentor,
@@ -28,7 +26,6 @@ class MentorResponse {
     final firstName = json['firstName'] as String? ?? '';
     final lastName = json['lastName'] as String? ?? '';
     final name = [firstName, lastName].where((s) => s.isNotEmpty).join(' ');
-    final rawSchedule = json['schedule'] as Map<String, dynamic>? ?? {};
 
     return MentorResponse(
       id: json['id'].toString(),
@@ -38,9 +35,6 @@ class MentorResponse {
       profession: json['profession'] as String?,
       rating: (json['summaryRating'] ?? 0).toDouble(),
       status: json['status'] as String? ?? 'active',
-      schedule: rawSchedule.map(
-        (day, slots) => MapEntry(day, List<String>.from(slots as List)),
-      ),
     );
   }
 
@@ -52,6 +46,5 @@ class MentorResponse {
     profession: profession,
     rating: rating,
     status: status,
-    schedule: schedule,
   );
 }

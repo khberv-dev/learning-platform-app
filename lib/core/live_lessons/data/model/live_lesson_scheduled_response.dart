@@ -18,11 +18,9 @@ class LiveLessonScheduledResponse {
   });
 
   factory LiveLessonScheduledResponse.fromJson(Map<String, dynamic> json) {
-    // The mentor is flat — firstName/lastName sit directly on it, either at
-    // lesson.mentor or lesson.assignment.mentor.
-    final assignment = json['assignment'] as Map<String, dynamic>?;
-    final mentor =
-        (json['mentor'] ?? assignment?['mentor']) as Map<String, dynamic>?;
+    // The mentor who scheduled the lesson — flat, firstName/lastName sit
+    // directly on it.
+    final mentor = json['mentor'] as Map<String, dynamic>?;
     final firstName = mentor?['firstName'] as String? ?? '';
     final lastName = mentor?['lastName'] as String? ?? '';
     final mentorName = [

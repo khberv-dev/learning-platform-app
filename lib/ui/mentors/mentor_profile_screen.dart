@@ -4,17 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/core/assignments/presentation/create_assignment_controller.dart';
 import 'package:student/core/mentors/domain/entity/mentor_entity.dart';
 import 'package:student/core/mentors/domain/usecase/use_leave_feedback.dart';
 import 'package:student/core/mentors/presentation/mentor_detail_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
-import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/back_icon_button.dart';
 import 'package:student/shared/widget/section_title.dart';
-import 'package:student/ui/mentors/book_mentor_sheet.dart';
 import 'package:student/utils/messenger.dart';
 import 'package:video_player/video_player.dart';
 
@@ -69,25 +66,6 @@ class _MentorProfileScreenState extends ConsumerState<MentorProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(mentorDetailControllerProvider(widget.mentorId));
-
-    ref.listen<AsyncValue<Object?>>(createAssignmentControllerProvider, (
-      prev,
-      next,
-    ) {
-      if (prev?.isLoading != true) return;
-      next.whenOrNull(
-        data: (assignment) {
-          if (assignment == null) return;
-          ScaffoldMessenger.of(context)
-            ..clearSnackBars()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context).mentorBookingSent),
-              ),
-            );
-        },
-      );
-    });
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -166,7 +144,7 @@ class _MentorProfileScreenState extends ConsumerState<MentorProfileScreen> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg,
                         ),
-                        child: AppButton.outlined(
+                        child: AppButton.filled(
                           label: AppLocalizations.of(context).mentorLeaveReview,
                           onTap: () => _showFeedbackSheet(context, mentor),
                         ),
@@ -174,19 +152,6 @@ class _MentorProfileScreenState extends ConsumerState<MentorProfileScreen> {
                     ],
                   ),
                 ),
-              ),
-              AppBottomActionBar(
-                children: [
-                  AppButton.filled(
-                    label: AppLocalizations.of(context).mentorBook,
-                    onTap: () => showBookMentorSheet(
-                      context,
-                      ref,
-                      mentorId: widget.mentorId,
-                      mentorName: mentor.name,
-                    ),
-                  ),
-                ],
               ),
             ],
           );

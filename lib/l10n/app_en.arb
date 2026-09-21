@@ -301,11 +301,18 @@
   "mentorsEmptyTitle": "No mentors yet",
   "mentorsEmptySubtitle": "Mentors will appear here once they join",
   "mentorsAvailable": "Available mentors",
+  "groupSectionTitle": "My group",
+  "groupPrimaryMentor": "Primary mentor",
+  "groupSupportMentor": "Support mentor",
+  "groupScheduleTitle": "Schedule",
+  "groupNoGroup": "You haven't been added to a group yet",
+  "groupStudentsCount": "{count, plural, one{{count} student} other{{count} students}}",
+  "@groupStudentsCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
   "mentorHeader": "Mentor",
   "mentorReviewsTitle": "Student reviews",
   "mentorNoReviews": "No reviews yet",
-  "mentorBook": "Book mentor",
-  "mentorBookingSent": "Booking request sent",
   "mentorLeaveReview": "Leave a review",
   "mentorReviewHint": "Share your experience with this mentor...",
   "mentorReviewSubmit": "Submit review",
@@ -328,18 +335,6 @@
     }
   },
   "settingsPurchaseHistory": "Purchase history",
-  "bookTitle": "Select Schedule",
-  "bookSubtitle": "Choose up to 3 weekly slots with {name}",
-  "@bookSubtitle": {
-    "placeholders": { "name": { "type": "String" } }
-  },
-  "bookLoadFailed": "Could not load schedule",
-  "bookNoAvailability": "This mentor hasn't set availability yet.\nYou can still send a booking request.",
-  "bookSlotsSelected": "{count}/3 slots selected",
-  "@bookSlotsSelected": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "bookConfirm": "Confirm Booking",
 
   "weekdayMonday": "Monday",
   "weekdayTuesday": "Tuesday",

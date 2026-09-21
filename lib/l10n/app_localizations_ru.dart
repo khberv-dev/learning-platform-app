@@ -681,6 +681,34 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mentorsAvailable => 'Доступные менторы';
 
   @override
+  String get groupSectionTitle => 'Моя группа';
+
+  @override
+  String get groupPrimaryMentor => 'Основной ментор';
+
+  @override
+  String get groupSupportMentor => 'Дополнительный ментор';
+
+  @override
+  String get groupScheduleTitle => 'Расписание';
+
+  @override
+  String get groupNoGroup => 'Вы ещё не добавлены в группу';
+
+  @override
+  String groupStudentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count студента',
+      many: '$count студентов',
+      few: '$count студента',
+      one: '$count студент',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get mentorHeader => 'Ментор';
 
   @override
@@ -688,12 +716,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mentorNoReviews => 'Отзывов пока нет';
-
-  @override
-  String get mentorBook => 'Записаться';
-
-  @override
-  String get mentorBookingSent => 'Заявка отправлена';
 
   @override
   String get mentorLeaveReview => 'Оставить отзыв';
@@ -745,29 +767,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsPurchaseHistory => 'История покупок';
-
-  @override
-  String get bookTitle => 'Выберите расписание';
-
-  @override
-  String bookSubtitle(String name) {
-    return 'Выберите до 3 занятий в неделю с $name';
-  }
-
-  @override
-  String get bookLoadFailed => 'Не удалось загрузить расписание';
-
-  @override
-  String get bookNoAvailability =>
-      'Ментор ещё не указал свободное время.\nВы всё равно можете отправить заявку.';
-
-  @override
-  String bookSlotsSelected(int count) {
-    return 'Выбрано $count/3';
-  }
-
-  @override
-  String get bookConfirm => 'Подтвердить запись';
 
   @override
   String get weekdayMonday => 'Понедельник';

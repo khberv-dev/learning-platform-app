@@ -676,6 +676,32 @@ class AppLocalizationsUz extends AppLocalizations {
   String get mentorsAvailable => 'Mavjud mentorlar';
 
   @override
+  String get groupSectionTitle => 'Mening guruhim';
+
+  @override
+  String get groupPrimaryMentor => 'Asosiy mentor';
+
+  @override
+  String get groupSupportMentor => 'Yordamchi mentor';
+
+  @override
+  String get groupScheduleTitle => 'Jadval';
+
+  @override
+  String get groupNoGroup => 'Siz hali guruhga qo\'shilmagansiz';
+
+  @override
+  String groupStudentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count talaba',
+      one: '$count talaba',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get mentorHeader => 'Mentor';
 
   @override
@@ -683,12 +709,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get mentorNoReviews => 'Hozircha fikrlar yo\'q';
-
-  @override
-  String get mentorBook => 'Band qilish';
-
-  @override
-  String get mentorBookingSent => 'So\'rov yuborildi';
 
   @override
   String get mentorLeaveReview => 'Fikr qoldirish';
@@ -739,29 +759,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get settingsPurchaseHistory => 'Xaridlar tarixi';
-
-  @override
-  String get bookTitle => 'Jadvalni tanlang';
-
-  @override
-  String bookSubtitle(String name) {
-    return '$name bilan haftasiga 3 tagacha vaqt tanlang';
-  }
-
-  @override
-  String get bookLoadFailed => 'Jadvalni yuklab bo\'lmadi';
-
-  @override
-  String get bookNoAvailability =>
-      'Mentor hali bo\'sh vaqtini kiritmagan.\nShunda ham so\'rov yuborishingiz mumkin.';
-
-  @override
-  String bookSlotsSelected(int count) {
-    return '3 tadan $count tasi tanlandi';
-  }
-
-  @override
-  String get bookConfirm => 'Bandlovni tasdiqlash';
 
   @override
   String get weekdayMonday => 'Dushanba';

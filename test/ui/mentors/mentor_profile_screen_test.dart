@@ -87,11 +87,11 @@ void main() {
     expect(find.text('No reviews yet'), findsOneWidget);
   });
 
-  testWidgets('offers the booking action', (tester) async {
+  testWidgets('has no booking action — 1:1 booking is gone', (tester) async {
     await _pump(tester, _mentor());
 
-    expect(find.text('Book mentor'), findsOneWidget);
-    expect(find.byType(AppButton), findsNWidgets(2));
+    expect(find.text('Book mentor'), findsNothing);
+    expect(find.byType(AppButton), findsOneWidget);
   });
 
   testWidgets('offers a leave-a-review action', (tester) async {

@@ -5,8 +5,6 @@ abstract class IMentorsRepository {
 
   Future<MentorEntity> getMentor(String id);
 
-  Future<Map<String, List<String>>> getMentorSchedule(String mentorId);
-
   /// Leaves feedback for mentor [id]. [rate] is 0-5.
   Future<void> leaveFeedback({
     required String id,

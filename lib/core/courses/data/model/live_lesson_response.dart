@@ -4,32 +4,25 @@ class LiveLessonResponse {
   final String id;
   final String title;
   final String videoPath;
-  final String mentorName;
+  final String groupTitle;
   final String createdAt;
 
   const LiveLessonResponse({
     required this.id,
     required this.title,
     required this.videoPath,
-    required this.mentorName,
+    required this.groupTitle,
     required this.createdAt,
   });
 
   factory LiveLessonResponse.fromJson(Map<String, dynamic> json) {
-    final assignment = json['assignment'] as Map<String, dynamic>?;
-    final mentor = assignment?['mentor'] as Map<String, dynamic>?;
-    final firstName = mentor?['firstName'] as String? ?? '';
-    final lastName = mentor?['lastName'] as String? ?? '';
-    final mentorName = [
-      firstName,
-      lastName,
-    ].where((s) => s.isNotEmpty).join(' ');
+    final group = json['group'] as Map<String, dynamic>?;
 
     return LiveLessonResponse(
       id: json['id'] as String,
       title: json['title'] as String? ?? '',
       videoPath: json['videoUrl'] as String? ?? '',
-      mentorName: mentorName,
+      groupTitle: group?['title'] as String? ?? '',
       createdAt: json['createdAt'] as String? ?? '',
     );
   }
@@ -38,7 +31,7 @@ class LiveLessonResponse {
     id: id,
     title: title,
     videoPath: videoPath,
-    mentorName: mentorName,
+    groupTitle: groupTitle,
     createdAt: createdAt,
   );
 }

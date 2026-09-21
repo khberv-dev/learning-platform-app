@@ -29,71 +29,58 @@ class ChatUserResponse {
   );
 }
 
-class ChatMemberResponse {
+class ChatGroupResponse {
   final String id;
-  final String userId;
-  final String firstName;
-  final String? lastName;
+  final String title;
 
-  const ChatMemberResponse({
-    required this.id,
-    required this.userId,
-    required this.firstName,
-    this.lastName,
-  });
+  const ChatGroupResponse({required this.id, required this.title});
 
-  factory ChatMemberResponse.fromJson(Map<String, dynamic> json) {
-    final user = json['user'] as Map<String, dynamic>? ?? {};
-    return ChatMemberResponse(
-      id: json['id'] as String? ?? '',
-      userId: user['id'] as String? ?? '',
-      firstName: user['firstName'] as String? ?? '',
-      lastName: user['lastName'] as String?,
-    );
-  }
+  factory ChatGroupResponse.fromJson(Map<String, dynamic> json) =>
+      ChatGroupResponse(
+        id: json['id'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+      );
 
-  ChatMemberEntity toEntity() => ChatMemberEntity(
-    id: id,
-    userId: userId,
-    firstName: firstName,
-    lastName: lastName,
-  );
+  ChatGroupEntity toEntity() => ChatGroupEntity(id: id, title: title);
 }
 
 class ChatRoomResponse {
   final String id;
-  final bool isGroup;
-  final List<ChatMemberResponse> members;
   final String updatedAt;
+  final ChatGroupResponse? group;
   final ChatUserResponse? mentor;
+  final List<ChatUserResponse> students;
 
   const ChatRoomResponse({
     required this.id,
-    required this.isGroup,
-    required this.members,
     required this.updatedAt,
+    this.group,
     this.mentor,
+    this.students = const [],
   });
 
+  // The list endpoint only attaches `group`; the detail endpoint additionally
+  // flattens the group's primary mentor and current student roster.
   factory ChatRoomResponse.fromJson(Map<String, dynamic> json) {
-    final rawMembers = json['members'] as List<dynamic>? ?? [];
+    final rawGroup = json['group'] as Map<String, dynamic>?;
     final rawMentor = json['mentor'] as Map<String, dynamic>?;
+    final rawStudents = json['students'] as List<dynamic>? ?? [];
     return ChatRoomResponse(
       id: json['id'] as String,
-      isGroup: json['isGroup'] as bool? ?? false,
-      members: rawMembers
-          .map((e) => ChatMemberResponse.fromJson(e as Map<String, dynamic>))
-          .toList(),
       updatedAt: json['updatedAt'] as String? ?? '',
+      group: rawGroup != null ? ChatGroupResponse.fromJson(rawGroup) : null,
       mentor: rawMentor != null ? ChatUserResponse.fromJson(rawMentor) : null,
+      students: rawStudents
+          .map((e) => ChatUserResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 
   ChatRoomEntity toEntity() => ChatRoomEntity(
     id: id,
-    isGroup: isGroup,
-    members: members.map((m) => m.toEntity()).toList(),
     updatedAt: updatedAt,
+    group: group?.toEntity(),
     mentor: mentor?.toEntity(),
+    students: students.map((s) => s.toEntity()).toList(),
   );
 }

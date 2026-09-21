@@ -675,6 +675,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mentorsAvailable => 'Available mentors';
 
   @override
+  String get groupSectionTitle => 'My group';
+
+  @override
+  String get groupPrimaryMentor => 'Primary mentor';
+
+  @override
+  String get groupSupportMentor => 'Support mentor';
+
+  @override
+  String get groupScheduleTitle => 'Schedule';
+
+  @override
+  String get groupNoGroup => 'You haven\'t been added to a group yet';
+
+  @override
+  String groupStudentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count students',
+      one: '$count student',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get mentorHeader => 'Mentor';
 
   @override
@@ -682,12 +708,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mentorNoReviews => 'No reviews yet';
-
-  @override
-  String get mentorBook => 'Book mentor';
-
-  @override
-  String get mentorBookingSent => 'Booking request sent';
 
   @override
   String get mentorLeaveReview => 'Leave a review';
@@ -739,29 +759,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPurchaseHistory => 'Purchase history';
-
-  @override
-  String get bookTitle => 'Select Schedule';
-
-  @override
-  String bookSubtitle(String name) {
-    return 'Choose up to 3 weekly slots with $name';
-  }
-
-  @override
-  String get bookLoadFailed => 'Could not load schedule';
-
-  @override
-  String get bookNoAvailability =>
-      'This mentor hasn\'t set availability yet.\nYou can still send a booking request.';
-
-  @override
-  String bookSlotsSelected(int count) {
-    return '$count/3 slots selected';
-  }
-
-  @override
-  String get bookConfirm => 'Confirm Booking';
 
   @override
   String get weekdayMonday => 'Monday';

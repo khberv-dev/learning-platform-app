@@ -29,7 +29,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
     required String password,
   }) async {
     final response = await _dio.post(
-      'auth/sign-in',
+      'auth/student/sign-in',
       data: {'phoneNumber': phoneNumber, 'password': password},
     );
     return _saveAndReturn(response.data as Map<String, dynamic>);
@@ -41,7 +41,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
     required String password,
   }) async {
     final response = await _dio.post(
-      'auth/sign-in',
+      'auth/student/sign-in',
       data: {'email': email.trim().toLowerCase(), 'password': password},
     );
     return _saveAndReturn(response.data as Map<String, dynamic>);

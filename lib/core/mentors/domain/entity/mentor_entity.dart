@@ -6,7 +6,6 @@ class MentorEntity {
   final String? profession;
   final double rating;
   final String status;
-  final Map<String, List<String>> schedule;
 
   const MentorEntity({
     required this.id,
@@ -16,7 +15,6 @@ class MentorEntity {
     this.avatarUrl,
     this.introVideo,
     this.profession,
-    this.schedule = const {},
   });
 
   bool get isActive => status == 'active';

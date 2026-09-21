@@ -134,18 +134,18 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> {
                       height: 1.3,
                     ),
                   ),
-                  if (session.mentorName.isNotEmpty) ...[
+                  if (session.groupTitle.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Row(
                       children: [
                         const Icon(
-                          Icons.person_outline_rounded,
+                          Icons.groups_outlined,
                           size: 16,
                           color: Color(0xFF18C96A),
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          session.mentorName,
+                          session.groupTitle,
                           style: const TextStyle(
                             color: Color(0xFF6B7280),
                             fontSize: 14,

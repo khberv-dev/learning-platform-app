@@ -6,6 +6,7 @@ import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/mentors/widget/mentor_card.dart';
+import 'package:student/ui/mentors/widget/my_group_card.dart';
 
 class MentorsPage extends ConsumerWidget {
   const MentorsPage({super.key});
@@ -32,6 +33,7 @@ class MentorsPage extends ConsumerWidget {
           ),
           child: SectionTitle(title: l10n.mentorsTitle, fontSize: 30),
         ),
+        const MyGroupCard(),
         Expanded(
           child: RefreshIndicator(
             onRefresh: refresh,

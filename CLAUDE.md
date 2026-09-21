@@ -58,7 +58,7 @@ lib/
 └── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, date_format.dart, uz_phone_formatter.dart
 ```
 
-**Domains:** `assessments`, `assignments`, `auth`, `chat`, `courses`, `live_lessons`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
+**Domains:** `assessments`, `auth`, `chat`, `courses`, `enrollments`, `groups`, `live_lessons`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
 
 Not every domain has all three layers. `assessments` has no presentation layer, since `AiAssessmentScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
 
@@ -106,6 +106,8 @@ JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `ref
 ### Error handling
 
 `lib/utils/messenger.dart` is the single path for surfacing failures: `apiErrorMessage(error)` unwraps a `DioException` body (`message` as String or List) into a user-facing string, and `showErrorMessage(context, msg)` shows it as an error-coloured SnackBar after clearing any existing ones. Use both rather than hand-rolling SnackBars.
+
+**Crash reporting:** `main.dart` wraps everything in `runZonedGuarded` and installs `FlutterError.onError` / `PlatformDispatcher.instance.onError`, each forwarding to `reportAppError` (`lib/core/diagnostics/error_reporting.dart`). That function is release-build-only (`kReleaseMode`), builds its own bare `Dio` (not `dioClientProvider` — no Riverpod container exists this early, and it must never get pulled into the main client's auth-refresh flow), and posts `{ device, message }` to the public `app-reports` endpoint. It attaches the stored access token as a Bearer header when there is one, since the backend resolves `AppReport.userId` from that token itself rather than a body field — the endpoint has no other place to take a user id from and works fine unauthenticated. Never throws; a failed report must not cause a second crash.
 
 ### Routing
 
@@ -168,11 +170,25 @@ The streak counts UTC days on which `POST user/me/activity` was called. Study ac
 
 `AppUpgradeAlert` wraps the app (from `MaterialApp.router`'s `builder`, so it has a Navigator and localizations) and shows `upgrader`'s store prompt once the splash screen is gone. Setting `minSupportedAppVersion` in `app_upgrade_alert.dart` makes the prompt unskippable for older builds. Use that when an API change breaks old clients.
 
+### Groups and mentors
+
+There is no more 1:1 mentor booking — a student's only mentor relationship is through their
+current **group**, a named cohort (mentor team + student roster + schedule) that's fully
+admin-managed (`core/groups/`, `GET student/groups/me`, nullable if ungrouped). `MyGroupCard`
+shows it at the top of `MentorsPage`. The `core/mentors/` domain is still separate and still lets a
+student browse mentor profiles and leave feedback (`GET student/mentors`, `POST
+student/mentors/:id/feedbacks`) — it just no longer has a per-mentor schedule or booking action.
+
 ### Live lessons
 
 Two distinct concepts with confusingly similar names:
-- `courses/domain/entity/live_lesson_entity.dart` — a recorded session attached to a course, played back with `video_player` + `chewie` in `LiveSessionScreen`
-- `live_lessons/domain/entity/live_lesson_scheduled_entity.dart` — an upcoming scheduled lesson from `live-lessons/my`, shown on the home page
+- `courses/domain/entity/live_lesson_entity.dart` — a recorded session tied to a **group**
+  (`GET student/live-lesson-recordings/my`), played back with `video_player` + `chewie` in
+  `LiveSessionScreen`. The API only attaches the group relation here, not a mentor, so the card
+  shows the group's title (`groupTitle`) rather than a mentor name.
+- `live_lessons/domain/entity/live_lesson_scheduled_entity.dart` — an upcoming scheduled lesson for
+  the student's current group, from `GET student/live-lessons`, shown on the home page. This one
+  does carry a flat `mentor` relation (whoever scheduled it).
 
 ### Localization
 

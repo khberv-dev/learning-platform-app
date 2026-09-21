@@ -34,15 +34,6 @@ class MentorsRepository implements IMentorsRepository {
   }
 
   @override
-  Future<Map<String, List<String>>> getMentorSchedule(String mentorId) async {
-    final response = await _dio.get('student/mentors/$mentorId/schedule');
-    final data = response.data as Map<String, dynamic>? ?? {};
-    return data.map(
-      (day, slots) => MapEntry(day, List<String>.from(slots as List)),
-    );
-  }
-
-  @override
   Future<void> leaveFeedback({
     required String id,
     required String text,

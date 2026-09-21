@@ -1306,6 +1306,42 @@ abstract class AppLocalizations {
   /// **'Available mentors'**
   String get mentorsAvailable;
 
+  /// No description provided for @groupSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My group'**
+  String get groupSectionTitle;
+
+  /// No description provided for @groupPrimaryMentor.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary mentor'**
+  String get groupPrimaryMentor;
+
+  /// No description provided for @groupSupportMentor.
+  ///
+  /// In en, this message translates to:
+  /// **'Support mentor'**
+  String get groupSupportMentor;
+
+  /// No description provided for @groupScheduleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get groupScheduleTitle;
+
+  /// No description provided for @groupNoGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t been added to a group yet'**
+  String get groupNoGroup;
+
+  /// No description provided for @groupStudentsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} student} other{{count} students}}'**
+  String groupStudentsCount(int count);
+
   /// No description provided for @mentorHeader.
   ///
   /// In en, this message translates to:
@@ -1323,18 +1359,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No reviews yet'**
   String get mentorNoReviews;
-
-  /// No description provided for @mentorBook.
-  ///
-  /// In en, this message translates to:
-  /// **'Book mentor'**
-  String get mentorBook;
-
-  /// No description provided for @mentorBookingSent.
-  ///
-  /// In en, this message translates to:
-  /// **'Booking request sent'**
-  String get mentorBookingSent;
 
   /// No description provided for @mentorLeaveReview.
   ///
@@ -1431,42 +1455,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Purchase history'**
   String get settingsPurchaseHistory;
-
-  /// No description provided for @bookTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Schedule'**
-  String get bookTitle;
-
-  /// No description provided for @bookSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose up to 3 weekly slots with {name}'**
-  String bookSubtitle(String name);
-
-  /// No description provided for @bookLoadFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not load schedule'**
-  String get bookLoadFailed;
-
-  /// No description provided for @bookNoAvailability.
-  ///
-  /// In en, this message translates to:
-  /// **'This mentor hasn\'t set availability yet.\nYou can still send a booking request.'**
-  String get bookNoAvailability;
-
-  /// No description provided for @bookSlotsSelected.
-  ///
-  /// In en, this message translates to:
-  /// **'{count}/3 slots selected'**
-  String bookSlotsSelected(int count);
-
-  /// No description provided for @bookConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Booking'**
-  String get bookConfirm;
 
   /// No description provided for @weekdayMonday.
   ///
