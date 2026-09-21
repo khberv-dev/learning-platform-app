@@ -1,8 +1,8 @@
 /// How a task's attached content should be presented.
 ///
-/// [audio] and [picture] come from an upload, so the task's `file` holds a CDN
-/// path. [text] is set when the content was written inline, so `file` holds the
-/// passage itself rather than a URL.
+/// [audio] and [picture] come from an upload, so the task's `file` holds an
+/// absolute URL. [text] is set when the content was written inline, so
+/// `file` holds the passage itself rather than a URL.
 enum TaskContentType {
   audio,
   text,

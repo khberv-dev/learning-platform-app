@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/core/p2p/domain/entity/p2p_state.dart';
 import 'package:student/core/p2p/presentation/p2p_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
@@ -202,12 +201,7 @@ class _PeerAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final avatarUrl = peer?.avatarUrl;
-    final imageUrl = avatarUrl == null
-        ? null
-        : avatarUrl.startsWith('http')
-        ? avatarUrl
-        : '$baseCdnUrl/$avatarUrl';
+    final imageUrl = peer?.avatarUrl;
 
     if (imageUrl != null) {
       return ClipOval(

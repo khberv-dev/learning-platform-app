@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/l10n/app_localizations.dart';
 
@@ -127,11 +126,8 @@ class _CourseImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl == null) return _placeholder();
-
-    final url = imageUrl!.startsWith('http')
-        ? imageUrl!
-        : '$baseCdnUrl/$imageUrl';
+    final url = imageUrl;
+    if (url == null) return _placeholder();
 
     return ColorFiltered(
       colorFilter: isExpired

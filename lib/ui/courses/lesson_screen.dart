@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/task_result_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
@@ -59,14 +58,10 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     super.dispose();
   }
 
-  Future<void> _initPlayer(String mediaUrl) async {
+  Future<void> _initPlayer(String url) async {
     final generation = ++_playerGeneration;
     _chewieController?.dispose();
     _videoController?.dispose();
-
-    final url = mediaUrl.startsWith('http')
-        ? mediaUrl
-        : '$baseCdnUrl/$mediaUrl';
 
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
     _videoController = controller;

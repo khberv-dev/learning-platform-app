@@ -1,7 +1,6 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
@@ -43,11 +42,10 @@ class _MentorProfileScreenState extends ConsumerState<MentorProfileScreen> {
     super.dispose();
   }
 
-  Future<void> _initVideo(String rawUrl) async {
-    if (_loadedVideoUrl == rawUrl) return;
-    _loadedVideoUrl = rawUrl;
+  Future<void> _initVideo(String url) async {
+    if (_loadedVideoUrl == url) return;
+    _loadedVideoUrl = url;
 
-    final url = rawUrl.startsWith('http') ? rawUrl : '$baseCdnUrl$rawUrl';
     _chewieController?.dispose();
     _videoController?.dispose();
 
@@ -478,19 +476,13 @@ class _Avatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = url == null
-        ? null
-        : url!.startsWith('http')
-        ? url!
-        : '$baseCdnUrl/$url';
-
     return ClipOval(
       child: SizedBox.square(
         dimension: size,
-        child: imageUrl == null
+        child: url == null
             ? _fallback(context)
             : Image.network(
-                imageUrl,
+                url!,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => _fallback(context),
               ),

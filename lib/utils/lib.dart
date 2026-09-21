@@ -1,24 +1,11 @@
-import 'package:student/app/data/network/config.dart';
-
-/// Resolves a media path from the API into an absolute URL.
+/// Normalizes a media URL from the API.
 ///
-/// Uploads land in the API's `./uploads` directory and are served at `/public`,
-/// while the stored paths omit that prefix — a course image is `/course/x.png`
-/// and a payment icon is `/payment-type/x.png`. Both need [baseCdnUrl] in
-/// front.
-///
-/// Trims a slash from each side of the join: the stored paths are rooted and
-/// [baseCdnUrl] carries a trailing slash, so a naive `'$baseCdnUrl/$raw'`
-/// yields `/public//course/x.png`.
+/// The API now sends fully-qualified URLs for every file (course images,
+/// avatars, payment icons, …), so this only turns an empty/missing value
+/// into `null` for callers that fall back to a placeholder.
 String? resolveMediaUrl(String? raw) {
   if (raw == null || raw.isEmpty) return null;
-  if (raw.startsWith('http')) return raw;
-
-  final base = baseCdnUrl.endsWith('/')
-      ? baseCdnUrl.substring(0, baseCdnUrl.length - 1)
-      : baseCdnUrl;
-  final path = raw.startsWith('/') ? raw.substring(1) : raw;
-  return '$base/$path';
+  return raw;
 }
 
 // Formats 998900012644 → +998 90 001 26 44

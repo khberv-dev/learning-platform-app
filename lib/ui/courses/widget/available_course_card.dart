@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
@@ -85,11 +84,8 @@ class _CourseImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl == null) return const _Placeholder();
-
-    final url = imageUrl!.startsWith('http')
-        ? imageUrl!
-        : '$baseCdnUrl/$imageUrl';
+    final url = imageUrl;
+    if (url == null) return const _Placeholder();
 
     return Image.network(
       url,

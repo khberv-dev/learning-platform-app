@@ -26,7 +26,7 @@ class LessonMaterialEntity {
   final String id;
   final String name;
 
-  /// CDN path as stored by the API, e.g. `/material/<uuid>.pdf`.
+  /// Absolute URL as stored by the API.
   final String url;
 
   /// Null when the API sends a kind this build doesn't know yet — the file is

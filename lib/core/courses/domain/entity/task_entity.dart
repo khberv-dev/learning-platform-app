@@ -22,8 +22,8 @@ class TaskEntity {
   final String? name;
   final List<TaskQuestionEntity> questions;
 
-  /// A CDN path when [contentType] is audio/picture, the passage itself when
-  /// it is text. Null when the task is questions-only.
+  /// An absolute URL when [contentType] is audio/picture, the passage itself
+  /// when it is text. Null when the task is questions-only.
   final String? file;
   final TaskContentType? contentType;
 

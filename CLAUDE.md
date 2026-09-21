@@ -101,8 +101,7 @@ JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `ref
 
 **Host selection:** `lib/app/data/network/config.dart` currently hardcodes `hostUrl = mainHostUrl` (prod, `https://cp.i-teach.uz`), so **debug builds hit production**. The `kDebugMode ? devHostUrl : mainHostUrl` switch is commented out. For a local API, set `devHostUrl` to your machine's LAN IP (currently `http://192.168.0.2:8000`), then point `hostUrl` at it. Don't commit that change.
 
-**Media URLs:** the API returns relative paths. The usual pattern is
-`url.startsWith('http') ? url : '$baseCdnUrl/$url'`. `baseCdnUrl` is `'$hostUrl/public/'` and already ends in a slash, so that pattern produces `public//path`. `mentor_profile_screen.dart` omits the extra slash in one place. `LiveSessionScreen` prefixes `hostUrl` instead of the CDN URL.
+**Media URLs:** the API returns fully-qualified URLs for every file (course images, avatars, payment icons, recordings, …), so screens use them as-is — no CDN base to prepend. `resolveMediaUrl` (`lib/utils/lib.dart`) just turns an empty/missing value into `null` for callers that fall back to a placeholder.
 
 ### Error handling
 

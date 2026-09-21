@@ -6,7 +6,7 @@ import 'package:student/shared/url_launcher.dart';
 /// Full-screen reader for an image — pinch to zoom, drag to move, double-tap to
 /// zoom straight to the spot you tapped.
 ///
-/// Takes an already-resolved absolute [url]; callers run the CDN path through
+/// Takes an already-resolved absolute [url]; callers run it through
 /// `resolveMediaUrl` before pushing.
 class ImageViewerScreen extends ConsumerStatefulWidget {
   static const path = '/material-image';

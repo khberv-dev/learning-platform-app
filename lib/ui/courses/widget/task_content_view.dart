@@ -11,7 +11,7 @@ import 'package:student/utils/lib.dart';
 /// The material a task hangs its questions on — an audio clip, a picture, or a
 /// text passage.
 ///
-/// [file] is a CDN path for [TaskContentType.audio] and
+/// [file] is an absolute URL for [TaskContentType.audio] and
 /// [TaskContentType.picture], but the passage itself for
 /// [TaskContentType.text].
 class TaskContentView extends StatelessWidget {

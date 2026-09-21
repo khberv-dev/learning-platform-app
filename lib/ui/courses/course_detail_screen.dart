@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
@@ -125,11 +124,7 @@ class _Banner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
-    final imageUrl = course.image == null
-        ? null
-        : course.image!.startsWith('http')
-        ? course.image!
-        : '$baseCdnUrl/${course.image}';
+    final imageUrl = course.image;
 
     return SizedBox(
       height: 180 + topPadding,

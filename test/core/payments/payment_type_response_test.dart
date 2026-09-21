@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/core/payments/data/model/payment_response.dart';
 import 'package:student/core/payments/data/model/payment_type_response.dart';
 import 'package:student/core/payments/domain/entity/payment_entity.dart';
@@ -7,38 +6,10 @@ import 'package:student/utils/lib.dart';
 
 void main() {
   group('resolveMediaUrl', () {
-    test('passes absolute URLs through', () {
+    test('passes absolute URLs through unchanged', () {
       expect(
         resolveMediaUrl('https://cdn.example.com/a.png'),
         'https://cdn.example.com/a.png',
-      );
-    });
-
-    test('adds the /public prefix the stored paths omit', () {
-      // Uploads are served at /public but stored as /payment-type/x.png.
-      expect(
-        resolveMediaUrl('/payment-type/payme.png'),
-        '$hostUrl/public/payment-type/payme.png',
-      );
-      expect(
-        resolveMediaUrl('/course/eng-a1.png'),
-        '$hostUrl/public/course/eng-a1.png',
-      );
-    });
-
-    test('never doubles a slash, whichever way the parts are punctuated', () {
-      // baseCdnUrl carries a trailing slash and the stored paths are rooted.
-      for (final raw in ['/course/a.png', 'course/a.png']) {
-        final url = resolveMediaUrl(raw)!;
-        expect(url, '$hostUrl/public/course/a.png', reason: raw);
-        expect(url.split('://').last, isNot(contains('//')), reason: raw);
-      }
-    });
-
-    test('handles paths without a leading slash', () {
-      expect(
-        resolveMediaUrl('payment-type/payme.png'),
-        '$hostUrl/public/payment-type/payme.png',
       );
     });
 
@@ -53,13 +24,16 @@ void main() {
       final entity = PaymentTypeResponse.fromJson({
         'id': 'p1',
         'title': 'Payme',
-        'icon': '/payment-type/payme.png',
+        'icon': 'https://cp.i-teach.uz/public/payment-type/payme.png',
         'url': 'https://payme.uz/checkout',
       }).toEntity();
 
       expect(entity.id, 'p1');
       expect(entity.title, 'Payme');
-      expect(entity.iconUrl, '$hostUrl/public/payment-type/payme.png');
+      expect(
+        entity.iconUrl,
+        'https://cp.i-teach.uz/public/payment-type/payme.png',
+      );
       expect(entity.checkoutUrl, 'https://payme.uz/checkout');
     });
 
@@ -67,12 +41,15 @@ void main() {
       final entity = PaymentTypeResponse.fromJson({
         'id': 7,
         'name': 'Click',
-        'logo': 'payment-type/click.png',
+        'logo': 'https://cp.i-teach.uz/public/payment-type/click.png',
       }).toEntity();
 
       expect(entity.id, '7');
       expect(entity.title, 'Click');
-      expect(entity.iconUrl, '$hostUrl/public/payment-type/click.png');
+      expect(
+        entity.iconUrl,
+        'https://cp.i-teach.uz/public/payment-type/click.png',
+      );
     });
 
     test('survives a missing icon', () {
@@ -103,7 +80,7 @@ void main() {
         'paymentTypes': [
           {
             'id': 'pt1',
-            'icon': '/payment-type/payme.png',
+            'icon': 'https://cp.i-teach.uz/public/payment-type/payme.png',
             'title': 'Payme',
             'url': 'https://payme.uz/checkout',
             'isActive': true,
@@ -124,7 +101,7 @@ void main() {
       expect(entity.paymentTypes.single.title, 'Payme');
       expect(
         entity.paymentTypes.single.iconUrl,
-        '$hostUrl/public/payment-type/payme.png',
+        'https://cp.i-teach.uz/public/payment-type/payme.png',
       );
     });
 

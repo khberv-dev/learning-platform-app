@@ -9,4 +9,3 @@ const hostUrl = kDebugMode ? devHostUrl : mainHostUrl;
 const apiVersion = 2;
 
 const baseApiUrl = '$hostUrl/api/v$apiVersion/';
-const baseCdnUrl = '$hostUrl/public/';

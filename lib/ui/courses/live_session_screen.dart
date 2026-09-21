@@ -1,7 +1,6 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:student/app/data/network/config.dart';
 import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/utils/date_format.dart';
@@ -42,10 +41,9 @@ class _LiveSessionScreenState extends State<LiveSessionScreen> {
     if (_initializing) return;
     setState(() => _initializing = true);
 
-    final path = widget.session.videoPath;
-    final url = path.startsWith('http') ? path : '$hostUrl$path';
-
-    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+    final controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.session.videoPath),
+    );
     _videoController = controller;
 
     await controller.initialize();
