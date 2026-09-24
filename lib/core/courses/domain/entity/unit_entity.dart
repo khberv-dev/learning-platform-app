@@ -1,17 +1,13 @@
-import 'package:student/core/courses/domain/entity/lesson_entity.dart';
-
+/// A unit inside a course, as listed by `GET courses/:courseId/units`. Its
+/// lessons live behind a separate call — see [LessonEntity].
 class UnitEntity {
   final String id;
-  final int number;
   final String title;
   final int lessonsCount;
-  final List<LessonEntity> lessons;
 
   const UnitEntity({
     required this.id,
-    required this.number,
     required this.title,
     required this.lessonsCount,
-    required this.lessons,
   });
 }

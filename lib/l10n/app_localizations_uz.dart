@@ -387,8 +387,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get lessonTasksInProgress => 'Topshiriqlar jarayonda';
 
   @override
-  String lessonScore(int correct, int total, int percent) {
-    return '$total tadan $correct ta to\'g\'ri · $percent%';
+  String lessonScore(int completed, int total, int percent) {
+    return '$total tadan $completed ta bajarildi · $percent%';
   }
 
   @override
@@ -437,9 +437,6 @@ class AppLocalizationsUz extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get materialsLoadFailed => 'Materiallarni yuklab bo\'lmadi';
 
   @override
   String get materialsOpenFailed => 'Faylni ochib bo\'lmadi';

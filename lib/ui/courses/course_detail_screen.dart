@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
-    show courseDetailControllerProvider;
+    show courseDetailControllerProvider, courseUnitsProvider;
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/unit_screen.dart';
@@ -24,11 +24,12 @@ class CourseDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(courseDetailControllerProvider(courseId));
+    final courseState = ref.watch(courseDetailControllerProvider(courseId));
+    final unitsState = ref.watch(courseUnitsProvider(courseId));
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      body: state.when(
+      body: courseState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Text(
@@ -36,7 +37,17 @@ class CourseDetailScreen extends ConsumerWidget {
             style: const TextStyle(color: Color(0xFF6B7280)),
           ),
         ),
-        data: (course) => _CourseDetailBody(course: course, isOwned: isOwned),
+        data: (course) => unitsState.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(
+            child: Text(
+              e.toString(),
+              style: const TextStyle(color: Color(0xFF6B7280)),
+            ),
+          ),
+          data: (units) =>
+              _CourseDetailBody(course: course, units: units, isOwned: isOwned),
+        ),
       ),
     );
   }
@@ -44,9 +55,14 @@ class CourseDetailScreen extends ConsumerWidget {
 
 class _CourseDetailBody extends StatelessWidget {
   final CourseDetailEntity course;
+  final List<UnitEntity> units;
   final bool isOwned;
 
-  const _CourseDetailBody({required this.course, required this.isOwned});
+  const _CourseDetailBody({
+    required this.course,
+    required this.units,
+    required this.isOwned,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +70,9 @@ class _CourseDetailBody extends StatelessWidget {
       children: [
         CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(child: _Banner(course: course)),
+            SliverToBoxAdapter(
+              child: _Banner(course: course, units: units),
+            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
@@ -70,10 +88,10 @@ class _CourseDetailBody extends StatelessWidget {
             SliverPadding(
               padding: EdgeInsets.fromLTRB(24, 0, 24, isOwned ? 24 : 100),
               sliver: SliverList.separated(
-                itemCount: course.units.length,
+                itemCount: units.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 8),
                 itemBuilder: (_, i) => _UnitCard(
-                  unit: course.units[i],
+                  unit: units[i],
                   index: i,
                   isOwned: isOwned,
                   courseId: course.id,
@@ -118,13 +136,15 @@ class _CourseDetailBody extends StatelessWidget {
 
 class _Banner extends StatelessWidget {
   final CourseDetailEntity course;
+  final List<UnitEntity> units;
 
-  const _Banner({required this.course});
+  const _Banner({required this.course, required this.units});
 
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.of(context).padding.top;
     final imageUrl = course.image;
+    final lessonsCount = units.fold(0, (sum, u) => sum + u.lessonsCount);
 
     return SizedBox(
       height: 180 + topPadding,
@@ -173,9 +193,7 @@ class _Banner extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  AppLocalizations.of(
-                    context,
-                  ).courseLessonCount(course.lessonsCount),
+                  AppLocalizations.of(context).courseLessonCount(lessonsCount),
                   style: const TextStyle(color: Colors.white, fontSize: 13),
                 ),
               ],

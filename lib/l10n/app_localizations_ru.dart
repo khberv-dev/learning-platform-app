@@ -390,8 +390,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lessonTasksInProgress => 'Задания в процессе';
 
   @override
-  String lessonScore(int correct, int total, int percent) {
-    return '$correct из $total верно · $percent%';
+  String lessonScore(int completed, int total, int percent) {
+    return '$completed из $total заданий · $percent%';
   }
 
   @override
@@ -442,9 +442,6 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get materialsLoadFailed => 'Не удалось загрузить материалы';
 
   @override
   String get materialsOpenFailed => 'Не удалось открыть файл';

@@ -12,26 +12,11 @@ void main() {
   testWidgets('locked lessons show a lock and cannot be opened', (
     tester,
   ) async {
-    const course = CourseDetailEntity(
-      id: 'course-1',
-      title: 'Course',
-      lessonsCount: 1,
-      units: [
-        UnitEntity(
-          id: 'unit-1',
-          number: 1,
-          title: 'Unit',
-          lessonsCount: 1,
-          lessons: [
-            LessonEntity(
-              id: 'lesson-1',
-              title: 'Locked lesson',
-              isLocked: true,
-            ),
-          ],
-        ),
-      ],
-    );
+    const course = CourseDetailEntity(id: 'course-1', title: 'Course');
+    const units = [UnitEntity(id: 'unit-1', title: 'Unit', lessonsCount: 1)];
+    const lessons = [
+      LessonEntity(id: 'lesson-1', title: 'Locked lesson', isLocked: true),
+    ];
 
     await tester.pumpWidget(
       ProviderScope(
@@ -39,6 +24,8 @@ void main() {
           courseDetailControllerProvider.overrideWith(
             (ref, id) async => course,
           ),
+          courseUnitsProvider.overrideWith((ref, id) async => units),
+          unitLessonsProvider.overrideWith((ref, params) async => lessons),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

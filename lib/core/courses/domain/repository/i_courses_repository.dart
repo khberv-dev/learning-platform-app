@@ -1,11 +1,12 @@
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
-import 'package:student/core/courses/domain/entity/lesson_material_entity.dart';
+import 'package:student/core/courses/domain/entity/lesson_detail_entity.dart';
+import 'package:student/core/courses/domain/entity/lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
-import 'package:student/core/courses/domain/entity/task_result_entity.dart';
 import 'package:student/core/courses/domain/entity/task_submission_result_entity.dart';
+import 'package:student/core/courses/domain/entity/unit_entity.dart';
 
 abstract class ICoursesRepository {
   Future<List<CourseEntity>> getAvailable();
@@ -16,6 +17,19 @@ abstract class ICoursesRepository {
 
   Future<CourseDetailEntity> getCourseDetail(String id);
 
+  Future<List<UnitEntity>> getUnits(String courseId);
+
+  Future<List<LessonEntity>> getLessons({
+    required String courseId,
+    required String unitId,
+  });
+
+  Future<LessonDetailEntity> getLessonDetail({
+    required String courseId,
+    required String unitId,
+    required String lessonId,
+  });
+
   Future<List<TaskEntity>> getTasks({
     required String courseId,
     required String unitId,
@@ -25,8 +39,4 @@ abstract class ICoursesRepository {
   Future<List<TaskSubmissionResultEntity>> submitTasks(
     Map<String, List<String>> answers,
   );
-
-  Future<List<LessonMaterialEntity>> getLessonMaterials(String lessonId);
-
-  Future<List<TaskResultEntity>> getLessonResults(String lessonId);
 }

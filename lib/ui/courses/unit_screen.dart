@@ -4,16 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
-    show courseDetailControllerProvider;
+    show
+        courseDetailControllerProvider,
+        courseUnitsProvider,
+        unitLessonsProvider;
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 
 /// Lessons of a single unit. The course page lists units only, so this is the
 /// step between it and [LessonScreen].
 ///
-/// Takes the unit's index rather than its id because the whole course detail is
-/// already cached by [courseDetailControllerProvider], and [LessonScreen]
-/// addresses lessons the same positional way.
+/// Takes the unit's index rather than its id because the whole unit list is
+/// already cached by [courseUnitsProvider], and [LessonScreen] addresses
+/// lessons the same positional way.
 class UnitScreen extends ConsumerWidget {
   static const path = '/unit';
 
@@ -28,12 +31,13 @@ class UnitScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(courseDetailControllerProvider(courseId));
+    final courseState = ref.watch(courseDetailControllerProvider(courseId));
+    final unitsState = ref.watch(courseUnitsProvider(courseId));
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
-        child: state.when(
+        child: unitsState.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(
             child: Padding(
@@ -45,41 +49,63 @@ class UnitScreen extends ConsumerWidget {
               ),
             ),
           ),
-          data: (course) {
-            if (unitIndex < 0 || unitIndex >= course.units.length) {
+          data: (units) {
+            if (unitIndex < 0 || unitIndex >= units.length) {
               return const _MissingUnit();
             }
-            final unit = course.units[unitIndex];
+            final unit = units[unitIndex];
+            final lessonsState = ref.watch(
+              unitLessonsProvider((courseId: courseId, unitId: unit.id)),
+            );
+
             return Column(
               children: [
-                _Header(unitIndex: unitIndex, courseTitle: course.title),
+                _Header(
+                  unitIndex: unitIndex,
+                  courseTitle: courseState.value?.title ?? '',
+                ),
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                    children: [
-                      _UnitSummary(unit: unit),
-                      const SizedBox(height: 20),
-                      if (unit.lessons.isEmpty)
-                        const _NoLessons()
-                      else
-                        ...List.generate(unit.lessons.length, (i) {
-                          return Padding(
-                            padding: EdgeInsets.only(top: i == 0 ? 0 : 8),
-                            child: _LessonCard(
-                              lesson: unit.lessons[i],
-                              index: i,
-                              onTap: unit.lessons[i].isLocked
-                                  ? null
-                                  : () => context.push(
-                                      '${LessonScreen.path}'
-                                      '?courseId=$courseId'
-                                      '&unitIndex=$unitIndex'
-                                      '&lessonIndex=$i',
-                                    ),
-                            ),
-                          );
-                        }),
-                    ],
+                  child: lessonsState.when(
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (e, _) => Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          e.toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Color(0xFF6B7280)),
+                        ),
+                      ),
+                    ),
+                    data: (lessons) => ListView(
+                      padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                      children: [
+                        _UnitSummary(unit: unit),
+                        const SizedBox(height: 20),
+                        if (lessons.isEmpty)
+                          const _NoLessons()
+                        else
+                          ...List.generate(lessons.length, (i) {
+                            return Padding(
+                              padding: EdgeInsets.only(top: i == 0 ? 0 : 8),
+                              child: _LessonCard(
+                                lesson: lessons[i],
+                                index: i,
+                                onTap: lessons[i].isLocked
+                                    ? null
+                                    : () => context.push(
+                                        '${LessonScreen.path}'
+                                        '?courseId=$courseId'
+                                        '&unitId=${unit.id}'
+                                        '&unitIndex=$unitIndex'
+                                        '&lessonIndex=$i',
+                                      ),
+                              ),
+                            );
+                          }),
+                      ],
+                    ),
                   ),
                 ),
               ],

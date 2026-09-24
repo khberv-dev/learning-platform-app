@@ -1,49 +1,39 @@
-import 'package:student/core/courses/data/model/unit_response.dart';
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 
 class CourseDetailResponse {
   final String id;
   final String title;
-  final int lessonsCount;
+  final String? description;
   final String? image;
-  final List<UnitResponse> units;
+  final int totalProgress;
   final DateTime? announcedAt;
 
   const CourseDetailResponse({
     required this.id,
     required this.title,
-    required this.lessonsCount,
-    required this.units,
+    this.description,
     this.image,
+    this.totalProgress = 0,
     this.announcedAt,
   });
 
   factory CourseDetailResponse.fromJson(Map<String, dynamic> json) {
-    final rawUnits = json['units'] as List<dynamic>? ?? [];
-    final lessons = json['lessons'] as List<dynamic>?;
     return CourseDetailResponse(
       id: json['id'].toString(),
       title: json['title'] as String,
-      lessonsCount:
-          (json['lessonsCount'] ??
-                  json['lessons_count'] ??
-                  lessons?.length ??
-                  0)
-              as int,
+      description: json['description'] as String?,
       image: json['image'] as String?,
+      totalProgress: (json['totalProgress'] as num?)?.toInt() ?? 0,
       announcedAt: DateTime.tryParse(json['announcedAt'] as String? ?? ''),
-      units: rawUnits
-          .map((e) => UnitResponse.fromJson(e as Map<String, dynamic>))
-          .toList(),
     );
   }
 
   CourseDetailEntity toEntity() => CourseDetailEntity(
     id: id,
     title: title,
-    lessonsCount: lessonsCount,
+    description: description,
     image: image,
+    totalProgress: totalProgress,
     announcedAt: announcedAt,
-    units: units.map((u) => u.toEntity()).toList(),
   );
 }

@@ -49,19 +49,6 @@ class AvailableCourseCard extends StatelessWidget {
                 letterSpacing: -0.3,
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              AppLocalizations.of(
-                context,
-              ).courseLessonCount(course.lessonsCount),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Color(0xffa79a92),
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
             const SizedBox(height: AppSpacing.md),
             AppButton.filled(
               label: AppLocalizations.of(context).courseLearnMore,

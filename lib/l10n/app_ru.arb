@@ -127,7 +127,7 @@
   "lessonViewTasks": "К заданиям",
   "lessonTasksCompleted": "Задания выполнены",
   "lessonTasksInProgress": "Задания в процессе",
-  "lessonScore": "{correct} из {total} верно · {percent}%",
+  "lessonScore": "{completed} из {total} заданий · {percent}%",
   "lessonRetake": "Пройти заново",
   "lessonInThisUnit": "В этом разделе",
   "lessonNoContent": "Нет контента",
@@ -142,7 +142,6 @@
 
   "materialsTitle": "Материалы",
   "materialsFileCount": "{count, plural, one{{count} файл} few{{count} файла} many{{count} файлов} other{{count} файла}}",
-  "materialsLoadFailed": "Не удалось загрузить материалы",
   "materialsOpenFailed": "Не удалось открыть файл",
 
   "purchaseSuccessTitle": "Готово!",

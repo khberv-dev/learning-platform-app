@@ -166,10 +166,10 @@
   "lessonViewTasks": "View Tasks",
   "lessonTasksCompleted": "Tasks Completed",
   "lessonTasksInProgress": "Tasks In Progress",
-  "lessonScore": "{correct} of {total} correct · {percent}%",
+  "lessonScore": "{completed} of {total} tasks · {percent}%",
   "@lessonScore": {
     "placeholders": {
-      "correct": { "type": "int" },
+      "completed": { "type": "int" },
       "total": { "type": "int" },
       "percent": { "type": "int" }
     }
@@ -191,7 +191,6 @@
   "@materialsFileCount": {
     "placeholders": { "count": { "type": "int" } }
   },
-  "materialsLoadFailed": "Materials couldn't be loaded",
   "materialsOpenFailed": "This file couldn't be opened",
 
   "purchaseSuccessTitle": "You’re in!",

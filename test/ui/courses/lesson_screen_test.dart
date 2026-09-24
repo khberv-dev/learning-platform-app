@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
+import 'package:student/core/courses/domain/entity/lesson_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/lesson_entity.dart';
-import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart';
-import 'package:student/core/courses/presentation/tasks_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 
@@ -19,28 +17,25 @@ void main() {
       title: 'Locked lesson',
       isLocked: true,
     );
-    const course = CourseDetailEntity(
-      id: 'course-1',
-      title: 'Course',
-      lessonsCount: 2,
-      units: [
-        UnitEntity(
-          id: 'unit-1',
-          number: 1,
-          title: 'Unit',
-          lessonsCount: 2,
-          lessons: [lesson, lockedLesson],
-        ),
-      ],
+    const lessonDetail = LessonDetailEntity(
+      id: 'lesson-1',
+      title: 'Text lesson',
+      taskProgression: TaskProgressionEntity(
+        totalTasks: 0,
+        completedTasks: 0,
+        progressPercent: 0,
+      ),
     );
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          courseDetailControllerProvider.overrideWith(
-            (ref, id) async => course,
+          unitLessonsProvider.overrideWith(
+            (ref, params) async => [lesson, lockedLesson],
           ),
-          lessonTaskResultsProvider.overrideWith((ref, id) async => []),
+          lessonDetailProvider.overrideWith((ref, params) async {
+            return lessonDetail;
+          }),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -48,6 +43,7 @@ void main() {
           locale: Locale('en'),
           home: LessonScreen(
             courseId: 'course-1',
+            unitId: 'unit-1',
             unitIndex: 0,
             initialLessonIndex: 0,
           ),

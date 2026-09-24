@@ -4,14 +4,12 @@ class LessonResponse {
   final String id;
   final String title;
   final String? description;
-  final String? mediaUrl;
   final bool isLocked;
 
   const LessonResponse({
     required this.id,
     required this.title,
     this.description,
-    this.mediaUrl,
     this.isLocked = false,
   });
 
@@ -19,7 +17,6 @@ class LessonResponse {
     id: json['id'].toString(),
     title: json['title'] as String,
     description: json['description'] as String?,
-    mediaUrl: json['media'] as String? ?? json['mediaUrl'] as String?,
     isLocked: json['isLocked'] as bool? ?? false,
   );
 
@@ -27,7 +24,6 @@ class LessonResponse {
     id: id,
     title: title,
     description: description,
-    mediaUrl: mediaUrl,
     isLocked: isLocked,
   );
 }

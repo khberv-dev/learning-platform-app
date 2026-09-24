@@ -781,8 +781,8 @@ abstract class AppLocalizations {
   /// No description provided for @lessonScore.
   ///
   /// In en, this message translates to:
-  /// **'{correct} of {total} correct · {percent}%'**
-  String lessonScore(int correct, int total, int percent);
+  /// **'{completed} of {total} tasks · {percent}%'**
+  String lessonScore(int completed, int total, int percent);
 
   /// No description provided for @lessonRetake.
   ///
@@ -861,12 +861,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one{{count} file} other{{count} files}}'**
   String materialsFileCount(int count);
-
-  /// No description provided for @materialsLoadFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Materials couldn\'t be loaded'**
-  String get materialsLoadFailed;
 
   /// No description provided for @materialsOpenFailed.
   ///

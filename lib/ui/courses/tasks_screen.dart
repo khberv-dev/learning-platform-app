@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/usecase/use_submit_tasks.dart';
+import 'package:student/core/courses/presentation/course_detail_controller.dart'
+    show lessonDetailProvider;
 import 'package:student/core/courses/presentation/tasks_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
@@ -111,7 +113,13 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
             MapEntry(taskId, answers.map((a) => a.trim()).toList()),
       );
       final results = await ref.read(useSubmitTasksProvider).call(payload);
-      ref.invalidate(lessonTaskResultsProvider(widget.lessonId));
+      ref.invalidate(
+        lessonDetailProvider((
+          courseId: widget.courseId,
+          unitId: widget.unitId,
+          lessonId: widget.lessonId,
+        )),
+      );
       if (!mounted) return;
       final tasks = ref.read(tasksControllerProvider(_params)).value ?? [];
       context.push(

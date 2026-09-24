@@ -171,6 +171,7 @@ final _appRouter = GoRouter(
       path: LessonScreen.path,
       builder: (_, state) => LessonScreen(
         courseId: state.uri.queryParameters['courseId']!,
+        unitId: state.uri.queryParameters['unitId']!,
         unitIndex:
             int.tryParse(state.uri.queryParameters['unitIndex'] ?? '0') ?? 0,
         initialLessonIndex:

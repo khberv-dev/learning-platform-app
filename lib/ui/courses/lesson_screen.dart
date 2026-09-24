@@ -5,13 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:student/core/courses/domain/entity/lesson_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/lesson_entity.dart';
-import 'package:student/core/courses/domain/entity/task_result_entity.dart';
-import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
-    show courseDetailControllerProvider;
-import 'package:student/core/courses/presentation/tasks_controller.dart'
-    show lessonTaskResultsProvider;
+    show lessonDetailProvider, unitLessonsProvider;
 import 'package:student/core/user/presentation/activity_recorder.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
@@ -24,12 +21,14 @@ class LessonScreen extends ConsumerStatefulWidget {
   static const path = '/lesson';
 
   final String courseId;
+  final String unitId;
   final int unitIndex;
   final int initialLessonIndex;
 
   const LessonScreen({
     super.key,
     required this.courseId,
+    required this.unitId,
     required this.unitIndex,
     required this.initialLessonIndex,
   });
@@ -100,9 +99,9 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     unawaited(ref.read(activityRecorderProvider).record());
   }
 
-  void _selectLesson(UnitEntity unit, int index) {
+  void _selectLesson(List<LessonEntity> lessons, int index) {
     if (_lessonIndex == index) return;
-    if (unit.lessons[index].isLocked) return;
+    if (lessons[index].isLocked) return;
     final oldChewieController = _chewieController;
     final oldVideoController = _videoController;
     _playerGeneration++;
@@ -113,83 +112,106 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     });
     oldChewieController?.dispose();
     oldVideoController?.dispose();
-
-    final lesson = unit.lessons[index];
-    final mediaUrl = lesson.mediaUrl?.trim();
-    if (mediaUrl != null && mediaUrl.isNotEmpty) _initPlayer(mediaUrl);
+    // The new lesson's media is only known once its detail loads — build()
+    // (re)initialises the player once that happens.
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(courseDetailControllerProvider(widget.courseId));
+    final lessonsState = ref.watch(
+      unitLessonsProvider((courseId: widget.courseId, unitId: widget.unitId)),
+    );
 
-    return state.when(
+    return lessonsState.when(
       loading: () => const Scaffold(
         backgroundColor: Color(0xFF0F172A),
         body: Center(child: CircularProgressIndicator(color: Colors.white)),
       ),
       error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
-      data: (course) {
-        final unit = course.units[widget.unitIndex];
-        final lesson = unit.lessons.isNotEmpty
-            ? unit.lessons[_lessonIndex.clamp(0, unit.lessons.length - 1)]
-            : null;
-
-        // Init player on first build if not yet initialised
-        final mediaUrl = lesson?.mediaUrl?.trim();
-        if (mediaUrl != null &&
-            mediaUrl.isNotEmpty &&
-            _videoController == null &&
-            _chewieController == null) {
-          WidgetsBinding.instance.addPostFrameCallback(
-            (_) => _initPlayer(mediaUrl),
+      data: (lessons) {
+        if (lessons.isEmpty) {
+          return Scaffold(
+            body: Center(
+              child: Text(AppLocalizations.of(context).unitNoLessonsTitle),
+            ),
           );
         }
 
-        final unitNumber = (widget.unitIndex + 1).toString().padLeft(2, '0');
+        final lessonIndex = _lessonIndex.clamp(0, lessons.length - 1);
+        final lessonId = lessons[lessonIndex].id;
+        final detailState = ref.watch(
+          lessonDetailProvider((
+            courseId: widget.courseId,
+            unitId: widget.unitId,
+            lessonId: lessonId,
+          )),
+        );
 
-        final taskResults = lesson != null
-            ? ref.watch(lessonTaskResultsProvider(lesson.id)).value ?? []
-            : <TaskResultEntity>[];
-
-        return Scaffold(
-          backgroundColor: const Color(0xFFF5F7FA),
-          body: SafeArea(
-            child: Column(
-              children: [
-                _TopBar(
-                  unitNumber: unitNumber,
-                  lessonNumber: (_lessonIndex + 1).toString().padLeft(2, '0'),
-                ),
-                _VideoArea(
-                  hasMedia: mediaUrl != null && mediaUrl.isNotEmpty,
-                  chewieController: _chewieController,
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [
-                      _LessonInfo(
-                        lesson: lesson,
-                        unitNumber: unitNumber,
-                        lessonIndex: _lessonIndex,
-                        totalLessons: unit.lessons.length,
-                        courseId: widget.courseId,
-                        unitId: unit.id,
-                        taskResults: taskResults,
-                      ),
-                      _UnitLessonList(
-                        unit: unit,
-                        currentIndex: _lessonIndex,
-                        onTap: (i) => _selectLesson(unit, i),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+        return detailState.when(
+          loading: () => const Scaffold(
+            backgroundColor: Color(0xFF0F172A),
+            body: Center(child: CircularProgressIndicator(color: Colors.white)),
           ),
+          error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
+          data: (lesson) {
+            // Init player on first build if not yet initialised
+            final mediaUrl = lesson.mediaUrl?.trim();
+            if (mediaUrl != null &&
+                mediaUrl.isNotEmpty &&
+                _videoController == null &&
+                _chewieController == null) {
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _initPlayer(mediaUrl),
+              );
+            }
+
+            final unitNumber = (widget.unitIndex + 1).toString().padLeft(
+              2,
+              '0',
+            );
+
+            return Scaffold(
+              backgroundColor: const Color(0xFFF5F7FA),
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    _TopBar(
+                      unitNumber: unitNumber,
+                      lessonNumber: (lessonIndex + 1).toString().padLeft(
+                        2,
+                        '0',
+                      ),
+                    ),
+                    _VideoArea(
+                      hasMedia: mediaUrl != null && mediaUrl.isNotEmpty,
+                      chewieController: _chewieController,
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.zero,
+                        children: [
+                          _LessonInfo(
+                            lesson: lesson,
+                            unitNumber: unitNumber,
+                            lessonIndex: lessonIndex,
+                            totalLessons: lessons.length,
+                            courseId: widget.courseId,
+                            unitId: widget.unitId,
+                          ),
+                          _UnitLessonList(
+                            lessons: lessons,
+                            currentIndex: lessonIndex,
+                            onTap: (i) => _selectLesson(lessons, i),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -300,22 +322,20 @@ class _PlayPlaceholder extends StatelessWidget {
 // ── Lesson info ───────────────────────────────────────────────────────────────
 
 class _LessonInfo extends StatelessWidget {
-  final LessonEntity? lesson;
+  final LessonDetailEntity lesson;
   final String unitNumber;
   final int lessonIndex;
   final int totalLessons;
   final String courseId;
   final String unitId;
-  final List<TaskResultEntity> taskResults;
 
   const _LessonInfo({
-    this.lesson,
+    required this.lesson,
     required this.unitNumber,
     required this.lessonIndex,
     required this.totalLessons,
     required this.courseId,
     required this.unitId,
-    required this.taskResults,
   });
 
   @override
@@ -357,18 +377,17 @@ class _LessonInfo extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            lesson?.title ?? '',
+            lesson.title,
             style: const TextStyle(
               color: Color(0xFF111827),
               fontSize: 20,
               fontWeight: FontWeight.w700,
             ),
           ),
-          if (lesson?.description != null &&
-              lesson!.description!.isNotEmpty) ...[
+          if (lesson.description != null && lesson.description!.isNotEmpty) ...[
             const SizedBox(height: 12),
             Text(
-              lesson!.description!,
+              lesson.description!,
               style: const TextStyle(
                 color: Color(0xFF6B7280),
                 fontSize: 14,
@@ -376,16 +395,15 @@ class _LessonInfo extends StatelessWidget {
               ),
             ),
           ],
-          if (lesson != null) ...[
-            const SizedBox(height: 16),
-            _TasksSection(
-              lesson: lesson!,
-              courseId: courseId,
-              unitId: unitId,
-              taskResults: taskResults,
-            ),
-            LessonMaterialsSection(lessonId: lesson!.id),
-          ],
+          const SizedBox(height: 16),
+          _TasksSection(
+            lessonId: lesson.id,
+            lessonTitle: lesson.title,
+            courseId: courseId,
+            unitId: unitId,
+            taskProgression: lesson.taskProgression,
+          ),
+          LessonMaterialsSection(materials: lesson.materials),
         ],
       ),
     );
@@ -395,16 +413,18 @@ class _LessonInfo extends StatelessWidget {
 // ── Tasks section ─────────────────────────────────────────────────────────────
 
 class _TasksSection extends ConsumerWidget {
-  final LessonEntity lesson;
+  final String lessonId;
+  final String lessonTitle;
   final String courseId;
   final String unitId;
-  final List<TaskResultEntity> taskResults;
+  final TaskProgressionEntity taskProgression;
 
   const _TasksSection({
-    required this.lesson,
+    required this.lessonId,
+    required this.lessonTitle,
     required this.courseId,
     required this.unitId,
-    required this.taskResults,
+    required this.taskProgression,
   });
 
   void _goToTasks(BuildContext context, WidgetRef ref) {
@@ -413,16 +433,18 @@ class _TasksSection extends ConsumerWidget {
       '${TasksScreen.path}'
       '?courseId=$courseId'
       '&unitId=$unitId'
-      '&lessonId=${lesson.id}'
-      '&lessonTitle=${Uri.encodeComponent(lesson.title)}',
+      '&lessonId=$lessonId'
+      '&lessonTitle=${Uri.encodeComponent(lessonTitle)}',
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final answered = taskResults.where((r) => r.isAnswered).length;
+    final completed = taskProgression.completedTasks;
+    final total = taskProgression.totalTasks;
+    final pct = taskProgression.progressPercent;
 
-    if (answered == 0) {
+    if (completed == 0) {
       return SizedBox(
         width: double.infinity,
         child: AppButton.filled(
@@ -435,12 +457,7 @@ class _TasksSection extends ConsumerWidget {
       );
     }
 
-    final total = taskResults.length;
-    final correct = taskResults
-        .where((r) => r.submission?.isCorrect ?? false)
-        .length;
-    final pct = total > 0 ? (correct / total * 100).round() : 0;
-    final allDone = answered == total;
+    final allDone = total > 0 && completed == total;
 
     return Container(
       decoration: BoxDecoration(
@@ -488,7 +505,7 @@ class _TasksSection extends ConsumerWidget {
                     Text(
                       AppLocalizations.of(
                         context,
-                      ).lessonScore(correct, total, pct),
+                      ).lessonScore(completed, total, pct),
                       style: const TextStyle(
                         color: Color(0xFF6B7280),
                         fontSize: 12,
@@ -503,7 +520,7 @@ class _TasksSection extends ConsumerWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value: total > 0 ? correct / total : 0,
+              value: pct / 100,
               minHeight: 5,
               backgroundColor: const Color(0xFFE5E7EB),
               valueColor: AlwaysStoppedAnimation(
@@ -532,12 +549,12 @@ class _TasksSection extends ConsumerWidget {
 // ── Unit lesson list ──────────────────────────────────────────────────────────
 
 class _UnitLessonList extends StatelessWidget {
-  final UnitEntity unit;
+  final List<LessonEntity> lessons;
   final int currentIndex;
   final void Function(int) onTap;
 
   const _UnitLessonList({
-    required this.unit,
+    required this.lessons,
     required this.currentIndex,
     required this.onTap,
   });
@@ -561,18 +578,16 @@ class _UnitLessonList extends StatelessWidget {
                 ),
               ),
               Text(
-                AppLocalizations.of(
-                  context,
-                ).courseLessonCount(unit.lessonsCount),
+                AppLocalizations.of(context).courseLessonCount(lessons.length),
                 style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 12),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          ...List.generate(unit.lessons.length, (i) {
+          ...List.generate(lessons.length, (i) {
             final isActive = i == currentIndex;
             final number = (i + 1).toString().padLeft(2, '0');
-            final lesson = unit.lessons[i];
+            final lesson = lessons[i];
             return GestureDetector(
               onTap: lesson.isLocked ? null : () => onTap(i),
               behavior: HitTestBehavior.opaque,

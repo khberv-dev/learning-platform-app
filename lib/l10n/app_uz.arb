@@ -127,7 +127,7 @@
   "lessonViewTasks": "Topshiriqlar",
   "lessonTasksCompleted": "Topshiriqlar bajarildi",
   "lessonTasksInProgress": "Topshiriqlar jarayonda",
-  "lessonScore": "{total} tadan {correct} ta to'g'ri · {percent}%",
+  "lessonScore": "{total} tadan {completed} ta bajarildi · {percent}%",
   "lessonRetake": "Qayta ishlash",
   "lessonInThisUnit": "Shu bo'limda",
   "lessonNoContent": "Kontent yo'q",
@@ -142,7 +142,6 @@
 
   "materialsTitle": "Materiallar",
   "materialsFileCount": "{count, plural, one{{count} ta fayl} other{{count} ta fayl}}",
-  "materialsLoadFailed": "Materiallarni yuklab bo'lmadi",
   "materialsOpenFailed": "Faylni ochib bo'lmadi",
 
   "purchaseSuccessTitle": "Tayyor!",

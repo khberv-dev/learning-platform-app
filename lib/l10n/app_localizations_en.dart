@@ -386,8 +386,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lessonTasksInProgress => 'Tasks In Progress';
 
   @override
-  String lessonScore(int correct, int total, int percent) {
-    return '$correct of $total correct · $percent%';
+  String lessonScore(int completed, int total, int percent) {
+    return '$completed of $total tasks · $percent%';
   }
 
   @override
@@ -436,9 +436,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get materialsLoadFailed => 'Materials couldn\'t be loaded';
 
   @override
   String get materialsOpenFailed => 'This file couldn\'t be opened';
