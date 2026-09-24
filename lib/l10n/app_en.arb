@@ -185,6 +185,7 @@
   "lessonVideoUnmute": "Unmute",
   "lessonVideoFullscreen": "Full screen",
   "lessonVideoExitFullscreen": "Exit full screen",
+  "lessonVideoSpeed": "Playback speed",
 
   "materialsTitle": "Materials",
   "materialsFileCount": "{count, plural, one{{count} file} other{{count} files}}",
@@ -318,6 +319,7 @@
   "studyPullToRetry": "Pull down to try again",
   "studyYourMentor": "Your mentor",
   "studyOpenChat": "Open chat",
+  "studyNoGroupTitle": "You haven't joined a group yet",
   "studyNoGroupMessage": "To start learning, buy a course and we'll add you to a group.",
   "mentorHeader": "Mentor",
   "mentorReviewsTitle": "Student reviews",

@@ -139,6 +139,7 @@
   "lessonVideoUnmute": "Ovozni yoqish",
   "lessonVideoFullscreen": "To'liq ekran",
   "lessonVideoExitFullscreen": "To'liq ekrandan chiqish",
+  "lessonVideoSpeed": "Ijro tezligi",
 
   "materialsTitle": "Materiallar",
   "materialsFileCount": "{count, plural, one{{count} ta fayl} other{{count} ta fayl}}",
@@ -230,6 +231,7 @@
   "studyPullToRetry": "Qayta urinish uchun pastga torting",
   "studyYourMentor": "Sizning mentoringiz",
   "studyOpenChat": "Chatni ochish",
+  "studyNoGroupTitle": "Siz hali guruhga qo'shilmagansiz",
   "studyNoGroupMessage": "O'qishni boshlash uchun kurs sotib oling, biz sizni guruhga qo'shamiz.",
   "mentorHeader": "Mentor",
   "mentorReviewsTitle": "Talabalar fikri",

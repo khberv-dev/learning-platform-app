@@ -428,6 +428,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lessonVideoExitFullscreen => 'Выйти из полноэкранного режима';
 
   @override
+  String get lessonVideoSpeed => 'Скорость воспроизведения';
+
+  @override
   String get materialsTitle => 'Материалы';
 
   @override
@@ -707,6 +710,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get studyOpenChat => 'Открыть чат';
+
+  @override
+  String get studyNoGroupTitle => 'Вы ещё не состоите в группе';
 
   @override
   String get studyNoGroupMessage =>

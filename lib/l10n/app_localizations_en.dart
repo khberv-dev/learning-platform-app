@@ -424,6 +424,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lessonVideoExitFullscreen => 'Exit full screen';
 
   @override
+  String get lessonVideoSpeed => 'Playback speed';
+
+  @override
   String get materialsTitle => 'Materials';
 
   @override
@@ -700,6 +703,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get studyOpenChat => 'Open chat';
+
+  @override
+  String get studyNoGroupTitle => 'You haven\'t joined a group yet';
 
   @override
   String get studyNoGroupMessage =>

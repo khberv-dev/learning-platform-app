@@ -61,7 +61,8 @@ class StudyPage extends ConsumerWidget {
                     ? AppEmptyState(
                         imagePath:
                             'assets/images/no_recorded_sessions_puppet.png',
-                        title: l10n.studyNoGroupMessage,
+                        title: l10n.studyNoGroupTitle,
+                        subtitle: l10n.studyNoGroupMessage,
                       )
                     : _GroupStatus(group: group),
               ),

@@ -11,6 +11,7 @@ import 'package:video_player/video_player.dart';
 class LessonVideoControls extends StatefulWidget {
   static const seekStep = Duration(seconds: 15);
   static const hideDelay = Duration(seconds: 5);
+  static const speeds = [0.5, 1.0, 1.5, 2.0];
 
   const LessonVideoControls({super.key});
 
@@ -113,6 +114,9 @@ class _LessonVideoControlsState extends State<LessonVideoControls> {
     await controller.setVolume(controller.value.volume == 0 ? 1 : 0);
   }
 
+  Future<void> _setSpeed(double speed) =>
+      _videoController!.setPlaybackSpeed(speed);
+
   @override
   Widget build(BuildContext context) {
     final video = _videoController;
@@ -214,6 +218,12 @@ class _LessonVideoControlsState extends State<LessonVideoControls> {
                           ),
                         ),
                         const SizedBox(width: 10),
+                        _SpeedButton(
+                          currentSpeed: video.value.playbackSpeed,
+                          semanticLabel: l10n.lessonVideoSpeed,
+                          onSelected: _setSpeed,
+                        ),
+                        const SizedBox(width: 10),
                         _VideoControlButton(
                           icon: Icon(
                             chewie.isFullScreen
@@ -268,6 +278,72 @@ class _SeekIcon extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Cycles the video between [LessonVideoControls.speeds] via a small popup
+/// menu, labelled with the speed currently in effect.
+class _SpeedButton extends StatelessWidget {
+  final double currentSpeed;
+  final String semanticLabel;
+  final ValueChanged<double> onSelected;
+
+  const _SpeedButton({
+    required this.currentSpeed,
+    required this.semanticLabel,
+    required this.onSelected,
+  });
+
+  static String _label(double speed) =>
+      '${speed == speed.roundToDouble() ? speed.toInt() : speed}x';
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      excludeSemantics: true,
+      child: PopupMenuButton<double>(
+        initialValue: currentSpeed,
+        onSelected: onSelected,
+        color: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        itemBuilder: (context) => [
+          for (final speed in LessonVideoControls.speeds)
+            PopupMenuItem(
+              value: speed,
+              child: Text(
+                _label(speed),
+                style: TextStyle(
+                  color: speed == currentSpeed
+                      ? const Color(0xFF18C96A)
+                      : const Color(0xFF111827),
+                  fontWeight: speed == currentSpeed
+                      ? FontWeight.w700
+                      : FontWeight.w500,
+                ),
+              ),
+            ),
+        ],
+        child: Container(
+          height: 38,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(19),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            _label(currentSpeed),
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

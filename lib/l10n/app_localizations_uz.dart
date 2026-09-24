@@ -425,6 +425,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get lessonVideoExitFullscreen => 'To\'liq ekrandan chiqish';
 
   @override
+  String get lessonVideoSpeed => 'Ijro tezligi';
+
+  @override
   String get materialsTitle => 'Materiallar';
 
   @override
@@ -701,6 +704,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get studyOpenChat => 'Chatni ochish';
+
+  @override
+  String get studyNoGroupTitle => 'Siz hali guruhga qo\'shilmagansiz';
 
   @override
   String get studyNoGroupMessage =>

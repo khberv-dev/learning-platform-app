@@ -850,6 +850,12 @@ abstract class AppLocalizations {
   /// **'Exit full screen'**
   String get lessonVideoExitFullscreen;
 
+  /// No description provided for @lessonVideoSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Playback speed'**
+  String get lessonVideoSpeed;
+
   /// No description provided for @materialsTitle.
   ///
   /// In en, this message translates to:
@@ -1335,6 +1341,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open chat'**
   String get studyOpenChat;
+
+  /// No description provided for @studyNoGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t joined a group yet'**
+  String get studyNoGroupTitle;
 
   /// No description provided for @studyNoGroupMessage.
   ///

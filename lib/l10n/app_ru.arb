@@ -139,6 +139,7 @@
   "lessonVideoUnmute": "Включить звук",
   "lessonVideoFullscreen": "Полноэкранный режим",
   "lessonVideoExitFullscreen": "Выйти из полноэкранного режима",
+  "lessonVideoSpeed": "Скорость воспроизведения",
 
   "materialsTitle": "Материалы",
   "materialsFileCount": "{count, plural, one{{count} файл} few{{count} файла} many{{count} файлов} other{{count} файла}}",
@@ -230,6 +231,7 @@
   "studyPullToRetry": "Потяните вниз, чтобы повторить",
   "studyYourMentor": "Ваш ментор",
   "studyOpenChat": "Открыть чат",
+  "studyNoGroupTitle": "Вы ещё не состоите в группе",
   "studyNoGroupMessage": "Чтобы начать обучение, купите курс, и мы добавим вас в группу.",
   "mentorHeader": "Ментор",
   "mentorReviewsTitle": "Отзывы студентов",
