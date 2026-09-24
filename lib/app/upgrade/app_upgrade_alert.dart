@@ -39,8 +39,12 @@ class _AppUpgradeAlertState extends State<AppUpgradeAlert> {
     minAppVersion: minSupportedAppVersion,
     debugLogging: kDebugMode,
     // Bypasses the "have we asked recently" and "did they ignore this version"
-    // checks, so every debug launch shows the prompt.
-    debugDisplayAlways: kDebugMode,
+    // checks, so every debug launch shows the prompt — but only the first
+    // time `shouldDisplayUpgrade` is evaluated per launch (it flips
+    // `_hasAlerted` the instant it's shown). `debugDisplayAlways` would
+    // re-force it on every later check too — e.g. every app resume, since
+    // `checkOnResume` defaults to true — showing it more than once a session.
+    debugDisplayOnce: kDebugMode,
     // In debug the store lookup is replaced wholesale: a real one would 404
     // for an unpublished build, leaving versionInfo null and the prompt
     // silently never showing, however hard debugDisplayAlways tried.

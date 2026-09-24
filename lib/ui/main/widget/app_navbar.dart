@@ -3,14 +3,13 @@ import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/l10n/app_localizations.dart';
 
-/// One destination. Either [imagePath] (a black silhouette PNG, tinted at
-/// paint time) or [icon] is used.
+/// One destination — [imagePath] is a black silhouette PNG, tinted at paint
+/// time.
 class _NavDestination {
   final String label;
-  final String? imagePath;
-  final IconData? icon;
+  final String imagePath;
 
-  const _NavDestination({required this.label, this.imagePath, this.icon});
+  const _NavDestination({required this.label, required this.imagePath});
 }
 
 /// Floating pill navigation bar. Detached from the screen edges and elevated,
@@ -19,14 +18,12 @@ class AppNavbar extends StatelessWidget {
   static const double height = 64;
 
   final int current;
-  final bool showChat;
   final Function(int) onItemClick;
 
   const AppNavbar({
     super.key,
     required this.current,
     required this.onItemClick,
-    this.showChat = false,
   });
 
   @override
@@ -42,14 +39,10 @@ class AppNavbar extends StatelessWidget {
         label: l10n.navCourse,
         imagePath: 'assets/images/nav_course.png',
       ),
-      // No nav_chat.png ships yet, so this one stays a Material icon.
-      if (showChat)
-        _NavDestination(label: l10n.navChat, icon: Icons.chat_bubble_rounded)
-      else
-        _NavDestination(
-          label: l10n.navMentor,
-          imagePath: 'assets/images/nav_mentor.png',
-        ),
+      _NavDestination(
+        label: l10n.navStudy,
+        imagePath: 'assets/images/nav_study.png',
+      ),
       _NavDestination(
         label: l10n.navProfile,
         imagePath: 'assets/images/nav_profile.png',
@@ -128,14 +121,12 @@ class _NavButton extends StatelessWidget {
               // square box to keep the row optically even.
               SizedBox.square(
                 dimension: 24,
-                child: destination.imagePath != null
-                    ? Image.asset(
-                        destination.imagePath!,
-                        fit: BoxFit.contain,
-                        color: tint,
-                        colorBlendMode: BlendMode.srcIn,
-                      )
-                    : Icon(destination.icon, size: 22, color: tint),
+                child: Image.asset(
+                  destination.imagePath,
+                  fit: BoxFit.contain,
+                  color: tint,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
               ),
               const SizedBox(height: 4),
               Text(

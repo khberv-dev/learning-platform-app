@@ -10,6 +10,7 @@ class ChatMessageResponse {
   final String? fileMimeType;
   final String senderId;
   final String senderName;
+  final String? senderAvatar;
   final String createdAt;
 
   const ChatMessageResponse({
@@ -18,6 +19,7 @@ class ChatMessageResponse {
     required this.senderId,
     required this.senderName,
     required this.createdAt,
+    this.senderAvatar,
     this.text,
     this.filePath,
     this.fileName,
@@ -48,6 +50,7 @@ class ChatMessageResponse {
       fileMimeType: json['fileMimeType'] as String?,
       senderId: sender['id'] as String? ?? '',
       senderName: senderName,
+      senderAvatar: sender['avatar'] as String?,
       createdAt: json['createdAt'] as String? ?? '',
     );
   }
@@ -62,6 +65,7 @@ class ChatMessageResponse {
     fileMimeType: fileMimeType,
     senderId: senderId,
     senderName: senderName,
+    senderAvatar: senderAvatar,
     createdAt: createdAt,
   );
 }

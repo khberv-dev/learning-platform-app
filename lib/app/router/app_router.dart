@@ -13,6 +13,7 @@ import 'package:student/ui/courses/image_viewer_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/courses/live_session_screen.dart';
 import 'package:student/ui/courses/pdf_viewer_screen.dart';
+import 'package:student/ui/courses/task_results_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/courses/unit_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
@@ -131,6 +132,13 @@ final _appRouter = GoRouter(
         lessonId: state.uri.queryParameters['lessonId']!,
         lessonTitle: state.uri.queryParameters['lessonTitle'] ?? '',
       ),
+    ),
+    GoRoute(
+      path: TaskResultsScreen.path,
+      builder: (_, state) {
+        final args = state.extra as TaskResultsArgs;
+        return TaskResultsScreen(results: args.results, tasks: args.tasks);
+      },
     ),
     GoRoute(
       path: LiveSessionScreen.path,

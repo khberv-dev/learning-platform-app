@@ -16,7 +16,6 @@ void main() {
       id: 'course-1',
       title: 'Course',
       lessonsCount: 1,
-      price: 0,
       units: [
         UnitEntity(
           id: 'unit-1',

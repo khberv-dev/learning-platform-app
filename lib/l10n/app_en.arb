@@ -74,8 +74,7 @@
 
   "navHome": "Home",
   "navCourse": "Course",
-  "navChat": "Chat",
-  "navMentor": "Mentor",
+  "navStudy": "Study",
   "navProfile": "Profile",
 
   "levelBeginner": "Beginner",
@@ -218,6 +217,26 @@
   "tasksEmptySubtitle": "Tasks for this lesson will appear here.",
   "taskAudioError": "Audio could not be played",
   "taskImageError": "Image could not be loaded",
+  "taskResultsTitle": "Results",
+  "taskResultsSummary": "{correct} of {total} correct",
+  "@taskResultsSummary": {
+    "placeholders": {
+      "correct": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "taskResultsCoinsEarned": "{count, plural, one{+{count} coin earned} other{+{count} coins earned}}",
+  "@taskResultsCoinsEarned": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "taskResultsCorrect": "Correct",
+  "taskResultsIncorrect": "Incorrect",
+  "taskResultsYourAnswer": "Your answer: {answer}",
+  "@taskResultsYourAnswer": {
+    "placeholders": { "answer": { "type": "String" } }
+  },
+  "taskResultsNoAnswer": "No answer",
+  "taskResultsDone": "Done",
 
   "pdfPageOf": "Page {current} of {total}",
   "@pdfPageOf": {
@@ -295,21 +314,12 @@
   "chatEmptyTitle": "No messages yet",
   "chatEmptySubtitle": "Send a message to start the conversation.",
 
-  "mentorsTitle": "Find a mentor",
-  "mentorsLoadFailed": "Couldn't load mentors",
-  "mentorsPullToRetry": "Pull down to try again",
-  "mentorsEmptyTitle": "No mentors yet",
-  "mentorsEmptySubtitle": "Mentors will appear here once they join",
-  "mentorsAvailable": "Available mentors",
-  "groupSectionTitle": "My group",
-  "groupPrimaryMentor": "Primary mentor",
-  "groupSupportMentor": "Support mentor",
-  "groupScheduleTitle": "Schedule",
-  "groupNoGroup": "You haven't been added to a group yet",
-  "groupStudentsCount": "{count, plural, one{{count} student} other{{count} students}}",
-  "@groupStudentsCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
+  "studyTitle": "Study",
+  "studyLoadFailed": "Couldn't load your group",
+  "studyPullToRetry": "Pull down to try again",
+  "studyYourMentor": "Your mentor",
+  "studyOpenChat": "Open chat",
+  "studyNoGroupMessage": "To start learning, buy a course and we'll add you to a group.",
   "mentorHeader": "Mentor",
   "mentorReviewsTitle": "Student reviews",
   "mentorNoReviews": "No reviews yet",
@@ -335,14 +345,6 @@
     }
   },
   "settingsPurchaseHistory": "Purchase history",
-
-  "weekdayMonday": "Monday",
-  "weekdayTuesday": "Tuesday",
-  "weekdayWednesday": "Wednesday",
-  "weekdayThursday": "Thursday",
-  "weekdayFriday": "Friday",
-  "weekdaySaturday": "Saturday",
-  "weekdaySunday": "Sunday",
 
   "plansTitle": "Choose a plan",
   "plansLoadFailed": "Couldn't load the plans",

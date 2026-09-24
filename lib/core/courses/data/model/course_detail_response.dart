@@ -6,16 +6,16 @@ class CourseDetailResponse {
   final String title;
   final int lessonsCount;
   final String? image;
-  final int price;
   final List<UnitResponse> units;
+  final DateTime? announcedAt;
 
   const CourseDetailResponse({
     required this.id,
     required this.title,
     required this.lessonsCount,
-    required this.price,
     required this.units,
     this.image,
+    this.announcedAt,
   });
 
   factory CourseDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -31,7 +31,7 @@ class CourseDetailResponse {
                   0)
               as int,
       image: json['image'] as String?,
-      price: (json['price'] ?? 0) as int,
+      announcedAt: DateTime.tryParse(json['announcedAt'] as String? ?? ''),
       units: rawUnits
           .map((e) => UnitResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -43,7 +43,7 @@ class CourseDetailResponse {
     title: title,
     lessonsCount: lessonsCount,
     image: image,
-    price: price,
+    announcedAt: announcedAt,
     units: units.map((u) => u.toEntity()).toList(),
   );
 }

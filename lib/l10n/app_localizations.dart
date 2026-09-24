@@ -430,17 +430,11 @@ abstract class AppLocalizations {
   /// **'Course'**
   String get navCourse;
 
-  /// No description provided for @navChat.
+  /// No description provided for @navStudy.
   ///
   /// In en, this message translates to:
-  /// **'Chat'**
-  String get navChat;
-
-  /// No description provided for @navMentor.
-  ///
-  /// In en, this message translates to:
-  /// **'Mentor'**
-  String get navMentor;
+  /// **'Study'**
+  String get navStudy;
 
   /// No description provided for @navProfile.
   ///
@@ -958,6 +952,54 @@ abstract class AppLocalizations {
   /// **'Image could not be loaded'**
   String get taskImageError;
 
+  /// No description provided for @taskResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get taskResultsTitle;
+
+  /// No description provided for @taskResultsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{correct} of {total} correct'**
+  String taskResultsSummary(int correct, int total);
+
+  /// No description provided for @taskResultsCoinsEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{+{count} coin earned} other{+{count} coins earned}}'**
+  String taskResultsCoinsEarned(int count);
+
+  /// No description provided for @taskResultsCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get taskResultsCorrect;
+
+  /// No description provided for @taskResultsIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect'**
+  String get taskResultsIncorrect;
+
+  /// No description provided for @taskResultsYourAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Your answer: {answer}'**
+  String taskResultsYourAnswer(String answer);
+
+  /// No description provided for @taskResultsNoAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'No answer'**
+  String get taskResultsNoAnswer;
+
+  /// No description provided for @taskResultsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get taskResultsDone;
+
   /// No description provided for @pdfPageOf.
   ///
   /// In en, this message translates to:
@@ -1270,77 +1312,41 @@ abstract class AppLocalizations {
   /// **'Send a message to start the conversation.'**
   String get chatEmptySubtitle;
 
-  /// No description provided for @mentorsTitle.
+  /// No description provided for @studyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Find a mentor'**
-  String get mentorsTitle;
+  /// **'Study'**
+  String get studyTitle;
 
-  /// No description provided for @mentorsLoadFailed.
+  /// No description provided for @studyLoadFailed.
   ///
   /// In en, this message translates to:
-  /// **'Couldn\'t load mentors'**
-  String get mentorsLoadFailed;
+  /// **'Couldn\'t load your group'**
+  String get studyLoadFailed;
 
-  /// No description provided for @mentorsPullToRetry.
+  /// No description provided for @studyPullToRetry.
   ///
   /// In en, this message translates to:
   /// **'Pull down to try again'**
-  String get mentorsPullToRetry;
+  String get studyPullToRetry;
 
-  /// No description provided for @mentorsEmptyTitle.
+  /// No description provided for @studyYourMentor.
   ///
   /// In en, this message translates to:
-  /// **'No mentors yet'**
-  String get mentorsEmptyTitle;
+  /// **'Your mentor'**
+  String get studyYourMentor;
 
-  /// No description provided for @mentorsEmptySubtitle.
+  /// No description provided for @studyOpenChat.
   ///
   /// In en, this message translates to:
-  /// **'Mentors will appear here once they join'**
-  String get mentorsEmptySubtitle;
+  /// **'Open chat'**
+  String get studyOpenChat;
 
-  /// No description provided for @mentorsAvailable.
+  /// No description provided for @studyNoGroupMessage.
   ///
   /// In en, this message translates to:
-  /// **'Available mentors'**
-  String get mentorsAvailable;
-
-  /// No description provided for @groupSectionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'My group'**
-  String get groupSectionTitle;
-
-  /// No description provided for @groupPrimaryMentor.
-  ///
-  /// In en, this message translates to:
-  /// **'Primary mentor'**
-  String get groupPrimaryMentor;
-
-  /// No description provided for @groupSupportMentor.
-  ///
-  /// In en, this message translates to:
-  /// **'Support mentor'**
-  String get groupSupportMentor;
-
-  /// No description provided for @groupScheduleTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Schedule'**
-  String get groupScheduleTitle;
-
-  /// No description provided for @groupNoGroup.
-  ///
-  /// In en, this message translates to:
-  /// **'You haven\'t been added to a group yet'**
-  String get groupNoGroup;
-
-  /// No description provided for @groupStudentsCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{{count} student} other{{count} students}}'**
-  String groupStudentsCount(int count);
+  /// **'To start learning, buy a course and we\'ll add you to a group.'**
+  String get studyNoGroupMessage;
 
   /// No description provided for @mentorHeader.
   ///
@@ -1455,48 +1461,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Purchase history'**
   String get settingsPurchaseHistory;
-
-  /// No description provided for @weekdayMonday.
-  ///
-  /// In en, this message translates to:
-  /// **'Monday'**
-  String get weekdayMonday;
-
-  /// No description provided for @weekdayTuesday.
-  ///
-  /// In en, this message translates to:
-  /// **'Tuesday'**
-  String get weekdayTuesday;
-
-  /// No description provided for @weekdayWednesday.
-  ///
-  /// In en, this message translates to:
-  /// **'Wednesday'**
-  String get weekdayWednesday;
-
-  /// No description provided for @weekdayThursday.
-  ///
-  /// In en, this message translates to:
-  /// **'Thursday'**
-  String get weekdayThursday;
-
-  /// No description provided for @weekdayFriday.
-  ///
-  /// In en, this message translates to:
-  /// **'Friday'**
-  String get weekdayFriday;
-
-  /// No description provided for @weekdaySaturday.
-  ///
-  /// In en, this message translates to:
-  /// **'Saturday'**
-  String get weekdaySaturday;
-
-  /// No description provided for @weekdaySunday.
-  ///
-  /// In en, this message translates to:
-  /// **'Sunday'**
-  String get weekdaySunday;
 
   /// No description provided for @plansTitle.
   ///

@@ -59,13 +59,14 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
     final response = await _dio.post(
       'auth/sign-up',
       data: {
-        'firstName': firstName,
+        'firstName': firstName.trim(),
         'phoneNumber': phoneNumber,
         'password': password,
         'code': code,
         // Left out rather than sent null: both are optional, and the API
         // rejects a null against its enum validator.
-        if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
+        if (lastName != null && lastName.trim().isNotEmpty)
+          'lastName': lastName.trim(),
         if (level != null) 'level': level.code,
       },
     );
@@ -84,11 +85,12 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
     final response = await _dio.post(
       'auth/sign-up',
       data: {
-        'firstName': firstName,
+        'firstName': firstName.trim(),
         'email': email.trim().toLowerCase(),
         'password': password,
         'code': code,
-        if (lastName != null && lastName.isNotEmpty) 'lastName': lastName,
+        if (lastName != null && lastName.trim().isNotEmpty)
+          'lastName': lastName.trim(),
         if (level != null) 'level': level.code,
       },
     );

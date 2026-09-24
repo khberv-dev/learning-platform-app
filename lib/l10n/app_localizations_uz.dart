@@ -181,10 +181,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get navCourse => 'Kurslar';
 
   @override
-  String get navChat => 'Chat';
-
-  @override
-  String get navMentor => 'Mentor';
+  String get navStudy => 'Ta\'lim';
 
   @override
   String get navProfile => 'Profil';
@@ -492,6 +489,42 @@ class AppLocalizationsUz extends AppLocalizations {
   String get taskImageError => 'Rasmni yuklab bo\'lmadi';
 
   @override
+  String get taskResultsTitle => 'Natijalar';
+
+  @override
+  String taskResultsSummary(int correct, int total) {
+    return '$total tadan $correct tasi to\'g\'ri';
+  }
+
+  @override
+  String taskResultsCoinsEarned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count tanga',
+      one: '+$count tanga',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get taskResultsCorrect => 'To\'g\'ri';
+
+  @override
+  String get taskResultsIncorrect => 'Noto\'g\'ri';
+
+  @override
+  String taskResultsYourAnswer(String answer) {
+    return 'Sizning javobingiz: $answer';
+  }
+
+  @override
+  String get taskResultsNoAnswer => 'Javob yo\'q';
+
+  @override
+  String get taskResultsDone => 'Tayyor';
+
+  @override
   String pdfPageOf(int current, int total) {
     return '$total tadan $current-sahifa';
   }
@@ -658,48 +691,23 @@ class AppLocalizationsUz extends AppLocalizations {
   String get chatEmptySubtitle => 'Suhbatni boshlash uchun xabar yuboring.';
 
   @override
-  String get mentorsTitle => 'Mentor topish';
+  String get studyTitle => 'Ta\'lim';
 
   @override
-  String get mentorsLoadFailed => 'Mentorlarni yuklab bo\'lmadi';
+  String get studyLoadFailed => 'Guruh ma\'lumotlarini yuklab bo\'lmadi';
 
   @override
-  String get mentorsPullToRetry => 'Qayta urinish uchun pastga torting';
+  String get studyPullToRetry => 'Qayta urinish uchun pastga torting';
 
   @override
-  String get mentorsEmptyTitle => 'Mentorlar yo\'q';
+  String get studyYourMentor => 'Sizning mentoringiz';
 
   @override
-  String get mentorsEmptySubtitle => 'Ular qo\'shilgach shu yerda ko\'rinadi';
+  String get studyOpenChat => 'Chatni ochish';
 
   @override
-  String get mentorsAvailable => 'Mavjud mentorlar';
-
-  @override
-  String get groupSectionTitle => 'Mening guruhim';
-
-  @override
-  String get groupPrimaryMentor => 'Asosiy mentor';
-
-  @override
-  String get groupSupportMentor => 'Yordamchi mentor';
-
-  @override
-  String get groupScheduleTitle => 'Jadval';
-
-  @override
-  String get groupNoGroup => 'Siz hali guruhga qo\'shilmagansiz';
-
-  @override
-  String groupStudentsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count talaba',
-      one: '$count talaba',
-    );
-    return '$_temp0';
-  }
+  String get studyNoGroupMessage =>
+      'O\'qishni boshlash uchun kurs sotib oling, biz sizni guruhga qo\'shamiz.';
 
   @override
   String get mentorHeader => 'Mentor';
@@ -759,27 +767,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get settingsPurchaseHistory => 'Xaridlar tarixi';
-
-  @override
-  String get weekdayMonday => 'Dushanba';
-
-  @override
-  String get weekdayTuesday => 'Seshanba';
-
-  @override
-  String get weekdayWednesday => 'Chorshanba';
-
-  @override
-  String get weekdayThursday => 'Payshanba';
-
-  @override
-  String get weekdayFriday => 'Juma';
-
-  @override
-  String get weekdaySaturday => 'Shanba';
-
-  @override
-  String get weekdaySunday => 'Yakshanba';
 
   @override
   String get plansTitle => 'Tarifni tanlang';

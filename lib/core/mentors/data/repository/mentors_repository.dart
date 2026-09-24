@@ -15,17 +15,6 @@ class MentorsRepository implements IMentorsRepository {
   const MentorsRepository({required Dio dio}) : _dio = dio;
 
   @override
-  Future<List<MentorEntity>> getMentors() async {
-    final response = await _dio.get('student/mentors');
-    final list = response.data as List<dynamic>;
-    return list
-        .map(
-          (e) => MentorResponse.fromJson(e as Map<String, dynamic>).toEntity(),
-        )
-        .toList();
-  }
-
-  @override
   Future<MentorEntity> getMentor(String id) async {
     final response = await _dio.get('student/mentors/$id');
     return MentorResponse.fromJson(

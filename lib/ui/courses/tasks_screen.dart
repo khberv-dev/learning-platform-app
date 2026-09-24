@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/usecase/use_submit_tasks.dart';
 import 'package:student/core/courses/presentation/tasks_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
+import 'package:student/ui/courses/task_results_screen.dart';
 import 'package:student/ui/courses/widget/task_content_view.dart';
 import 'package:student/utils/messenger.dart';
 
@@ -108,9 +110,14 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
         (taskId, answers) =>
             MapEntry(taskId, answers.map((a) => a.trim()).toList()),
       );
-      await ref.read(useSubmitTasksProvider).call(payload);
+      final results = await ref.read(useSubmitTasksProvider).call(payload);
       ref.invalidate(lessonTaskResultsProvider(widget.lessonId));
-      if (mounted) Navigator.of(context).pop();
+      if (!mounted) return;
+      final tasks = ref.read(tasksControllerProvider(_params)).value ?? [];
+      context.push(
+        TaskResultsScreen.path,
+        extra: (results: results, tasks: tasks),
+      );
     } catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);

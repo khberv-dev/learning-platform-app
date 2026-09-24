@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/core/notifications/presentation/push_messaging_service.dart';
 import 'package:student/core/notifications/presentation/unread_notifications_count_provider.dart';
 import 'package:student/core/payments/presentation/purchase_watcher.dart';
-import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/courses_page.dart';
 import 'package:student/ui/courses/widget/purchase_success_dialog.dart';
 import 'package:student/ui/home/home_page.dart';
 import 'package:student/ui/main/widget/app_navbar.dart';
 import 'package:student/ui/profile/profile_page.dart';
-import 'package:student/ui/mentors/mentors_page.dart';
+import 'package:student/ui/study/study_page.dart';
 
 class AppScreen extends ConsumerStatefulWidget {
   static const path = '/app';
@@ -98,18 +96,6 @@ class _AppScreenState extends ConsumerState<AppScreen>
   @override
   Widget build(BuildContext context) {
     final navbarIndex = ref.watch(navbarControllerProvider);
-    final showChat = ref.watch(hasChatRoomsProvider).value ?? false;
-
-    void onNavItemClick(int index) {
-      if (showChat && index == 2) {
-        final rooms = ref.read(chatRoomsProvider).value;
-        final room = rooms?.firstOrNull;
-        if (room == null) return;
-        context.push('${ChatRoomScreen.path}?roomId=${room.id}');
-        return;
-      }
-      ref.read(navbarControllerProvider.notifier).state = index;
-    }
 
     return Scaffold(
       // Pages run to the bottom of the screen so the pill floats over their
@@ -119,19 +105,14 @@ class _AppScreenState extends ConsumerState<AppScreen>
       extendBody: true,
       bottomNavigationBar: AppNavbar(
         current: navbarIndex,
-        showChat: showChat,
-        onItemClick: onNavItemClick,
+        onItemClick: (index) =>
+            ref.read(navbarControllerProvider.notifier).state = index,
       ),
       // Not SafeArea: the profile hero bleeds to the top edge, so each page
       // applies the top inset itself.
       body: IndexedStack(
         index: navbarIndex,
-        children: const [
-          HomePage(),
-          CoursesPage(),
-          MentorsPage(),
-          ProfilePage(),
-        ],
+        children: const [HomePage(), CoursesPage(), StudyPage(), ProfilePage()],
       ),
     );
   }

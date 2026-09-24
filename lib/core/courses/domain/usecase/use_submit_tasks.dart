@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/courses/data/repository/courses_repository.dart';
+import 'package:student/core/courses/domain/entity/task_submission_result_entity.dart';
 import 'package:student/core/courses/domain/repository/i_courses_repository.dart';
 
 final useSubmitTasksProvider = Provider(
@@ -11,6 +12,7 @@ class UseSubmitTasks {
 
   const UseSubmitTasks(this._repository);
 
-  Future<void> call(Map<String, List<String>> answers) =>
-      _repository.submitTasks(answers);
+  Future<List<TaskSubmissionResultEntity>> call(
+    Map<String, List<String>> answers,
+  ) => _repository.submitTasks(answers);
 }

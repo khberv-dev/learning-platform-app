@@ -127,9 +127,9 @@ Auth works with either a phone number or an email, toggled by `AuthIdentitySwitc
 
 ### Main shell
 
-`AppScreen` (`/app`) is an `IndexedStack` of four tabs — Home, Courses, Mentors, Profile — driven by `navbarControllerProvider`. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
+`AppScreen` (`/app`) is an `IndexedStack` of four tabs — Home, Courses, Study, Profile — driven by `navbarControllerProvider`. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
 
-**Gotcha:** the navbar always has four items, but when `hasChatRoomsProvider` is true item **index 2** swaps from *Mentor* (the Mentors tab) to *Chat*, and tapping it pushes `ChatRoomScreen` for the first room instead of changing `navbarIndex` — so the Mentors tab is unreachable from the navbar for students who have a chat room. Any change to nav item order must keep `AppNavbar`'s list and `AppScreen.onNavItemClick`'s index-2 special case in sync.
+The navbar is static — four fixed items, `AppNavbar.onItemClick` just sets `navbarControllerProvider`. This used to swap item 2 between *Mentor* and *Chat* depending on `hasChatRoomsProvider`; that's gone now that a student has at most one group (and thus at most one chat room) — `StudyPage` itself shows the group's mentor and an "open chat" button instead.
 
 ### Realtime (Socket.IO)
 
@@ -174,10 +174,13 @@ The streak counts UTC days on which `POST user/me/activity` was called. Study ac
 
 There is no more 1:1 mentor booking — a student's only mentor relationship is through their
 current **group**, a named cohort (mentor team + student roster + schedule) that's fully
-admin-managed (`core/groups/`, `GET student/groups/me`, nullable if ungrouped). `MyGroupCard`
-shows it at the top of `MentorsPage`. The `core/mentors/` domain is still separate and still lets a
-student browse mentor profiles and leave feedback (`GET student/mentors`, `POST
-student/mentors/:id/feedbacks`) — it just no longer has a per-mentor schedule or booking action.
+admin-managed (`core/groups/`, `GET student/groups/me`, nullable if ungrouped). `StudyPage`
+(`ui/study/`, the navbar's Study tab) is the group-status screen: group name, the primary mentor
+(tap through to their profile), and a button into the group's chat room — or, ungrouped, a message
+telling the student to buy a course first. The `core/mentors/` domain is still separate and still
+lets a student view one mentor's profile and leave feedback (`GET student/mentors/:id`, `POST
+student/mentors/:id/feedbacks`) — there's no browse-all-mentors listing anymore, since the only way
+to reach a mentor profile now is through your own group.
 
 ### Live lessons
 

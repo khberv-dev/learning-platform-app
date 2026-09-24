@@ -5,15 +5,15 @@ class CourseDetailEntity {
   final String title;
   final int lessonsCount;
   final String? image;
-  final int price;
   final List<UnitEntity> units;
+  final DateTime? announcedAt;
 
   const CourseDetailEntity({
     required this.id,
     required this.title,
     required this.lessonsCount,
-    required this.price,
     required this.units,
     this.image,
+    this.announcedAt,
   });
 }

@@ -8,6 +8,7 @@ import 'package:student/core/courses/data/model/live_lesson_response.dart';
 import 'package:student/core/courses/data/model/my_course_response.dart';
 import 'package:student/core/courses/data/model/task_response.dart';
 import 'package:student/core/courses/data/model/task_result_response.dart';
+import 'package:student/core/courses/data/model/task_submission_result_response.dart';
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
 import 'package:student/core/courses/domain/entity/lesson_material_entity.dart';
@@ -15,6 +16,7 @@ import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/entity/task_result_entity.dart';
+import 'package:student/core/courses/domain/entity/task_submission_result_entity.dart';
 import 'package:student/core/courses/domain/repository/i_courses_repository.dart';
 
 final coursesRepositoryProvider = Provider<ICoursesRepository>(
@@ -28,8 +30,12 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<List<CourseEntity>> getAvailable() async {
-    final response = await _dio.get('student/courses/available');
-    final list = response.data as List<dynamic>;
+    final response = await _dio.get(
+      'student/courses/available',
+      queryParameters: {'limit': 100},
+    );
+    final envelope = response.data as Map<String, dynamic>;
+    final list = envelope['data'] as List<dynamic>;
     return list
         .map(
           (e) => CourseResponse.fromJson(e as Map<String, dynamic>).toEntity(),
@@ -39,8 +45,12 @@ class CoursesRepository implements ICoursesRepository {
 
   @override
   Future<List<MyCourseEntity>> getMyCourses() async {
-    final response = await _dio.get('student/courses/me');
-    final list = response.data as List<dynamic>;
+    final response = await _dio.get(
+      'student/courses/me',
+      queryParameters: {'limit': 100},
+    );
+    final envelope = response.data as Map<String, dynamic>;
+    final list = envelope['data'] as List<dynamic>;
     return list
         .map(
           (e) =>
@@ -77,17 +87,29 @@ class CoursesRepository implements ICoursesRepository {
   }) async {
     final response = await _dio.get(
       'student/courses/$courseId/units/$unitId/lessons/$lessonId/tasks',
+      queryParameters: {'limit': 100},
     );
-    final list = response.data as List<dynamic>;
+    final envelope = response.data as Map<String, dynamic>;
+    final list = envelope['data'] as List<dynamic>;
     return list
         .map((e) => TaskResponse.fromJson(e as Map<String, dynamic>).toEntity())
         .toList();
   }
 
   @override
-  Future<void> submitTasks(Map<String, List<String>> answers) async {
+  Future<List<TaskSubmissionResultEntity>> submitTasks(
+    Map<String, List<String>> answers,
+  ) async {
     // One answer string per question of the task, in question order.
-    await _dio.post('student/task-submissions', data: answers);
+    final response = await _dio.post('student/task-submissions', data: answers);
+    final list = response.data as List<dynamic>;
+    return list
+        .map(
+          (e) => TaskSubmissionResultResponse.fromJson(
+            e as Map<String, dynamic>,
+          ).toEntity(),
+        )
+        .toList();
   }
 
   @override

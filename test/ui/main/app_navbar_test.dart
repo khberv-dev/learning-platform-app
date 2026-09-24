@@ -4,44 +4,25 @@ import 'package:student/ui/main/widget/app_navbar.dart';
 
 import '../../support/localized_app.dart';
 
-Widget _host({
-  int current = 0,
-  bool showChat = false,
-  void Function(int)? onItemClick,
-}) => localizedHome(
-  home: Scaffold(
-    bottomNavigationBar: AppNavbar(
-      current: current,
-      showChat: showChat,
-      onItemClick: onItemClick ?? (_) {},
-    ),
-    body: const SizedBox.expand(),
-  ),
-);
+Widget _host({int current = 0, void Function(int)? onItemClick}) =>
+    localizedHome(
+      home: Scaffold(
+        bottomNavigationBar: AppNavbar(
+          current: current,
+          onItemClick: onItemClick ?? (_) {},
+        ),
+        body: const SizedBox.expand(),
+      ),
+    );
 
 void main() {
   testWidgets('shows the four default destinations', (tester) async {
     await tester.pumpWidget(_host());
 
     expect(tester.takeException(), isNull);
-    for (final label in ['Home', 'Course', 'Mentor', 'Profile']) {
+    for (final label in ['Home', 'Course', 'Study', 'Profile']) {
       expect(find.text(label), findsOneWidget);
     }
-    expect(find.text('Chat'), findsNothing);
-  });
-
-  testWidgets('showChat replaces Mentor at index 2', (tester) async {
-    await tester.pumpWidget(_host(showChat: true));
-
-    expect(find.text('Chat'), findsOneWidget);
-    expect(find.text('Mentor'), findsNothing);
-
-    // Order matters — AppScreen special-cases index 2.
-    final labels = tester
-        .widgetList<Text>(find.byType(Text))
-        .map((t) => t.data)
-        .toList();
-    expect(labels, ['Home', 'Course', 'Chat', 'Profile']);
   });
 
   testWidgets('reports the tapped index', (tester) async {

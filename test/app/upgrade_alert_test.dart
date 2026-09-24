@@ -120,6 +120,23 @@ void main() {
     expect(find.text('home'), findsOneWidget);
   });
 
+  testWidgets('does not reappear on a later app resume', (tester) async {
+    final router = await _pumpApp(tester);
+    await _leaveSplash(tester, router);
+
+    await tester.tap(find.text('LATER'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+
+    // `Upgrader` re-checks on every resume (`checkOnResume` defaults to
+    // true) — regressing to `debugDisplayAlways` would force it back up here.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AlertDialog), findsNothing);
+  });
+
   testWidgets('the release notes blurb is kept out of the prompt', (
     tester,
   ) async {

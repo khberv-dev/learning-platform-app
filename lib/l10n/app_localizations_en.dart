@@ -181,10 +181,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navCourse => 'Course';
 
   @override
-  String get navChat => 'Chat';
-
-  @override
-  String get navMentor => 'Mentor';
+  String get navStudy => 'Study';
 
   @override
   String get navProfile => 'Profile';
@@ -490,6 +487,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get taskImageError => 'Image could not be loaded';
 
   @override
+  String get taskResultsTitle => 'Results';
+
+  @override
+  String taskResultsSummary(int correct, int total) {
+    return '$correct of $total correct';
+  }
+
+  @override
+  String taskResultsCoinsEarned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count coins earned',
+      one: '+$count coin earned',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get taskResultsCorrect => 'Correct';
+
+  @override
+  String get taskResultsIncorrect => 'Incorrect';
+
+  @override
+  String taskResultsYourAnswer(String answer) {
+    return 'Your answer: $answer';
+  }
+
+  @override
+  String get taskResultsNoAnswer => 'No answer';
+
+  @override
+  String get taskResultsDone => 'Done';
+
+  @override
   String pdfPageOf(int current, int total) {
     return 'Page $current of $total';
   }
@@ -657,48 +690,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatEmptySubtitle => 'Send a message to start the conversation.';
 
   @override
-  String get mentorsTitle => 'Find a mentor';
+  String get studyTitle => 'Study';
 
   @override
-  String get mentorsLoadFailed => 'Couldn\'t load mentors';
+  String get studyLoadFailed => 'Couldn\'t load your group';
 
   @override
-  String get mentorsPullToRetry => 'Pull down to try again';
+  String get studyPullToRetry => 'Pull down to try again';
 
   @override
-  String get mentorsEmptyTitle => 'No mentors yet';
+  String get studyYourMentor => 'Your mentor';
 
   @override
-  String get mentorsEmptySubtitle => 'Mentors will appear here once they join';
+  String get studyOpenChat => 'Open chat';
 
   @override
-  String get mentorsAvailable => 'Available mentors';
-
-  @override
-  String get groupSectionTitle => 'My group';
-
-  @override
-  String get groupPrimaryMentor => 'Primary mentor';
-
-  @override
-  String get groupSupportMentor => 'Support mentor';
-
-  @override
-  String get groupScheduleTitle => 'Schedule';
-
-  @override
-  String get groupNoGroup => 'You haven\'t been added to a group yet';
-
-  @override
-  String groupStudentsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count students',
-      one: '$count student',
-    );
-    return '$_temp0';
-  }
+  String get studyNoGroupMessage =>
+      'To start learning, buy a course and we\'ll add you to a group.';
 
   @override
   String get mentorHeader => 'Mentor';
@@ -759,27 +767,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPurchaseHistory => 'Purchase history';
-
-  @override
-  String get weekdayMonday => 'Monday';
-
-  @override
-  String get weekdayTuesday => 'Tuesday';
-
-  @override
-  String get weekdayWednesday => 'Wednesday';
-
-  @override
-  String get weekdayThursday => 'Thursday';
-
-  @override
-  String get weekdayFriday => 'Friday';
-
-  @override
-  String get weekdaySaturday => 'Saturday';
-
-  @override
-  String get weekdaySunday => 'Sunday';
 
   @override
   String get plansTitle => 'Choose a plan';

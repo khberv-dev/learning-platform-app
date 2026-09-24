@@ -5,6 +5,7 @@ import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/entity/task_result_entity.dart';
+import 'package:student/core/courses/domain/entity/task_submission_result_entity.dart';
 
 abstract class ICoursesRepository {
   Future<List<CourseEntity>> getAvailable();
@@ -21,7 +22,9 @@ abstract class ICoursesRepository {
     required String lessonId,
   });
 
-  Future<void> submitTasks(Map<String, List<String>> answers);
+  Future<List<TaskSubmissionResultEntity>> submitTasks(
+    Map<String, List<String>> answers,
+  );
 
   Future<List<LessonMaterialEntity>> getLessonMaterials(String lessonId);
 

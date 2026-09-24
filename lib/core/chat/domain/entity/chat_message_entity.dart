@@ -8,6 +8,7 @@ class ChatMessageEntity {
   final String? fileMimeType;
   final String senderId;
   final String senderName;
+  final String? senderAvatar;
   final String createdAt;
 
   const ChatMessageEntity({
@@ -16,6 +17,7 @@ class ChatMessageEntity {
     required this.senderId,
     required this.senderName,
     required this.createdAt,
+    this.senderAvatar,
     this.text,
     this.filePath,
     this.fileName,

@@ -6,6 +6,7 @@ import 'package:student/core/chat/presentation/chat_messages_controller.dart';
 import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/l10n/app_localizations.dart';
+import 'package:student/utils/lib.dart';
 import 'package:student/utils/messenger.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
@@ -60,20 +61,16 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final state = ref.watch(chatMessagesProvider(widget.roomId));
     final currentUserId = ref.watch(currentUserProvider)?.id ?? '';
     final roomDetail = ref.watch(chatRoomProvider(widget.roomId)).value;
-    final mentor = roomDetail?.mentor;
-    final mentorId = mentor?.id;
-    final mentorName =
-        mentor?.fullName ?? AppLocalizations.of(context).chatMentor;
-    final mentorInitial = mentorName.isNotEmpty
-        ? mentorName[0].toUpperCase()
-        : '?';
+    final groupTitle =
+        roomDetail?.group?.title ?? AppLocalizations.of(context).chatMentor;
+    final mentorName = roomDetail?.mentor?.fullName;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
       body: SafeArea(
         child: Column(
           children: [
-            _Header(mentorName: mentorName, mentorInitial: mentorInitial),
+            _Header(groupTitle: groupTitle, mentorName: mentorName),
             Expanded(
               child: state.isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -93,12 +90,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       itemCount: state.messages.length,
                       itemBuilder: (_, i) {
                         final msg = state.messages[i];
-                        // Prefer mentor-id check: more reliable than
-                        // currentUserProvider which may not be set yet.
-                        final isMe = mentorId != null
-                            ? msg.senderId != mentorId
-                            : msg.senderId == currentUserId;
-                        return _MessageBubble(message: msg, isMe: isMe);
+                        return _MessageBubble(
+                          message: msg,
+                          isMe: msg.senderId == currentUserId,
+                        );
                       },
                     ),
             ),
@@ -119,13 +114,15 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 // ── Header ────────────────────────────────────────────────────────────────────
 
 class _Header extends StatelessWidget {
-  final String mentorName;
-  final String mentorInitial;
+  final String groupTitle;
+  final String? mentorName;
 
-  const _Header({required this.mentorName, required this.mentorInitial});
+  const _Header({required this.groupTitle, this.mentorName});
 
   @override
   Widget build(BuildContext context) {
+    final initial = groupTitle.isNotEmpty ? groupTitle[0].toUpperCase() : '?';
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.fromLTRB(16, 8, 12, 12),
@@ -140,7 +137,7 @@ class _Header extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                mentorInitial,
+                initial,
                 style: const TextStyle(
                   color: Color(0xFF18C96A),
                   fontSize: 16,
@@ -155,7 +152,7 @@ class _Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  mentorName,
+                  groupTitle,
                   style: const TextStyle(
                     color: Color(0xFF111827),
                     fontSize: 15,
@@ -164,13 +161,16 @@ class _Header extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                Text(
-                  AppLocalizations.of(context).chatMentor,
-                  style: const TextStyle(
-                    color: Color(0xFF9CA3AF),
-                    fontSize: 11,
+                if (mentorName != null)
+                  Text(
+                    mentorName!,
+                    style: const TextStyle(
+                      color: Color(0xFF9CA3AF),
+                      fontSize: 11,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
               ],
             ),
           ),
@@ -204,6 +204,44 @@ class _MessageBubble extends StatelessWidget {
 
   const _MessageBubble({required this.message, required this.isMe});
 
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Align(
+        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.72,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (!isMe) ...[
+                _SenderAvatar(
+                  url: message.senderAvatar,
+                  name: message.senderName,
+                ),
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                child: _Bubble(message: message, isMe: isMe),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Bubble extends StatelessWidget {
+  final ChatMessageEntity message;
+  final bool isMe;
+
+  const _Bubble({required this.message, required this.isMe});
+
   String _formatTime(String raw) {
     try {
       final dt = DateTime.parse(raw).toLocal();
@@ -217,87 +255,123 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Align(
-        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.72,
+    return Column(
+      crossAxisAlignment: isMe
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        if (!isMe)
+          Padding(
+            padding: const EdgeInsets.only(left: 4, bottom: 2),
+            child: Text(
+              message.senderName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Color(0xFF18C96A),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: isMe
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isMe ? const Color(0xFF18C96A) : Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(16),
-                    topRight: const Radius.circular(16),
-                    bottomLeft: Radius.circular(isMe ? 16 : 4),
-                    bottomRight: Radius.circular(isMe ? 4 : 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: isMe ? const Color(0xFF18C96A) : Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: const Radius.circular(16),
+              topRight: const Radius.circular(16),
+              bottomLeft: Radius.circular(isMe ? 16 : 4),
+              bottomRight: Radius.circular(isMe ? 4 : 16),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ],
+          ),
+          child: message.isText
+              ? Text(
+                  message.text ?? '',
+                  style: TextStyle(
+                    color: isMe ? Colors.white : const Color(0xFF111827),
+                    fontSize: 14,
+                    height: 1.4,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 1),
+                )
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.attach_file_rounded,
+                      color: isMe ? Colors.white70 : const Color(0xFF6B7280),
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        message.fileName ??
+                            AppLocalizations.of(context).chatFile,
+                        style: TextStyle(
+                          color: isMe ? Colors.white : const Color(0xFF111827),
+                          fontSize: 13,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
-                child: message.isText
-                    ? Text(
-                        message.text ?? '',
-                        style: TextStyle(
-                          color: isMe ? Colors.white : const Color(0xFF111827),
-                          fontSize: 14,
-                          height: 1.4,
-                        ),
-                      )
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.attach_file_rounded,
-                            color: isMe
-                                ? Colors.white70
-                                : const Color(0xFF6B7280),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              message.fileName ??
-                                  AppLocalizations.of(context).chatFile,
-                              style: TextStyle(
-                                color: isMe
-                                    ? Colors.white
-                                    : const Color(0xFF111827),
-                                fontSize: 13,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
+          child: Text(
+            _formatTime(message.createdAt),
+            style: const TextStyle(color: Color(0xFFD1D5DB), fontSize: 10),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SenderAvatar extends StatelessWidget {
+  final String? url;
+  final String name;
+
+  const _SenderAvatar({this.url, required this.name});
+
+  String get _initial => name.isNotEmpty ? name[0].toUpperCase() : '?';
+
+  @override
+  Widget build(BuildContext context) {
+    final resolved = resolveMediaUrl(url);
+
+    return ClipOval(
+      child: SizedBox.square(
+        dimension: 28,
+        child: resolved == null
+            ? _fallback()
+            : Image.network(
+                resolved,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _fallback(),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 2, left: 4, right: 4),
-                child: Text(
-                  _formatTime(message.createdAt),
-                  style: const TextStyle(
-                    color: Color(0xFFD1D5DB),
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ],
+      ),
+    );
+  }
+
+  Widget _fallback() {
+    return ColoredBox(
+      color: const Color(0xFF18C96A),
+      child: Center(
+        child: Text(
+          _initial,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
