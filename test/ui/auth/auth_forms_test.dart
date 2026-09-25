@@ -127,8 +127,16 @@ void main() {
       return opened;
     }
 
+    // The legal notice sits at the bottom of the form, below the fold now
+    // that the gender picker adds height — scroll it into view first.
+    Future<void> scrollToLegalNotice(WidgetTester tester) async {
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -400));
+      await tester.pumpAndSettle();
+    }
+
     testWidgets('opens the public offer', (tester) async {
       final opened = await pumpRegister(tester);
+      await scrollToLegalNotice(tester);
 
       await tester.tapOnText(find.textRange.ofSubstring('Public Offer'));
       await tester.pumpAndSettle();
@@ -138,6 +146,7 @@ void main() {
 
     testWidgets('opens the privacy policy', (tester) async {
       final opened = await pumpRegister(tester);
+      await scrollToLegalNotice(tester);
 
       await tester.tapOnText(find.textRange.ofSubstring('Privacy Policy'));
       await tester.pumpAndSettle();
@@ -147,6 +156,7 @@ void main() {
 
     testWidgets('reports a document that could not be opened', (tester) async {
       await pumpRegister(tester, launchSucceeds: false);
+      await scrollToLegalNotice(tester);
 
       await tester.tapOnText(find.textRange.ofSubstring('Privacy Policy'));
       await tester.pumpAndSettle();

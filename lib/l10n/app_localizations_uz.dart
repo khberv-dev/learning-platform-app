@@ -596,6 +596,15 @@ class AppLocalizationsUz extends AppLocalizations {
   String get fieldLastName => 'Familiya';
 
   @override
+  String get fieldGender => 'Jins';
+
+  @override
+  String get genderMale => 'Erkak';
+
+  @override
+  String get genderFemale => 'Ayol';
+
+  @override
   String get validationPhone => 'To\'g\'ri telefon raqamini kiriting';
 
   @override

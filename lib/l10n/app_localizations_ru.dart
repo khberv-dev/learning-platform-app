@@ -602,6 +602,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get fieldLastName => 'Фамилия';
 
   @override
+  String get fieldGender => 'Пол';
+
+  @override
+  String get genderMale => 'Мужской';
+
+  @override
+  String get genderFemale => 'Женский';
+
+  @override
   String get validationPhone => 'Введите корректный номер телефона';
 
   @override

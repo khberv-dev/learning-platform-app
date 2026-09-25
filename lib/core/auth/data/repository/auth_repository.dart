@@ -6,6 +6,7 @@ import 'package:student/core/auth/data/model/auth_response.dart';
 import 'package:student/core/auth/domain/entity/auth_entity.dart';
 import 'package:student/core/auth/domain/entity/otp_purpose.dart';
 import 'package:student/core/auth/domain/repository/i_auth_repository.dart';
+import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 
 final authRepositoryProvider = Provider<IAuthRepository>(
@@ -55,6 +56,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   }) async {
     final response = await _dio.post(
       'auth/sign-up',
@@ -68,6 +70,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
         if (lastName != null && lastName.trim().isNotEmpty)
           'lastName': lastName.trim(),
         if (level != null) 'level': level.code,
+        if (gender != null) 'gender': gender.code,
       },
     );
     return _saveAndReturn(response.data as Map<String, dynamic>);
@@ -81,6 +84,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   }) async {
     final response = await _dio.post(
       'auth/sign-up',
@@ -92,6 +96,7 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
         if (lastName != null && lastName.trim().isNotEmpty)
           'lastName': lastName.trim(),
         if (level != null) 'level': level.code,
+        if (gender != null) 'gender': gender.code,
       },
     );
     return _saveAndReturn(response.data as Map<String, dynamic>);

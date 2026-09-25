@@ -6,6 +6,7 @@ import 'package:student/app/theme/app_colors.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/presentation/register_controller.dart';
 import 'package:student/core/startup/presentation/skill_quiz_result_controller.dart';
+import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
@@ -36,6 +37,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _passwordController = TextEditingController();
   bool _otpSent = false;
   AuthIdentityType _identityType = AuthIdentityType.phone;
+  Gender? _gender;
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +114,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           label: l10n.fieldLastName,
                           controller: _lastNameController,
                           textCapitalization: TextCapitalization.words,
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        _GenderSwitch(
+                          value: _gender,
+                          label: l10n.fieldGender,
+                          maleLabel: l10n.genderMale,
+                          femaleLabel: l10n.genderFemale,
+                          onChanged: (value) => setState(() => _gender = value),
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AuthIdentitySwitch(
@@ -201,6 +211,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             email: _emailController.text.trim().toLowerCase(),
             password: _passwordController.text,
             level: ref.read(skillQuizResultProvider),
+            gender: _gender,
           );
       return;
     }
@@ -215,6 +226,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           // Null when the placement quiz was skipped or closed early, which
           // leaves the API to apply its own default level.
           level: ref.read(skillQuizResultProvider),
+          gender: _gender,
         );
   }
 
@@ -231,6 +243,56 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
 bool _isValidEmail(String value) =>
     RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value.trim());
+
+/// Optional — tapping the already-selected segment clears it, since the API
+/// is happy to apply its own default when nothing is sent.
+class _GenderSwitch extends StatelessWidget {
+  final Gender? value;
+  final String label;
+  final String maleLabel;
+  final String femaleLabel;
+  final ValueChanged<Gender?> onChanged;
+
+  const _GenderSwitch({
+    required this.value,
+    required this.label,
+    required this.maleLabel,
+    required this.femaleLabel,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.ink,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        SizedBox(
+          width: double.infinity,
+          child: SegmentedButton<Gender>(
+            segments: [
+              ButtonSegment(value: Gender.male, label: Text(maleLabel)),
+              ButtonSegment(value: Gender.female, label: Text(femaleLabel)),
+            ],
+            selected: value == null ? const {} : {value!},
+            emptySelectionAllowed: true,
+            showSelectedIcon: false,
+            onSelectionChanged: (selection) =>
+                onChanged(selection.isEmpty ? null : selection.first),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 const publicOfferUrl = 'https://i-teach.uz/docs/public_agreement.html';
 const privacyPolicyUrl = 'https://i-teach.uz/docs/privacy-policy.html';

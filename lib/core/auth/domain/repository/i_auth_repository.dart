@@ -1,5 +1,6 @@
 import 'package:student/core/auth/domain/entity/auth_entity.dart';
 import 'package:student/core/auth/domain/entity/otp_purpose.dart';
+import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 
 abstract class IAuthRepository {
@@ -9,7 +10,8 @@ abstract class IAuthRepository {
   });
 
   /// [level] is what the placement quiz scored. Omitted when it wasn't taken,
-  /// leaving the API to apply its own default. [lastName] is optional.
+  /// leaving the API to apply its own default. [lastName] and [gender] are
+  /// optional too — the API defaults an omitted [gender] to male.
   Future<AuthEntity> signUp({
     required String firstName,
     String? lastName,
@@ -17,6 +19,7 @@ abstract class IAuthRepository {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   });
 
   /// [purpose] decides which checks the API applies, so it has to match the
@@ -51,6 +54,7 @@ abstract class IEmailAuthRepository {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   });
 
   Future<void> sendEmailOtp({

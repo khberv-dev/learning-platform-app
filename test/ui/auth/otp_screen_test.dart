@@ -9,6 +9,7 @@ import 'package:student/core/auth/domain/entity/auth_entity.dart';
 import 'package:student/core/auth/domain/entity/otp_purpose.dart';
 import 'package:student/core/auth/domain/repository/i_auth_repository.dart';
 import 'package:student/core/auth/presentation/recover_password_controller.dart';
+import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
@@ -54,6 +55,7 @@ class _FakeAuthRepository implements IAuthRepository {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   }) => throw UnimplementedError();
 }
 

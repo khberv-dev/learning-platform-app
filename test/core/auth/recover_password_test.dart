@@ -7,6 +7,7 @@ import 'package:student/core/auth/domain/repository/i_auth_repository.dart';
 import 'package:student/core/auth/presentation/otp_controller.dart';
 import 'package:student/core/auth/presentation/recover_password_controller.dart';
 import 'package:student/core/auth/presentation/register_controller.dart';
+import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 
 /// Records what the controllers ask the API for, and can be made to fail.
@@ -54,6 +55,7 @@ class _FakeAuthRepository implements IAuthRepository {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   }) => throw UnimplementedError();
 }
 

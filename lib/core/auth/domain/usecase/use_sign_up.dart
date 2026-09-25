@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/auth/data/repository/auth_repository.dart';
 import 'package:student/core/auth/domain/entity/auth_entity.dart';
 import 'package:student/core/auth/domain/repository/i_auth_repository.dart';
+import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 
 final useSignUpProvider = Provider(
@@ -20,6 +21,7 @@ class UseSignUp {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   }) => _repository.signUp(
     firstName: firstName,
     lastName: lastName,
@@ -27,6 +29,7 @@ class UseSignUp {
     password: password,
     code: code,
     level: level,
+    gender: gender,
   );
 
   Future<AuthEntity> callEmail({
@@ -36,6 +39,7 @@ class UseSignUp {
     required String password,
     required String code,
     StudentLevel? level,
+    Gender? gender,
   }) => (_repository as IEmailAuthRepository).signUpWithEmail(
     firstName: firstName,
     lastName: lastName,
@@ -43,5 +47,6 @@ class UseSignUp {
     password: password,
     code: code,
     level: level,
+    gender: gender,
   );
 }

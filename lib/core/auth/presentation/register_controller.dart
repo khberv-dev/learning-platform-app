@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/core/auth/domain/entity/otp_purpose.dart';
 import 'package:student/core/auth/domain/usecase/use_send_otp.dart';
 import 'package:student/core/auth/domain/usecase/use_sign_up.dart';
+import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 import 'package:student/core/user/domain/usecase/use_get_me.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
@@ -18,6 +19,7 @@ class RegisterController extends AsyncNotifier<void> {
   String? _email;
   String? _password;
   StudentLevel? _level;
+  Gender? _gender;
 
   @override
   FutureOr<void> build() {}
@@ -25,12 +27,15 @@ class RegisterController extends AsyncNotifier<void> {
   /// Step 1: store registration data and send OTP to the phone number.
   ///
   /// [level] comes from the placement quiz and is null when it was skipped.
+  /// [gender] is null when the student didn't pick one, leaving the API to
+  /// apply its own default.
   Future<void> prepareAndSendOtp({
     required String firstName,
     String? lastName,
     required String phoneNumber,
     required String password,
     StudentLevel? level,
+    Gender? gender,
   }) async {
     _firstName = firstName;
     _lastName = lastName;
@@ -38,6 +43,7 @@ class RegisterController extends AsyncNotifier<void> {
     _email = null;
     _password = password;
     _level = level;
+    _gender = gender;
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref
@@ -52,6 +58,7 @@ class RegisterController extends AsyncNotifier<void> {
     required String email,
     required String password,
     StudentLevel? level,
+    Gender? gender,
   }) async {
     _firstName = firstName;
     _lastName = lastName;
@@ -59,6 +66,7 @@ class RegisterController extends AsyncNotifier<void> {
     _email = email.trim().toLowerCase();
     _password = password;
     _level = level;
+    _gender = gender;
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref
@@ -80,6 +88,7 @@ class RegisterController extends AsyncNotifier<void> {
           password: _password!,
           code: code,
           level: _level,
+          gender: _gender,
         );
       } else {
         await signUp.call(
@@ -89,6 +98,7 @@ class RegisterController extends AsyncNotifier<void> {
           password: _password!,
           code: code,
           level: _level,
+          gender: _gender,
         );
       }
       final user = await ref.read(useGetMeProvider).call();

@@ -595,6 +595,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldLastName => 'Last name';
 
   @override
+  String get fieldGender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
   String get validationPhone => 'Enter a valid phone number';
 
   @override
