@@ -4,8 +4,10 @@ import 'package:student/core/courses/domain/usecase/use_get_tasks.dart';
 
 typedef TasksParams = ({String courseId, String unitId, String lessonId});
 
-final tasksControllerProvider =
-    FutureProvider.family<List<TaskEntity>, TasksParams>(
+// autoDispose: TasksScreen is pushed and popped, so this is torn down with it
+// and a revisit always re-fetches instead of replaying stale answers/state.
+final tasksControllerProvider = FutureProvider.autoDispose
+    .family<List<TaskEntity>, TasksParams>(
       (ref, params) => ref
           .read(useGetTasksProvider)
           .call(

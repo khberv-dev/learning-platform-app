@@ -97,6 +97,17 @@ class _AppScreenState extends ConsumerState<AppScreen>
   Widget build(BuildContext context) {
     final navbarIndex = ref.watch(navbarControllerProvider);
 
+    // The tabs live in an IndexedStack, so CoursesPage is never unmounted on
+    // switching away from it — nothing naturally forces a refetch. Force one
+    // explicitly on every switch back into it instead, so course data is
+    // never served stale from an earlier visit.
+    ref.listen<int>(navbarControllerProvider, (previous, next) {
+      if (next == 1 && previous != next) {
+        ref.invalidate(myCoursesControllerProvider);
+        ref.invalidate(availableCoursesControllerProvider);
+      }
+    });
+
     return Scaffold(
       // Pages run to the bottom of the screen so the pill floats over their
       // content rather than over a strip of scaffold background. Scaffold

@@ -111,7 +111,6 @@
   "courseUnits": "Разделы",
   "courseLessonCount": "{count, plural, one{{count} урок} few{{count} урока} many{{count} уроков} other{{count} урока}}",
   "courseChoosePlan": "Выбрать тариф",
-  "courseExpired": "Истёк",
   "courseProgress": "Прогресс",
   "courseLearnMore": "Подробнее",
   "courseRecordedSession": "ЗАПИСЬ УРОКА",
@@ -250,7 +249,6 @@
   "purchaseHistoryStatusCreated": "Ожидает оплаты",
   "purchaseHistoryStatusPaid": "Оплачено",
   "purchaseHistoryStatusCancelled": "Отменено",
-  "purchaseHistoryPeriod": "{start} – {end}",
   "settingsPurchaseHistory": "История покупок",
 
   "plansTitle": "Выберите тариф",
@@ -259,7 +257,6 @@
   "plansEmptySubtitle": "Этот курс сейчас не продаётся",
   "plansDuration": "{count, plural, one{{count} месяц} few{{count} месяца} many{{count} месяцев} other{{count} месяца}}",
   "plansPrice": "{amount} сум",
-  "plansWithMentor": "С ментором",
 
   "paymentTitle": "Способ оплаты",
   "paymentLoadFailed": "Не удалось начать оплату",

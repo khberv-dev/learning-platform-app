@@ -1,74 +1,43 @@
 import 'package:student/core/payments/data/model/payment_type_response.dart';
 import 'package:student/core/payments/domain/entity/payment_entity.dart';
 
-class PaymentEnrollmentResponse {
-  final String id;
-  final String? status;
-  final String? start;
-  final String? end;
-  final String? courseTitle;
-
-  const PaymentEnrollmentResponse({
-    required this.id,
-    this.status,
-    this.start,
-    this.end,
-    this.courseTitle,
-  });
-
-  factory PaymentEnrollmentResponse.fromJson(Map<String, dynamic> json) {
-    final course = json['course'] as Map<String, dynamic>?;
-    return PaymentEnrollmentResponse(
-      id: json['id'].toString(),
-      status: json['status'] as String?,
-      start: json['start'] as String?,
-      end: json['end'] as String?,
-      courseTitle: course?['title'] as String?,
-    );
-  }
-
-  PaymentEnrollmentEntity toEntity() => PaymentEnrollmentEntity(
-    id: id,
-    status: PaymentEnrollmentStatus.parse(status),
-    start: start == null ? null : DateTime.tryParse(start!),
-    end: end == null ? null : DateTime.tryParse(end!),
-    courseTitle: courseTitle,
-  );
-}
-
 class PaymentResponse {
   final String id;
   final String? status;
   final int amount;
   final String? planTitle;
+  final String? courseTitle;
   final String createdAt;
   final PaymentTypeResponse? paymentType;
-  final PaymentEnrollmentResponse? enrollment;
 
   const PaymentResponse({
     required this.id,
     this.status,
     this.amount = 0,
     this.planTitle,
+    this.courseTitle,
     this.createdAt = '',
     this.paymentType,
-    this.enrollment,
   });
 
   factory PaymentResponse.fromJson(Map<String, dynamic> json) {
     final type = json['paymentType'] as Map<String, dynamic>?;
-    final enrollment = json['enrollment'] as Map<String, dynamic>?;
-    final plan = json['plan'] as Map<String, dynamic>?;
+    // A payment carries no direct plan/enrolment relation anymore — the path
+    // to what it bought is purchases[0].subscription.plan(.course).
+    final purchases = json['purchases'] as List<dynamic>? ?? const [];
+    final subscription = purchases.isNotEmpty
+        ? purchases.first['subscription'] as Map<String, dynamic>?
+        : null;
+    final plan = subscription?['plan'] as Map<String, dynamic>?;
+    final course = plan?['course'] as Map<String, dynamic>?;
     return PaymentResponse(
       id: json['id'].toString(),
       status: json['status'] as String?,
       amount: (json['amount'] as num?)?.toInt() ?? 0,
       planTitle: plan?['title'] as String?,
+      courseTitle: course?['title'] as String?,
       createdAt: json['createdAt'] as String? ?? '',
       paymentType: type == null ? null : PaymentTypeResponse.fromJson(type),
-      enrollment: enrollment == null
-          ? null
-          : PaymentEnrollmentResponse.fromJson(enrollment),
     );
   }
 
@@ -77,9 +46,9 @@ class PaymentResponse {
     status: PaymentStatus.parse(status),
     amount: amount,
     planTitle: planTitle,
+    courseTitle: courseTitle,
     createdAt: createdAt,
     paymentType: paymentType?.toEntity(),
-    enrollment: enrollment?.toEntity(),
   );
 }
 

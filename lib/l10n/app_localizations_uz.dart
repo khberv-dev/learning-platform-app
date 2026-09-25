@@ -338,9 +338,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get courseChoosePlan => 'Tarifni tanlash';
 
   @override
-  String get courseExpired => 'Muddati tugagan';
-
-  @override
   String get courseProgress => 'Jarayon';
 
   @override
@@ -764,11 +761,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get purchaseHistoryStatusCancelled => 'Bekor qilindi';
 
   @override
-  String purchaseHistoryPeriod(String start, String end) {
-    return '$start – $end';
-  }
-
-  @override
   String get settingsPurchaseHistory => 'Xaridlar tarixi';
 
   @override
@@ -798,9 +790,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String plansPrice(String amount) {
     return '$amount so\'m';
   }
-
-  @override
-  String get plansWithMentor => 'Mentor bilan';
 
   @override
   String get paymentTitle => 'To\'lov usuli';

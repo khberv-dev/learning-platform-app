@@ -136,7 +136,7 @@ class _PaymentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  payment.planTitle ?? payment.enrollment?.courseTitle ?? '—',
+                  payment.planTitle ?? payment.courseTitle ?? '—',
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
@@ -251,7 +251,6 @@ class _EnrollmentTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final start = entry.start;
-    final end = entry.end;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -282,13 +281,10 @@ class _EnrollmentTile extends StatelessWidget {
             l10n.plansPrice(entry.purchaseAmount),
             style: const TextStyle(color: Color(0xff6b7280), fontSize: 13),
           ),
-          if (start != null && end != null) ...[
+          if (start != null) ...[
             const SizedBox(height: 2),
             Text(
-              l10n.purchaseHistoryPeriod(
-                formatShortDate(context, start),
-                formatShortDate(context, end),
-              ),
+              formatShortDate(context, start),
               style: const TextStyle(color: Color(0xff9ca3af), fontSize: 12),
             ),
           ],

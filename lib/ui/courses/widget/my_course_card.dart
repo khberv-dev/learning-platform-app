@@ -11,7 +11,6 @@ class MyCourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pct = (course.progress * 100).round();
-    final isExpired = course.status == CourseStatus.expired;
 
     return GestureDetector(
       onTap: () => context.push('/course/${course.courseId}?owned=true'),
@@ -24,46 +23,19 @@ class MyCourseCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _CourseImage(imageUrl: course.imageUrl, isExpired: isExpired),
+            _CourseImage(imageUrl: course.imageUrl),
             Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          course.title,
-                          style: const TextStyle(
-                            color: Color(0xFF111827),
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                      if (isExpired) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFEF2F2),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            AppLocalizations.of(context).courseExpired,
-                            style: const TextStyle(
-                              color: Color(0xFFEF4444),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
+                  Text(
+                    course.title,
+                    style: const TextStyle(
+                      color: Color(0xFF111827),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -101,9 +73,7 @@ class MyCourseCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(3),
                     child: LinearProgressIndicator(
                       value: course.progress,
-                      color: isExpired
-                          ? const Color(0xFF9CA3AF)
-                          : const Color(0xFF18C96A),
+                      color: const Color(0xFF18C96A),
                       backgroundColor: const Color(0xFFE5E7EB),
                       minHeight: 6,
                     ),
@@ -120,47 +90,20 @@ class MyCourseCard extends StatelessWidget {
 
 class _CourseImage extends StatelessWidget {
   final String? imageUrl;
-  final bool isExpired;
 
-  const _CourseImage({this.imageUrl, required this.isExpired});
+  const _CourseImage({this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
     final url = imageUrl;
     if (url == null) return _placeholder();
 
-    return ColorFiltered(
-      colorFilter: isExpired
-          ? const ColorFilter.matrix([
-              0.2126,
-              0.7152,
-              0.0722,
-              0,
-              0,
-              0.2126,
-              0.7152,
-              0.0722,
-              0,
-              0,
-              0.2126,
-              0.7152,
-              0.0722,
-              0,
-              0,
-              0,
-              0,
-              0,
-              1,
-              0,
-            ])
-          : const ColorFilter.mode(Colors.transparent, BlendMode.color),
-      child: Image.network(
-        url,
-        height: 120,
-        width: double.infinity,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stack) => _placeholder(),
-      ),
+    return Image.network(
+      url,
+      height: 120,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stack) => _placeholder(),
     );
   }
 

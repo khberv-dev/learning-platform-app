@@ -338,9 +338,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get courseChoosePlan => 'Choose a plan';
 
   @override
-  String get courseExpired => 'Expired';
-
-  @override
   String get courseProgress => 'Progress';
 
   @override
@@ -764,11 +761,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseHistoryStatusCancelled => 'Cancelled';
 
   @override
-  String purchaseHistoryPeriod(String start, String end) {
-    return '$start – $end';
-  }
-
-  @override
   String get settingsPurchaseHistory => 'Purchase history';
 
   @override
@@ -798,9 +790,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String plansPrice(String amount) {
     return '$amount so\'m';
   }
-
-  @override
-  String get plansWithMentor => 'With mentor';
 
   @override
   String get paymentTitle => 'Payment method';

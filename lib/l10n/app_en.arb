@@ -133,7 +133,6 @@
     "placeholders": { "count": { "type": "int" } }
   },
   "courseChoosePlan": "Choose a plan",
-  "courseExpired": "Expired",
   "courseProgress": "Progress",
   "courseLearnMore": "Learn more",
   "courseRecordedSession": "RECORDED SESSION",
@@ -338,13 +337,6 @@
   "purchaseHistoryStatusCreated": "Pending",
   "purchaseHistoryStatusPaid": "Paid",
   "purchaseHistoryStatusCancelled": "Cancelled",
-  "purchaseHistoryPeriod": "{start} – {end}",
-  "@purchaseHistoryPeriod": {
-    "placeholders": {
-      "start": { "type": "String" },
-      "end": { "type": "String" }
-    }
-  },
   "settingsPurchaseHistory": "Purchase history",
 
   "plansTitle": "Choose a plan",
@@ -359,7 +351,6 @@
   "@plansPrice": {
     "placeholders": { "amount": { "type": "String" } }
   },
-  "plansWithMentor": "With mentor",
 
   "paymentTitle": "Payment method",
   "paymentLoadFailed": "Couldn't start the payment",

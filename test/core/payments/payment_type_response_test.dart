@@ -65,18 +65,7 @@ void main() {
   group('PaymentRequestResponse', () {
     test('reads the request payload the docs describe', () {
       final entity = PaymentRequestResponse.fromJson({
-        'payment': {
-          'id': 'pa1',
-          'status': 'created',
-          'paymentType': null,
-          'enrollment': {
-            'id': 'en1',
-            'status': 'created',
-            'start': null,
-            'end': null,
-            'course': {'id': 'c1', 'title': 'English A1', 'price': 250000},
-          },
-        },
+        'payment': {'id': 'pa1', 'status': 'created', 'paymentType': null},
         'paymentTypes': [
           {
             'id': 'pt1',
@@ -91,13 +80,8 @@ void main() {
       expect(entity.payment.id, 'pa1');
       expect(entity.payment.status, PaymentStatus.created);
       expect(entity.payment.paymentType, isNull);
-      expect(
-        entity.payment.enrollment?.status,
-        PaymentEnrollmentStatus.created,
-      );
-      // Null until an admin confirms.
-      expect(entity.payment.enrollment?.start, isNull);
-      expect(entity.payment.enrollment?.courseTitle, 'English A1');
+      // Not yet settled — no purchase/subscription has been created.
+      expect(entity.payment.courseTitle, isNull);
       expect(entity.paymentTypes.single.title, 'Payme');
       expect(
         entity.paymentTypes.single.iconUrl,
@@ -109,28 +93,32 @@ void main() {
       final entity = PaymentResponse.fromJson({
         'id': 'pa1',
         'status': 'paid',
-        'enrollment': {
-          'id': 'en1',
-          'status': 'active',
-          'start': '2026-05-18T00:00:00.000Z',
-          'end': '2026-08-18T00:00:00.000Z',
-          'course': {'id': 'c1', 'title': 'English A1'},
-        },
+        'purchases': [
+          {
+            'id': 'pu1',
+            'subscription': {
+              'id': 'su1',
+              'start': '2026-05-18T00:00:00.000Z',
+              'end': '2026-08-18T00:00:00.000Z',
+              'plan': {
+                'id': 'pl1',
+                'title': 'Premium',
+                'course': {'id': 'c1', 'title': 'English A1'},
+              },
+            },
+          },
+        ],
       }).toEntity();
 
       expect(entity.status, PaymentStatus.paid);
       expect(entity.status.isSettled, isTrue);
-      expect(entity.enrollment?.status, PaymentEnrollmentStatus.active);
-      expect(entity.enrollment?.start, DateTime.utc(2026, 5, 18));
+      expect(entity.planTitle, 'Premium');
+      expect(entity.courseTitle, 'English A1');
     });
 
     test('unknown statuses fall back to the pending ones', () {
       expect(PaymentStatus.parse('wat'), PaymentStatus.created);
       expect(PaymentStatus.parse(null), PaymentStatus.created);
-      expect(
-        PaymentEnrollmentStatus.parse('wat'),
-        PaymentEnrollmentStatus.created,
-      );
     });
   });
 }

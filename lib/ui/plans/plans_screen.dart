@@ -156,10 +156,6 @@ class PlanCard extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  if (plan.hasMentor) ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    const _MentorChip(),
-                  ],
                 ],
               ),
             ),
@@ -179,32 +175,6 @@ class PlanCard extends StatelessWidget {
               color: Colors.black,
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _MentorChip extends StatelessWidget {
-  const _MentorChip();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: 3,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.round),
-        border: Border.all(color: AppColors.ink, width: 1.5),
-      ),
-      child: Text(
-        AppLocalizations.of(context).plansWithMentor,
-        style: const TextStyle(
-          color: AppColors.ink,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );

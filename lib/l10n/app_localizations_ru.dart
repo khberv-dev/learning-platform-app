@@ -342,9 +342,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get courseChoosePlan => 'Выбрать тариф';
 
   @override
-  String get courseExpired => 'Истёк';
-
-  @override
   String get courseProgress => 'Прогресс';
 
   @override
@@ -771,11 +768,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get purchaseHistoryStatusCancelled => 'Отменено';
 
   @override
-  String purchaseHistoryPeriod(String start, String end) {
-    return '$start – $end';
-  }
-
-  @override
   String get settingsPurchaseHistory => 'История покупок';
 
   @override
@@ -807,9 +799,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String plansPrice(String amount) {
     return '$amount сум';
   }
-
-  @override
-  String get plansWithMentor => 'С ментором';
 
   @override
   String get paymentTitle => 'Способ оплаты';

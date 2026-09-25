@@ -111,7 +111,6 @@
   "courseUnits": "Bo'limlar",
   "courseLessonCount": "{count, plural, one{{count} ta dars} other{{count} ta dars}}",
   "courseChoosePlan": "Tarifni tanlash",
-  "courseExpired": "Muddati tugagan",
   "courseProgress": "Jarayon",
   "courseLearnMore": "Batafsil",
   "courseRecordedSession": "DARS YOZUVI",
@@ -250,7 +249,6 @@
   "purchaseHistoryStatusCreated": "Kutilmoqda",
   "purchaseHistoryStatusPaid": "To'landi",
   "purchaseHistoryStatusCancelled": "Bekor qilindi",
-  "purchaseHistoryPeriod": "{start} – {end}",
   "settingsPurchaseHistory": "Xaridlar tarixi",
 
   "plansTitle": "Tarifni tanlang",
@@ -259,7 +257,6 @@
   "plansEmptySubtitle": "Bu kurs hozir sotuvda emas",
   "plansDuration": "{count, plural, one{{count} oy} other{{count} oy}}",
   "plansPrice": "{amount} so'm",
-  "plansWithMentor": "Mentor bilan",
 
   "paymentTitle": "To'lov usuli",
   "paymentLoadFailed": "To'lovni boshlab bo'lmadi",

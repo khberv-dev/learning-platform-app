@@ -231,7 +231,6 @@ void main() {
           title: 'English A1',
           lessonsCount: 5,
           progress: 0,
-          status: CourseStatus.active,
         ),
       ],
     );

@@ -7,7 +7,6 @@ class MyCourseResponse {
   final int lessonsCount;
   final String? imageUrl;
   final double progress;
-  final CourseStatus status;
 
   const MyCourseResponse({
     required this.enrollmentId,
@@ -15,7 +14,6 @@ class MyCourseResponse {
     required this.title,
     required this.lessonsCount,
     required this.progress,
-    required this.status,
     this.imageUrl,
   });
 
@@ -24,11 +22,6 @@ class MyCourseResponse {
     final rawProgress = (json['totalProgress'] ?? 0) as num;
     final progress = rawProgress > 1 ? rawProgress / 100 : rawProgress;
 
-    final statusStr = json['status'] as String? ?? 'active';
-    final status = statusStr == 'expired'
-        ? CourseStatus.expired
-        : CourseStatus.active;
-
     return MyCourseResponse(
       enrollmentId: json['id'].toString(),
       courseId: course['id'].toString(),
@@ -36,7 +29,6 @@ class MyCourseResponse {
       lessonsCount: (json['lessonsCount'] ?? json['lessons_count'] ?? 0) as int,
       imageUrl: course['image'] as String?,
       progress: progress.toDouble(),
-      status: status,
     );
   }
 
@@ -47,6 +39,5 @@ class MyCourseResponse {
     lessonsCount: lessonsCount,
     imageUrl: imageUrl,
     progress: progress,
-    status: status,
   );
 }

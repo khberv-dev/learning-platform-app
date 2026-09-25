@@ -694,12 +694,6 @@ abstract class AppLocalizations {
   /// **'Choose a plan'**
   String get courseChoosePlan;
 
-  /// No description provided for @courseExpired.
-  ///
-  /// In en, this message translates to:
-  /// **'Expired'**
-  String get courseExpired;
-
   /// No description provided for @courseProgress.
   ///
   /// In en, this message translates to:
@@ -1456,12 +1450,6 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get purchaseHistoryStatusCancelled;
 
-  /// No description provided for @purchaseHistoryPeriod.
-  ///
-  /// In en, this message translates to:
-  /// **'{start} – {end}'**
-  String purchaseHistoryPeriod(String start, String end);
-
   /// No description provided for @settingsPurchaseHistory.
   ///
   /// In en, this message translates to:
@@ -1503,12 +1491,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{amount} so\'m'**
   String plansPrice(String amount);
-
-  /// No description provided for @plansWithMentor.
-  ///
-  /// In en, this message translates to:
-  /// **'With mentor'**
-  String get plansWithMentor;
 
   /// No description provided for @paymentTitle.
   ///

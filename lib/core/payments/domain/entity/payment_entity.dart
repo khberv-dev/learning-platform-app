@@ -15,57 +15,30 @@ enum PaymentStatus {
   bool get isSettled => this != PaymentStatus.created;
 }
 
-enum PaymentEnrollmentStatus {
-  /// Awaiting payment — the course content stays locked.
-  created,
-  active,
-  cancelled;
-
-  static PaymentEnrollmentStatus parse(String? raw) => switch (raw) {
-    'active' => PaymentEnrollmentStatus.active,
-    'cancelled' => PaymentEnrollmentStatus.cancelled,
-    _ => PaymentEnrollmentStatus.created,
-  };
-}
-
-/// The enrolment a payment unlocks. `start` and `end` stay null until an admin
-/// confirms the payment.
-class PaymentEnrollmentEntity {
-  final String id;
-  final PaymentEnrollmentStatus status;
-  final DateTime? start;
-  final DateTime? end;
-  final String? courseTitle;
-
-  const PaymentEnrollmentEntity({
-    required this.id,
-    required this.status,
-    this.start,
-    this.end,
-    this.courseTitle,
-  });
-}
-
 class PaymentEntity {
   final String id;
   final PaymentStatus status;
   final int amount;
   final String? planTitle;
+
+  /// The course a settled payment's plan belongs to. Reached through
+  /// `purchases[0].subscription.plan.course` on the wire — a payment no
+  /// longer carries a direct enrolment relation.
+  final String? courseTitle;
+
   final String createdAt;
 
   /// Null until the student picks a method.
   final PaymentTypeEntity? paymentType;
-
-  final PaymentEnrollmentEntity? enrollment;
 
   const PaymentEntity({
     required this.id,
     required this.status,
     this.amount = 0,
     this.planTitle,
+    this.courseTitle,
     this.createdAt = '',
     this.paymentType,
-    this.enrollment,
   });
 }
 

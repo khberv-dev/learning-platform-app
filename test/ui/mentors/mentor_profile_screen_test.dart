@@ -27,7 +27,6 @@ MentorEntity _mentor({String? profession = 'General english'}) => MentorEntity(
   id: '1',
   name: 'Botir Jobirovich',
   rating: 0,
-  status: 'active',
   profession: profession,
 );
 

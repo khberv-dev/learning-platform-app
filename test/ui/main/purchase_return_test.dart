@@ -22,7 +22,6 @@ MyCourseEntity _course(String id, String title) => MyCourseEntity(
   title: title,
   lessonsCount: 10,
   progress: 0,
-  status: CourseStatus.active,
 );
 
 class _Courses implements ICoursesRepository {

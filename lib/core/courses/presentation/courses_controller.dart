@@ -8,10 +8,15 @@ import 'package:student/core/courses/domain/usecase/use_get_available_courses.da
 import 'package:student/core/courses/domain/usecase/use_get_live_lessons.dart';
 import 'package:student/core/courses/domain/usecase/use_get_my_courses.dart';
 
+// autoDispose: the list screen sits in a persistent IndexedStack tab, so
+// nothing ever naturally unsubscribes it — AppScreen invalidates these on
+// every switch into the Courses tab instead, and autoDispose keeps that
+// consistent with never caching stale course data.
 final availableCoursesControllerProvider =
-    AsyncNotifierProvider<AvailableCoursesController, List<CourseEntity>>(
-      AvailableCoursesController.new,
-    );
+    AsyncNotifierProvider.autoDispose<
+      AvailableCoursesController,
+      List<CourseEntity>
+    >(AvailableCoursesController.new);
 
 class AvailableCoursesController extends AsyncNotifier<List<CourseEntity>> {
   @override
@@ -20,9 +25,10 @@ class AvailableCoursesController extends AsyncNotifier<List<CourseEntity>> {
 }
 
 final myCoursesControllerProvider =
-    AsyncNotifierProvider<MyCoursesController, List<MyCourseEntity>>(
-      MyCoursesController.new,
-    );
+    AsyncNotifierProvider.autoDispose<
+      MyCoursesController,
+      List<MyCourseEntity>
+    >(MyCoursesController.new);
 
 class MyCoursesController extends AsyncNotifier<List<MyCourseEntity>> {
   @override

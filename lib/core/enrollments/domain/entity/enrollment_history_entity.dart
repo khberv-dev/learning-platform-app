@@ -5,7 +5,6 @@ class EnrollmentHistoryEntity {
   final String id;
   final String purchaseAmount;
   final DateTime? start;
-  final DateTime? end;
   final String courseTitle;
   final DateTime? createdAt;
 
@@ -14,7 +13,6 @@ class EnrollmentHistoryEntity {
     required this.purchaseAmount,
     required this.courseTitle,
     this.start,
-    this.end,
     this.createdAt,
   });
 }

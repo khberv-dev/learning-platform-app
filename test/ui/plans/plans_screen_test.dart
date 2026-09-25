@@ -13,27 +13,9 @@ import 'package:student/ui/plans/plans_screen.dart';
 import '../../support/localized_app.dart';
 
 const _plans = [
-  PlanEntity(
-    id: 'pl1',
-    title: 'Standart',
-    price: 250000,
-    month: 3,
-    hasMentor: false,
-  ),
-  PlanEntity(
-    id: 'pl2',
-    title: 'Premium',
-    price: 900000,
-    month: 12,
-    hasMentor: true,
-  ),
-  PlanEntity(
-    id: 'pl3',
-    title: 'Sinov',
-    price: 90000,
-    month: 1,
-    hasMentor: false,
-  ),
+  PlanEntity(id: 'pl1', title: 'Standart', price: 250000, month: 3),
+  PlanEntity(id: 'pl2', title: 'Premium', price: 900000, month: 12),
+  PlanEntity(id: 'pl3', title: 'Sinov', price: 90000, month: 1),
 ];
 
 class _Repo implements IPlansRepository {
@@ -94,7 +76,6 @@ void main() {
         'title': 'Standart',
         'price': 250000,
         'month': 3,
-        'hasMentor': false,
         'isActive': true,
       }).toEntity();
 
@@ -102,16 +83,14 @@ void main() {
       expect(plan.title, 'Standart');
       expect(plan.price, 250000);
       expect(plan.month, 3);
-      expect(plan.hasMentor, isFalse);
     });
 
-    test('tolerates missing numbers and flags', () {
+    test('tolerates missing numbers', () {
       final plan = PlanResponse.fromJson({'id': 7}).toEntity();
 
       expect(plan.id, '7');
       expect(plan.price, 0);
       expect(plan.month, 0);
-      expect(plan.hasMentor, isFalse);
     });
   });
 
@@ -133,12 +112,6 @@ void main() {
       expect(find.text('3 months'), findsOneWidget);
       expect(find.text('12 months'), findsOneWidget);
       expect(find.text('1 month'), findsOneWidget);
-    });
-
-    testWidgets('flags only the plans that include a mentor', (tester) async {
-      await _pump(tester, _Repo());
-
-      expect(find.text('With mentor'), findsOneWidget);
     });
 
     testWidgets('opens checkout against the chosen plan, not the course', (

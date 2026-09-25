@@ -8,13 +8,10 @@ class PlanEntity {
   /// How many months of access the plan buys.
   final int month;
 
-  final bool hasMentor;
-
   const PlanEntity({
     required this.id,
     required this.title,
     required this.price,
     required this.month,
-    required this.hasMentor,
   });
 }

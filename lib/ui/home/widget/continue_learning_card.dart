@@ -104,7 +104,6 @@ class _CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percent = (course.progress * 100).round();
-    final expired = course.status == CourseStatus.expired;
 
     return GestureDetector(
       onTap: () => context.push('/course/${course.courseId}?owned=true'),
@@ -112,17 +111,11 @@ class _CourseCard extends StatelessWidget {
         width: fullWidth ? double.infinity : 280,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          gradient: expired
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6B7280), Color(0xFF374151)],
-                )
-              : const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF18C96A), Color(0xFF059669)],
-                ),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF18C96A), Color(0xFF059669)],
+          ),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -144,24 +137,23 @@ class _CourseCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                if (!expired)
-                  Container(
-                    height: 36,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      AppLocalizations.of(context).homeResume,
-                      style: const TextStyle(
-                        color: Color(0xFF18C96A),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
+                Container(
+                  height: 36,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    AppLocalizations.of(context).homeResume,
+                    style: const TextStyle(
+                      color: Color(0xFF18C96A),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
+                ),
               ],
             ),
             const SizedBox(height: 14),
@@ -170,8 +162,8 @@ class _CourseCard extends StatelessWidget {
               children: [
                 Text(
                   AppLocalizations.of(context).homeProgress,
-                  style: TextStyle(
-                    color: expired ? Colors.white54 : const Color(0xFFD1FAE5),
+                  style: const TextStyle(
+                    color: Color(0xFFD1FAE5),
                     fontSize: 12,
                   ),
                 ),
@@ -191,9 +183,7 @@ class _CourseCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: course.progress.clamp(0.0, 1.0),
                 color: Colors.white,
-                backgroundColor: expired
-                    ? Colors.white24
-                    : const Color(0xFF14A558),
+                backgroundColor: const Color(0xFF14A558),
                 minHeight: 6,
               ),
             ),

@@ -7,13 +7,11 @@ class MentorResponse {
   final String? introVideo;
   final String? profession;
   final double rating;
-  final String status;
 
   const MentorResponse({
     required this.id,
     required this.name,
     required this.rating,
-    required this.status,
     this.avatarUrl,
     this.introVideo,
     this.profession,
@@ -34,7 +32,6 @@ class MentorResponse {
       introVideo: json['introVideo'] as String?,
       profession: json['profession'] as String?,
       rating: (json['summaryRating'] ?? 0).toDouble(),
-      status: json['status'] as String? ?? 'active',
     );
   }
 
@@ -45,6 +42,5 @@ class MentorResponse {
     introVideo: introVideo,
     profession: profession,
     rating: rating,
-    status: status,
   );
 }
