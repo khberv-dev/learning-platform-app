@@ -6,7 +6,6 @@
     "description": "Title of the language picker shown after the splash screen"
   },
   "languageSubtitle": "You can change it later in your profile",
-  "languageContinue": "Continue",
   "languageSettingsTitle": "Language",
 
   "commonContinue": "Continue",
@@ -40,7 +39,8 @@
 
   "onboardingHeadlineLead": "Learn ",
   "onboardingHeadlineHighlight": "English",
-  "onboardingHeadlineTail": "\nFaster than ever",
+  "onboardingHeadlineTail": " faster than ever before",
+  "onboardingSubtitle": "Set your level — we'll build a study plan that fits you",
   "onboardingFreshStart": "Let's Get a Fresh Start",
   "onboardingResume": "Resume Journey",
 

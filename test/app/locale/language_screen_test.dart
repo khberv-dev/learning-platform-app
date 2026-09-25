@@ -82,27 +82,12 @@ void main() {
     expect(find.text('Выберите язык'), findsOneWidget);
   });
 
-  testWidgets('tapping an option previews it without committing', (
-    tester,
-  ) async {
-    final container = await _pumpPicker(tester);
-
-    await tester.tap(find.text("O'zbekcha"));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Tilni tanlang'), findsOneWidget);
-    // Previewed only: nothing is stored until Continue.
-    expect(container.read(localeControllerProvider), isNull);
-  });
-
-  testWidgets('Continue applies the choice and carries on to `next`', (
+  testWidgets('tapping a language stores it and carries on to `next`', (
     tester,
   ) async {
     final container = await _pumpPicker(tester, next: '/app');
 
     await tester.tap(find.text('Русский'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Продолжить'));
     await tester.pumpAndSettle();
 
     expect(container.read(localeControllerProvider), AppLanguage.ru);
@@ -114,8 +99,6 @@ void main() {
 
     await tester.tap(find.text("O'zbekcha"));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Davom etish'));
-    await tester.pumpAndSettle();
 
     // What `main` reads before the first frame of the next run.
     expect(
@@ -124,12 +107,10 @@ void main() {
     );
   });
 
-  testWidgets('without a choice, the default destination is onboarding', (
-    tester,
-  ) async {
+  testWidgets('without an explicit next, lands on onboarding', (tester) async {
     await _pumpPicker(tester, next: languageDefaultNext);
 
-    await tester.tap(find.text('Continue'));
+    await tester.tap(find.text('English'));
     await tester.pumpAndSettle();
 
     expect(find.text('onboarding'), findsOneWidget);

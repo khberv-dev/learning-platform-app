@@ -3,7 +3,6 @@
 
   "languageTitle": "Выберите язык",
   "languageSubtitle": "Позже его можно изменить в профиле",
-  "languageContinue": "Продолжить",
   "languageSettingsTitle": "Язык",
 
   "commonContinue": "Продолжить",
@@ -30,7 +29,8 @@
 
   "onboardingHeadlineLead": "Учите ",
   "onboardingHeadlineHighlight": "английский",
-  "onboardingHeadlineTail": "\nбыстрее, чем когда-либо",
+  "onboardingHeadlineTail": " быстрее, чем когда-либо",
+  "onboardingSubtitle": "Определите свой уровень — мы составим подходящий план обучения",
   "onboardingFreshStart": "Начать с нуля",
   "onboardingResume": "Продолжить путь",
 

@@ -15,9 +15,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get languageSubtitle => 'Позже его можно изменить в профиле';
 
   @override
-  String get languageContinue => 'Продолжить';
-
-  @override
   String get languageSettingsTitle => 'Язык';
 
   @override
@@ -90,7 +87,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get onboardingHeadlineHighlight => 'английский';
 
   @override
-  String get onboardingHeadlineTail => '\nбыстрее, чем когда-либо';
+  String get onboardingHeadlineTail => ' быстрее, чем когда-либо';
+
+  @override
+  String get onboardingSubtitle =>
+      'Определите свой уровень — мы составим подходящий план обучения';
 
   @override
   String get onboardingFreshStart => 'Начать с нуля';

@@ -15,9 +15,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageSubtitle => 'You can change it later in your profile';
 
   @override
-  String get languageContinue => 'Continue';
-
-  @override
   String get languageSettingsTitle => 'Language';
 
   @override
@@ -90,7 +87,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingHeadlineHighlight => 'English';
 
   @override
-  String get onboardingHeadlineTail => '\nFaster than ever';
+  String get onboardingHeadlineTail => ' faster than ever before';
+
+  @override
+  String get onboardingSubtitle =>
+      'Set your level — we\'ll build a study plan that fits you';
 
   @override
   String get onboardingFreshStart => 'Let\'s Get a Fresh Start';

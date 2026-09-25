@@ -16,9 +16,6 @@ class AppLocalizationsUz extends AppLocalizations {
       'Keyinroq profilingizdan o\'zgartirishingiz mumkin';
 
   @override
-  String get languageContinue => 'Davom etish';
-
-  @override
   String get languageSettingsTitle => 'Til';
 
   @override
@@ -91,13 +88,17 @@ class AppLocalizationsUz extends AppLocalizations {
   String get onboardingHeadlineHighlight => 'Ingliz tilini';
 
   @override
-  String get onboardingHeadlineTail => '\nhar qachongidan tez o\'rganing';
+  String get onboardingHeadlineTail => ' har qachongidan ham tez o\'rganing';
+
+  @override
+  String get onboardingSubtitle =>
+      'Darajangizni belgilang — biz sizga mos o\'quv rejasini tuzamiz';
 
   @override
   String get onboardingFreshStart => 'Noldan boshlaymiz';
 
   @override
-  String get onboardingResume => 'Davom ettirish';
+  String get onboardingResume => 'Davom etish';
 
   @override
   String get welcomeTitle => 'iTeach\'ga xush kelibsiz';

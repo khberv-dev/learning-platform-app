@@ -54,15 +54,27 @@ final _inputDecorationTheme = InputDecorationThemeData(
   ),
 );
 
-// No `textTheme` override on purpose — that's what gives us the platform
-// system font. ThemeData picks its Typography from defaultTargetPlatform:
-// iOS → CupertinoSystemText/CupertinoSystemDisplay, macOS → .AppleSystemUIFont
-// (both resolve to SF Pro, supplied by the OS — Apple's licence forbids
-// embedding the font in an app bundle), Android → Roboto.
-// Setting a fontFamily or textTheme here overrides that on every platform.
+// App-wide rounded typeface. The design calls for SF Pro Rounded, but Apple's
+// licence forbids embedding it in an app bundle (and it isn't installed on
+// Android at all) — M PLUS Rounded 1c is an openly-licensed (OFL) look-alike
+// used on both platforms instead. `.apply` rewrites every style's fontFamily
+// while leaving size/weight/color alone, so this reaches text that reads
+// `Theme.of(context).textTheme.*` and, via the ambient `DefaultTextStyle`
+// every `MaterialApp` establishes, plain `Text('...', style: TextStyle(...))`
+// calls elsewhere that don't set their own `fontFamily`.
+const _fontFamily = 'MPLUSRounded1c';
+final _baseTextTheme = ThemeData.light().textTheme.apply(
+  fontFamily: _fontFamily,
+);
+final _basePrimaryTextTheme = ThemeData.light().primaryTextTheme.apply(
+  fontFamily: _fontFamily,
+);
+
 final _baseTheme = ThemeData.light().copyWith(
   scaffoldBackgroundColor: Color(0xfff6f7fa),
   colorScheme: _baseColorScheme,
+  textTheme: _baseTextTheme,
+  primaryTextTheme: _basePrimaryTextTheme,
   progressIndicatorTheme: _progressIndicatorTheme,
   iconButtonTheme: _iconButtonTheme,
   filledButtonTheme: _filledButtonTheme,

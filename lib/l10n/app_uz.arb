@@ -3,7 +3,6 @@
 
   "languageTitle": "Tilni tanlang",
   "languageSubtitle": "Keyinroq profilingizdan o'zgartirishingiz mumkin",
-  "languageContinue": "Davom etish",
   "languageSettingsTitle": "Til",
 
   "commonContinue": "Davom etish",
@@ -30,9 +29,10 @@
 
   "onboardingHeadlineLead": "",
   "onboardingHeadlineHighlight": "Ingliz tilini",
-  "onboardingHeadlineTail": "\nhar qachongidan tez o'rganing",
+  "onboardingHeadlineTail": " har qachongidan ham tez o'rganing",
+  "onboardingSubtitle": "Darajangizni belgilang — biz sizga mos o'quv rejasini tuzamiz",
   "onboardingFreshStart": "Noldan boshlaymiz",
-  "onboardingResume": "Davom ettirish",
+  "onboardingResume": "Davom etish",
 
   "welcomeTitle": "iTeach'ga xush kelibsiz",
   "welcomeSubtitle": "Ingliz tilini o'rganish yo'lingiz\nshu yerdan boshlanadi",

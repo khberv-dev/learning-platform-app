@@ -112,12 +112,6 @@ abstract class AppLocalizations {
   /// **'You can change it later in your profile'**
   String get languageSubtitle;
 
-  /// No description provided for @languageContinue.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue'**
-  String get languageContinue;
-
   /// No description provided for @languageSettingsTitle.
   ///
   /// In en, this message translates to:
@@ -259,8 +253,14 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingHeadlineTail.
   ///
   /// In en, this message translates to:
-  /// **'\nFaster than ever'**
+  /// **' faster than ever before'**
   String get onboardingHeadlineTail;
+
+  /// No description provided for @onboardingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your level — we\'ll build a study plan that fits you'**
+  String get onboardingSubtitle;
 
   /// No description provided for @onboardingFreshStart.
   ///

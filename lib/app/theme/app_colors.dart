@@ -10,11 +10,6 @@ abstract class AppColors {
   /// theme primary so it stays readable on the pale onboarding sky.
   static const deepGreen = Color(0xff2f6b2e);
 
-  /// Sky tone sampled from the top-centre of the onboarding artwork. The page
-  /// sits on this so the band above the bottom-aligned artwork reads as more
-  /// sky rather than a separate surface.
-  static const onboardingSky = Color(0xffc8e1f5);
-
   /// Unfilled portion of [AppProgressBar].
   static const progressTrack = Color(0xffb6c3cb);
 

@@ -1,7 +1,7 @@
 name: student
 description: "Mobile app for iTeach students"
 publish_to: 'none'
-version: 1.0.5+17
+version: 1.1.0+18
 
 environment:
   sdk: ^3.11.4
@@ -53,6 +53,26 @@ flutter:
     - assets/
     - assets/images/
     - assets/icons/
+  # SF Pro Rounded can't be bundled (Apple-exclusive font, license forbids
+  # redistribution) — M PLUS Rounded 1c is the open-licence (OFL) stand-in
+  # used app-wide instead, on both iOS and Android.
+  fonts:
+    - family: MPLUSRounded1c
+      fonts:
+        - asset: assets/fonts/MPLUSRounded1c/MPLUSRounded1c-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/MPLUSRounded1c/MPLUSRounded1c-Light.ttf
+          weight: 300
+        - asset: assets/fonts/MPLUSRounded1c/MPLUSRounded1c-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/MPLUSRounded1c/MPLUSRounded1c-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/MPLUSRounded1c/MPLUSRounded1c-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/MPLUSRounded1c/MPLUSRounded1c-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/MPLUSRounded1c/MPLUSRounded1c-Black.ttf
+          weight: 900
 
 flutter_launcher_icons:
   image_path: assets/images/brand.png

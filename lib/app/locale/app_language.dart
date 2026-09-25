@@ -7,9 +7,9 @@ import 'package:flutter/widgets.dart';
 /// student may not be able to read, so each option names itself in its own
 /// language rather than in the current UI language.
 enum AppLanguage {
-  uz('uz', "O'zbekcha", '🇺🇿'),
-  ru('ru', 'Русский', '🇷🇺'),
-  en('en', 'English', '🇬🇧');
+  uz('uz', "O'zbekcha", '🇺🇿', 'assets/images/flag_uz.png'),
+  ru('ru', 'Русский', '🇷🇺', 'assets/images/flag_ru.png'),
+  en('en', 'English', '🇬🇧', 'assets/images/flag_uk.png');
 
   /// Language subtag, which doubles as the stored value.
   final String code;
@@ -18,7 +18,11 @@ enum AppLanguage {
 
   final String flag;
 
-  const AppLanguage(this.code, this.label, this.flag);
+  /// Pre-rendered circular flag icon, used wherever an emoji glyph isn't
+  /// enough (e.g. the language picker's redesigned rows).
+  final String flagAsset;
+
+  const AppLanguage(this.code, this.label, this.flag, this.flagAsset);
 
   Locale get locale => Locale(code);
 
