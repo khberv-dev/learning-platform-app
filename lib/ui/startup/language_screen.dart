@@ -71,7 +71,7 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
               // Expanded only works as a direct Column/Row child, not inside
               // a Stack — this is a Column so the image can claim all the
               // space above the fixed-height card below it, with no scroll.
-              child: Column(
+              child: Stack(
                 children: [
                   // Fills all the space the bottom card leaves it, cropping
                   // rather than scrolling — anchored top so an overflow trims
@@ -86,50 +86,53 @@ class _LanguageScreenState extends ConsumerState<LanguageScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.xl,
-                      AppSpacing.lg,
-                      AppSpacing.xl,
-                      AppSpacing.xl,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          l10n.languageTitle,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF111827),
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            height: 1.22,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          l10n.languageSubtitle,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color(0xFF6B7280),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
-                        for (final language in _displayOrder) ...[
-                          if (language != _displayOrder.first)
-                            const SizedBox(height: AppSpacing.md),
-                          SizedBox(
-                            width: double.infinity,
-                            child: _LanguageRow(
-                              language: language,
-                              onTap: () => _select(language),
+                  Align(
+                    alignment: AlignmentGeometry.bottomEnd,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.xl,
+                        AppSpacing.lg,
+                        AppSpacing.xl,
+                        AppSpacing.xl,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.languageTitle,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Color(0xFF111827),
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                              height: 1.22,
+                              letterSpacing: -0.5,
                             ),
                           ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            l10n.languageSubtitle,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Color(0xFF6B7280),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          for (final language in _displayOrder) ...[
+                            if (language != _displayOrder.first)
+                              const SizedBox(height: AppSpacing.md),
+                            SizedBox(
+                              width: double.infinity,
+                              child: _LanguageRow(
+                                language: language,
+                                onTap: () => _select(language),
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
                 ],

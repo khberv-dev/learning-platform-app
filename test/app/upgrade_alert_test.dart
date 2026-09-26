@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +6,8 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:student/app/upgrade/app_upgrade_alert.dart';
 import 'package:student/ui/startup/splash_screen.dart';
-import 'package:upgrader/upgrader.dart';
+
+import '../support/localized_app.dart';
 
 const _homePath = '/home';
 
@@ -26,7 +28,15 @@ void _stubPlugins() {
 
 /// Stands in for the real app: a router that starts on the splash route, with
 /// the alert mounted from the builder exactly as `App` mounts it.
-Future<GoRouter> _pumpApp(WidgetTester tester) async {
+Future<GoRouter> _pumpApp(
+  WidgetTester tester, {
+  bool dismissible = true,
+  List<Uri>? opened,
+}) async {
+  tester.view.physicalSize = const Size(390, 844) * 2;
+  tester.view.devicePixelRatio = 2;
+  addTearDown(tester.view.reset);
+
   final router = GoRouter(
     routes: [
       GoRoute(
@@ -41,24 +51,37 @@ Future<GoRouter> _pumpApp(WidgetTester tester) async {
   );
 
   await tester.pumpWidget(
-    MaterialApp.router(
+    localizedApp(
       routerConfig: router,
       builder: (context, child) => AppUpgradeAlert(
         router: router,
+        dismissible: dismissible,
+        openStore: (url) async {
+          opened?.add(url);
+          return true;
+        },
         child: child ?? const SizedBox.shrink(),
       ),
     ),
   );
 
-  // The store lookup and the dialog's own post-frame delay both have to settle.
+  // The store lookup and the sheet's own post-frame delay both have to settle.
   await tester.pumpAndSettle();
   return router;
 }
 
 /// Stands in for the splash animation ending: the whole stack is replaced,
-/// which is what used to take the dialog with it.
+/// which is what used to take the prompt with it.
 Future<void> _leaveSplash(WidgetTester tester, GoRouter router) async {
   router.go(_homePath);
+  await tester.pumpAndSettle();
+}
+
+final _sheet = find.text('A new version is available');
+
+/// Taps the scrim above the sheet.
+Future<void> _tapOutside(WidgetTester tester) async {
+  await tester.tapAt(const Offset(195, 60));
   await tester.pumpAndSettle();
 }
 
@@ -72,17 +95,32 @@ void main() {
 
     // Prompting here would be prompting into the void: the splash replaces the
     // route stack when its animation ends, and upgrader never offers twice.
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(_sheet, findsNothing);
     expect(find.text('splash'), findsOneWidget);
   });
 
-  testWidgets('prompts once the splash has handed over', (tester) async {
+  testWidgets('prompts with the update sheet once the splash has handed over', (
+    tester,
+  ) async {
     final router = await _pumpApp(tester);
     await _leaveSplash(tester, router);
 
     // Tests run in debug, so the stand-in store applies and the prompt is
     // unconditional — this is the "always show in debug" behaviour.
-    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(find.byType(BottomSheet), findsOneWidget);
+    expect(_sheet, findsOneWidget);
+    expect(
+      find.text(
+        'A new version of the app is ready. Update now to enjoy the latest '
+        'features.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Update'), findsOneWidget);
+    // One way forward — none of upgrader's stock Later / Ignore buttons.
+    expect(find.text('LATER'), findsNothing);
+    expect(find.text('IGNORE'), findsNothing);
+    expect(find.byType(AlertDialog), findsNothing);
   });
 
   testWidgets('the prompt survives the navigation that raised it', (
@@ -91,42 +129,37 @@ void main() {
     final router = await _pumpApp(tester);
     await _leaveSplash(tester, router);
 
-    // A few frames on from the hand-over the dialog is still there, rather
-    // than having been popped along with the splash page.
     await tester.pump(const Duration(seconds: 1));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(_sheet, findsOneWidget);
   });
 
-  testWidgets('offers a way past it', (tester) async {
+  testWidgets('in debug, tapping outside dismisses it', (tester) async {
     final router = await _pumpApp(tester);
     await _leaveSplash(tester, router);
 
-    // Skippable: both escape hatches are offered alongside the update action.
-    expect(find.text('LATER'), findsOneWidget);
-    expect(find.text('IGNORE'), findsOneWidget);
-    expect(find.text('UPDATE NOW'), findsOneWidget);
+    await _tapOutside(tester);
+
+    expect(_sheet, findsNothing);
+    expect(find.text('home'), findsOneWidget);
   });
 
-  testWidgets('LATER dismisses and leaves the app usable', (tester) async {
+  testWidgets('in debug, back dismisses it', (tester) async {
     final router = await _pumpApp(tester);
     await _leaveSplash(tester, router);
 
-    await tester.tap(find.text('LATER'));
+    await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
 
-    expect(find.byType(AlertDialog), findsNothing);
-    expect(find.text('home'), findsOneWidget);
+    expect(_sheet, findsNothing);
   });
 
   testWidgets('does not reappear on a later app resume', (tester) async {
     final router = await _pumpApp(tester);
     await _leaveSplash(tester, router);
-
-    await tester.tap(find.text('LATER'));
-    await tester.pumpAndSettle();
-    expect(find.byType(AlertDialog), findsNothing);
+    await _tapOutside(tester);
+    expect(_sheet, findsNothing);
 
     // `Upgrader` re-checks on every resume (`checkOnResume` defaults to
     // true) — regressing to `debugDisplayAlways` would force it back up here.
@@ -134,31 +167,73 @@ void main() {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
 
-    expect(find.byType(AlertDialog), findsNothing);
+    expect(_sheet, findsNothing);
   });
 
-  testWidgets('the release notes blurb is kept out of the prompt', (
+  testWidgets('when not dismissible, neither the scrim nor back closes it', (
     tester,
   ) async {
-    final router = await _pumpApp(tester);
+    final router = await _pumpApp(tester, dismissible: false);
     await _leaveSplash(tester, router);
 
-    expect(find.textContaining('Release Notes'), findsNothing);
+    await _tapOutside(tester);
+    expect(_sheet, findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(_sheet, findsOneWidget);
+
+    // Nor a drag down on the sheet.
+    await tester.drag(_sheet, const Offset(0, 500));
+    await tester.pumpAndSettle();
+    expect(_sheet, findsOneWidget);
   });
 
-  test(
-    'ships unblocked, so the prompt stays skippable until asked otherwise',
-    () {
-      // Guards the release default: setting this makes the dialog unskippable
-      // for older builds, which should never happen by accident.
-      expect(minSupportedAppVersion, isNull);
-    },
-  );
+  testWidgets('Update opens the Play Store listing on Android', (tester) async {
+    final opened = <Uri>[];
+    final router = await _pumpApp(tester, opened: opened);
+    await _leaveSplash(tester, router);
 
-  test('a blocked upgrader would hide the escape hatches', () {
-    // Documents the lever rather than the current state: below a minimum, both
-    // LATER and IGNORE are dropped by upgrader itself.
-    final upgrader = Upgrader(minAppVersion: '99.0.0');
-    expect(upgrader.state.minAppVersion.toString(), '99.0.0');
+    await tester.tap(find.text('Update'));
+    await tester.pumpAndSettle();
+
+    expect(opened, [Uri.parse(playStoreUrl)]);
+    // Dismissible (debug), so it gets out of the way once the store opens.
+    expect(_sheet, findsNothing);
+  });
+
+  testWidgets('Update opens the App Store listing on iOS', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final opened = <Uri>[];
+    final router = await _pumpApp(tester, opened: opened);
+    await _leaveSplash(tester, router);
+
+    await tester.tap(find.text('Update'));
+    await tester.pumpAndSettle();
+    debugDefaultTargetPlatformOverride = null;
+
+    expect(opened, [Uri.parse(appStoreUrl)]);
+  });
+
+  testWidgets('when not dismissible, the sheet stays up behind the store', (
+    tester,
+  ) async {
+    final opened = <Uri>[];
+    final router = await _pumpApp(tester, dismissible: false, opened: opened);
+    await _leaveSplash(tester, router);
+
+    await tester.tap(find.text('Update'));
+    await tester.pumpAndSettle();
+
+    expect(opened, hasLength(1));
+    expect(_sheet, findsOneWidget);
+  });
+
+  test('dismissible by default only in debug builds', () {
+    final alert = AppUpgradeAlert(
+      router: GoRouter(routes: []),
+      child: const SizedBox(),
+    );
+    expect(alert.dismissible, kDebugMode);
   });
 }

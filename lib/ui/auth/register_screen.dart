@@ -13,11 +13,9 @@ import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_text_field.dart';
 import 'package:student/shared/url_launcher.dart';
-import 'package:student/shared/widget/auth_identity_switch.dart';
-import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
+import 'package:student/ui/main/app_screen.dart';
 import 'package:student/utils/messenger.dart';
-import 'package:student/utils/uz_phone_formatter.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   static const path = '/register';
@@ -28,43 +26,17 @@ class RegisterScreen extends ConsumerStatefulWidget {
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
+/// The last registration step: the phone/email was already verified by code
+/// (login → [OtpScreen]), so this only asks for the profile.
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _otpSent = false;
-  AuthIdentityType _identityType = AuthIdentityType.phone;
   Gender? _gender;
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AsyncValue<void>>(registerControllerProvider, (prev, next) {
-      if (prev?.isLoading != true) return;
-      next.whenOrNull(
-        data: (_) {
-          if (!_otpSent) {
-            _otpSent = true;
-            final query = _identityType == AuthIdentityType.phone
-                ? {
-                    'phone': '998${_phoneController.text.replaceAll(' ', '')}',
-                    'mode': 'register',
-                  }
-                : {
-                    'email': _emailController.text.trim().toLowerCase(),
-                    'mode': 'register',
-                  };
-            context.push(
-              Uri(path: OtpScreen.path, queryParameters: query).toString(),
-            );
-          }
-        },
-        error: (e, _) => showErrorMessage(context, apiErrorMessage(context, e)),
-      );
-    });
-
     final isLoading = ref.watch(registerControllerProvider).isLoading;
     final l10n = AppLocalizations.of(context);
 
@@ -124,42 +96,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           onChanged: (value) => setState(() => _gender = value),
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                        AuthIdentitySwitch(
-                          value: _identityType,
-                          phoneLabel: l10n.authUsePhone,
-                          emailLabel: l10n.authUseEmail,
-                          onChanged: (value) => setState(() {
-                            _identityType = value;
-                            _formKey.currentState?.reset();
-                          }),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        if (_identityType == AuthIdentityType.phone)
-                          AppTextField(
-                            key: const ValueKey('register-phone'),
-                            label: l10n.fieldPhone,
-                            controller: _phoneController,
-                            prefixText: '+998 ',
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [UzPhoneFormatter()],
-                            validator: (value) {
-                              final digits = (value ?? '').replaceAll(' ', '');
-                              return digits.length == 9
-                                  ? null
-                                  : l10n.validationPhone;
-                            },
-                          )
-                        else
-                          AppTextField(
-                            key: const ValueKey('register-email'),
-                            label: l10n.fieldEmail,
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) => _isValidEmail(value ?? '')
-                                ? null
-                                : l10n.validationEmail,
-                          ),
-                        const SizedBox(height: AppSpacing.lg),
                         AppTextField(
                           label: l10n.fieldPassword,
                           controller: _passwordController,
@@ -186,10 +122,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   isLoading: isLoading,
                   onTap: _submit,
                 ),
-                AppButton.outlined(
-                  label: l10n.loginSubmit,
-                  onTap: () => context.go(LoginScreen.path),
-                ),
               ],
             ),
           ],
@@ -198,51 +130,39 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     );
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    _otpSent = false;
     final lastName = _lastNameController.text.trim();
-    if (_identityType == AuthIdentityType.email) {
-      ref
-          .read(registerControllerProvider.notifier)
-          .prepareEmailAndSendOtp(
-            firstName: _firstNameController.text.trim(),
-            lastName: lastName.isEmpty ? null : lastName,
-            email: _emailController.text.trim().toLowerCase(),
-            password: _passwordController.text,
-            level: ref.read(skillQuizResultProvider),
-            gender: _gender,
-          );
-      return;
-    }
-    final digits = _phoneController.text.replaceAll(' ', '');
-    ref
+    final registered = await ref
         .read(registerControllerProvider.notifier)
-        .prepareAndSendOtp(
+        .complete(
           firstName: _firstNameController.text.trim(),
           lastName: lastName.isEmpty ? null : lastName,
-          phoneNumber: '998$digits',
           password: _passwordController.text,
           // Null when the placement quiz was skipped or closed early, which
           // leaves the API to apply its own default level.
           level: ref.read(skillQuizResultProvider),
           gender: _gender,
         );
+    if (!mounted) return;
+    if (registered) {
+      context.go(AppScreen.path);
+    } else {
+      showErrorMessage(
+        context,
+        apiErrorMessage(context, ref.read(registerControllerProvider).error!),
+      );
+    }
   }
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 }
-
-bool _isValidEmail(String value) =>
-    RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value.trim());
 
 /// Optional — tapping the already-selected segment clears it, since the API
 /// is happy to apply its own default when nothing is sent.

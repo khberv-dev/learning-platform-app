@@ -25,6 +25,24 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
       _tokenStorage = tokenStorage;
 
   @override
+  Future<bool> checkPhoneExists(String phoneNumber) async {
+    final response = await _dio.get(
+      'auth/check-phone',
+      queryParameters: {'phoneNumber': phoneNumber},
+    );
+    return (response.data as Map<String, dynamic>)['exists'] as bool? ?? false;
+  }
+
+  @override
+  Future<bool> checkEmailExists(String email) async {
+    final response = await _dio.get(
+      'auth/check-email',
+      queryParameters: {'email': email.trim().toLowerCase()},
+    );
+    return (response.data as Map<String, dynamic>)['exists'] as bool? ?? false;
+  }
+
+  @override
   Future<AuthEntity> signIn({
     required String phoneNumber,
     required String password,
@@ -49,50 +67,46 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
   }
 
   @override
-  Future<AuthEntity> signUp({
-    required String firstName,
-    String? lastName,
-    required String phoneNumber,
-    required String password,
-    required String code,
-    StudentLevel? level,
-    Gender? gender,
-  }) async {
+  Future<String> sendRegisterOtp({String? phoneNumber, String? email}) async {
+    assert((phoneNumber == null) != (email == null));
     final response = await _dio.post(
-      'auth/sign-up',
+      'auth/register/otp/send',
       data: {
-        'firstName': firstName.trim(),
-        'phoneNumber': phoneNumber,
-        'password': password,
-        'code': code,
-        // Left out rather than sent null: both are optional, and the API
-        // rejects a null against its enum validator.
-        if (lastName != null && lastName.trim().isNotEmpty)
-          'lastName': lastName.trim(),
-        if (level != null) 'level': level.code,
-        if (gender != null) 'gender': gender.code,
+        'phoneNumber': ?phoneNumber,
+        if (email != null) 'email': email.trim().toLowerCase(),
       },
     );
-    return _saveAndReturn(response.data as Map<String, dynamic>);
+    return (response.data as Map<String, dynamic>)['sessionId'] as String;
   }
 
   @override
-  Future<AuthEntity> signUpWithEmail({
+  Future<void> verifyRegisterOtp({
+    required String sessionId,
+    required String code,
+  }) async {
+    await _dio.post(
+      'auth/register/otp/verify',
+      data: {'sessionId': sessionId, 'code': code},
+    );
+  }
+
+  @override
+  Future<AuthEntity> register({
+    required String sessionId,
     required String firstName,
     String? lastName,
-    required String email,
     required String password,
-    required String code,
     StudentLevel? level,
     Gender? gender,
   }) async {
     final response = await _dio.post(
-      'auth/sign-up',
+      'auth/register',
       data: {
+        'sessionId': sessionId,
         'firstName': firstName.trim(),
-        'email': email.trim().toLowerCase(),
         'password': password,
-        'code': code,
+        // Left out rather than sent null: all three are optional, and the API
+        // rejects a null against its enum validators.
         if (lastName != null && lastName.trim().isNotEmpty)
           'lastName': lastName.trim(),
         if (level != null) 'level': level.code,

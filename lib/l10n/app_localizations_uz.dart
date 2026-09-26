@@ -53,12 +53,6 @@ class AppLocalizationsUz extends AppLocalizations {
       'Nimadir xato ketdi. Qayta urinib ko\'ring.';
 
   @override
-  String get authUsePhone => 'Telefon';
-
-  @override
-  String get authUseEmail => 'Email';
-
-  @override
   String get fieldEmail => 'Email manzil';
 
   @override
@@ -537,7 +531,41 @@ class AppLocalizationsUz extends AppLocalizations {
   String get imageLoadFailed => 'Rasmni yuklab bo\'lmadi';
 
   @override
-  String get loginTitle => 'Xush kelibsiz';
+  String get loginTitle => 'Kirish';
+
+  @override
+  String get loginSubtitlePhone =>
+      'Hisobingizga kirish uchun telefon raqamingizni kiriting';
+
+  @override
+  String get loginSubtitleEmail =>
+      'Hisobingizga kirish uchun elektron pochtangizni kiriting';
+
+  @override
+  String get loginTabPhone => 'Telefon orqali';
+
+  @override
+  String get loginTabEmail => 'Email orqali';
+
+  @override
+  String get loginOr => 'yoki';
+
+  @override
+  String get loginTelegram => 'Telegram orqali kirish';
+
+  @override
+  String get loginTelegramUnavailable =>
+      'Telegram orqali kirish hali mavjud emas';
+
+  @override
+  String get loginLegalLead => 'Davom etish orqali siz ';
+
+  @override
+  String get loginLegalOffer => 'ommaviy oferta';
+
+  @override
+  String get loginLegalTail =>
+      ' shartlari bilan rozi ekanligingizni tasdiqlaysiz.';
 
   @override
   String get loginForgotPassword => 'Parolni unutdingizmi?';
@@ -618,15 +646,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get validationFirstName => 'Ismingizni kiriting';
 
   @override
-  String get otpTitle => 'Telefon raqamingizni\ntasdiqlang';
-
-  @override
   String otpSubtitle(String phone) {
     return '$phone raqamiga 6 xonali kod yubordik';
   }
-
-  @override
-  String get otpEmailTitle => 'Email manzilingizni\ntasdiqlang';
 
   @override
   String otpEmailSubtitle(String email) {
@@ -634,12 +656,7 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String otpResendIn(int seconds) {
-    return 'Kodni qayta yuborish: $seconds s';
-  }
-
-  @override
-  String get otpResend => 'Kodni qayta yuborish';
+  String get otpResend => 'Qayta yuborish';
 
   @override
   String get otpPasswordUpdated => 'Parol muvaffaqiyatli yangilandi';
@@ -1076,4 +1093,17 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get roadmapTopicPresentations => 'Ekspert taqdimotlari';
+
+  @override
+  String get updateTitle => 'Yangi versiya mavjud';
+
+  @override
+  String get updateBody =>
+      'Ilovaning yangi versiyasi tayyor. Hozir yangilang va yangi imkoniyatlardan foydalaning.';
+
+  @override
+  String get updateAction => 'Yangilash';
+
+  @override
+  String get otpEnterCode => 'Kodni kiriting';
 }

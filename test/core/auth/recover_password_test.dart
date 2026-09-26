@@ -42,21 +42,55 @@ class _FakeAuthRepository implements IAuthRepository {
   }
 
   @override
+  Future<bool> checkPhoneExists(String phoneNumber) =>
+      throw UnimplementedError();
+
+  @override
   Future<AuthEntity> signIn({
     required String phoneNumber,
     required String password,
   }) => throw UnimplementedError();
 
+  // ── Registration (session-based) ──
+  final List<({String? phoneNumber, String? email})> registerOtpRequests = [];
+  final List<({String sessionId, String code})> verifications = [];
+  final List<({String sessionId, String firstName, StudentLevel? level})>
+  registrations = [];
+
+  /// Thrown by the next [verifyRegisterOtp], standing in for a wrong code.
+  Object? verifyError;
+
   @override
-  Future<AuthEntity> signUp({
+  Future<String> sendRegisterOtp({String? phoneNumber, String? email}) async {
+    registerOtpRequests.add((phoneNumber: phoneNumber, email: email));
+    return 'session-1';
+  }
+
+  @override
+  Future<void> verifyRegisterOtp({
+    required String sessionId,
+    required String code,
+  }) async {
+    verifications.add((sessionId: sessionId, code: code));
+    if (verifyError != null) throw verifyError!;
+  }
+
+  @override
+  Future<AuthEntity> register({
+    required String sessionId,
     required String firstName,
     String? lastName,
-    required String phoneNumber,
     required String password,
-    required String code,
     StudentLevel? level,
     Gender? gender,
-  }) => throw UnimplementedError();
+  }) async {
+    registrations.add((
+      sessionId: sessionId,
+      firstName: firstName,
+      level: level,
+    ));
+    return const AuthEntity(accessToken: 'access', refreshToken: 'refresh');
+  }
 }
 
 ({ProviderContainer container, _FakeAuthRepository repo}) _setUp() {
@@ -87,18 +121,50 @@ void main() {
     expect(container.read(recoverPasswordControllerProvider).hasError, isFalse);
   });
 
-  test('sign-up still asks under the registration purpose', () async {
+  test(
+    'registration verifies the code against the session it was sent on',
+    () async {
+      final (:container, :repo) = _setUp();
+      final controller = container.read(registerControllerProvider.notifier);
+
+      expect(await controller.sendOtp(phoneNumber: '998901234567'), isTrue);
+      expect(await controller.verifyOtp('123456'), isTrue);
+
+      expect(repo.registerOtpRequests, [
+        (phoneNumber: '998901234567', email: null),
+      ]);
+      // Registration has its own endpoints — nothing under a recover purpose.
+      expect(repo.otpRequests, isEmpty);
+      expect(repo.verifications, [(sessionId: 'session-1', code: '123456')]);
+    },
+  );
+
+  test(
+    'a wrong registration code reports failure and keeps the session',
+    () async {
+      final (:container, :repo) = _setUp();
+      final controller = container.read(registerControllerProvider.notifier);
+      await controller.sendOtp(email: 'sevara@example.com');
+      repo.verifyError = Exception('OTP noto\'g\'ri');
+
+      expect(await controller.verifyOtp('000000'), isFalse);
+      expect(container.read(registerControllerProvider).hasError, isTrue);
+
+      repo.verifyError = null;
+      expect(await controller.verifyOtp('123456'), isTrue);
+      expect(repo.verifications.last, (sessionId: 'session-1', code: '123456'));
+    },
+  );
+
+  test('verifying before a code was sent fails instead of throwing', () async {
     final (:container, :repo) = _setUp();
 
-    await container
+    final verified = await container
         .read(registerControllerProvider.notifier)
-        .prepareAndSendOtp(
-          firstName: 'Aziz',
-          phoneNumber: '998901234567',
-          password: 'secret123',
-        );
+        .verifyOtp('123456');
 
-    expect(repo.otpRequests.single.purpose, OtpPurpose.registration);
+    expect(verified, isFalse);
+    expect(repo.verifications, isEmpty);
   });
 
   test('a resend keeps the purpose of the flow it belongs to', () async {

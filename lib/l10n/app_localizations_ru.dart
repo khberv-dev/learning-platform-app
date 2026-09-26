@@ -52,12 +52,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Что-то пошло не так. Попробуйте ещё раз.';
 
   @override
-  String get authUsePhone => 'Телефон';
-
-  @override
-  String get authUseEmail => 'Email';
-
-  @override
   String get fieldEmail => 'Электронная почта';
 
   @override
@@ -543,7 +537,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get imageLoadFailed => 'Не удалось загрузить изображение';
 
   @override
-  String get loginTitle => 'С возвращением';
+  String get loginTitle => 'Вход';
+
+  @override
+  String get loginSubtitlePhone =>
+      'Введите номер телефона, чтобы войти в аккаунт';
+
+  @override
+  String get loginSubtitleEmail => 'Введите email, чтобы войти в аккаунт';
+
+  @override
+  String get loginTabPhone => 'По телефону';
+
+  @override
+  String get loginTabEmail => 'По email';
+
+  @override
+  String get loginOr => 'или';
+
+  @override
+  String get loginTelegram => 'Войти через Telegram';
+
+  @override
+  String get loginTelegramUnavailable => 'Вход через Telegram пока недоступен';
+
+  @override
+  String get loginLegalLead => 'Продолжая, вы соглашаетесь с условиями ';
+
+  @override
+  String get loginLegalOffer => 'публичной оферты';
+
+  @override
+  String get loginLegalTail => '.';
 
   @override
   String get loginForgotPassword => 'Забыли пароль?';
@@ -624,24 +649,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get validationFirstName => 'Введите имя';
 
   @override
-  String get otpTitle => 'Подтвердите\nномер телефона';
-
-  @override
   String otpSubtitle(String phone) {
     return 'Мы отправили 6-значный код на $phone';
   }
 
   @override
-  String get otpEmailTitle => 'Подтвердите адрес\nэлектронной почты';
-
-  @override
   String otpEmailSubtitle(String email) {
     return 'Мы отправили 6-значный код на email $email';
-  }
-
-  @override
-  String otpResendIn(int seconds) {
-    return 'Отправить код повторно через $seconds с';
   }
 
   @override
@@ -1088,4 +1102,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get roadmapTopicPresentations => 'Экспертные презентации';
+
+  @override
+  String get updateTitle => 'Доступна новая версия';
+
+  @override
+  String get updateBody =>
+      'Новая версия приложения готова. Обновитесь сейчас и пользуйтесь новыми возможностями.';
+
+  @override
+  String get updateAction => 'Обновить';
+
+  @override
+  String get otpEnterCode => 'Введите код';
 }

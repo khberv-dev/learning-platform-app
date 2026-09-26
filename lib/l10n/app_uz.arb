@@ -10,8 +10,6 @@
   "commonResume": "Davom etish",
   "commonCancel": "Bekor qilish",
   "commonRetry": "Qayta urinish",
-  "authUsePhone": "Telefon",
-  "authUseEmail": "Email",
   "fieldEmail": "Email manzil",
   "validationEmail": "To'g'ri email manzilini kiriting",
   "commonYes": "Ha",
@@ -172,7 +170,17 @@
   "pdfLoadFailedHint": "Fayl shikastlangan yoki aloqa uzilgan.",
   "imageLoadFailed": "Rasmni yuklab bo'lmadi",
 
-  "loginTitle": "Xush kelibsiz",
+  "loginTitle": "Kirish",
+  "loginSubtitlePhone": "Hisobingizga kirish uchun telefon raqamingizni kiriting",
+  "loginSubtitleEmail": "Hisobingizga kirish uchun elektron pochtangizni kiriting",
+  "loginTabPhone": "Telefon orqali",
+  "loginTabEmail": "Email orqali",
+  "loginOr": "yoki",
+  "loginTelegram": "Telegram orqali kirish",
+  "loginTelegramUnavailable": "Telegram orqali kirish hali mavjud emas",
+  "loginLegalLead": "Davom etish orqali siz ",
+  "loginLegalOffer": "ommaviy oferta",
+  "loginLegalTail": " shartlari bilan rozi ekanligingizni tasdiqlaysiz.",
   "loginForgotPassword": "Parolni unutdingizmi?",
   "loginSubmit": "Kirish",
   "registerTitle": "Hisob yaratish",
@@ -201,12 +209,9 @@
   "validationPasswordsMatch": "Parollar mos kelmadi",
   "validationFirstName": "Ismingizni kiriting",
 
-  "otpTitle": "Telefon raqamingizni\ntasdiqlang",
   "otpSubtitle": "{phone} raqamiga 6 xonali kod yubordik",
-  "otpEmailTitle": "Email manzilingizni\ntasdiqlang",
   "otpEmailSubtitle": "{email} email manziliga 6 xonali kod yubordik",
-  "otpResendIn": "Kodni qayta yuborish: {seconds} s",
-  "otpResend": "Kodni qayta yuborish",
+  "otpResend": "Qayta yuborish",
   "otpPasswordUpdated": "Parol muvaffaqiyatli yangilandi",
 
   "profilePhone": "Telefon raqami",
@@ -351,5 +356,9 @@
   "roadmapTopicCulturalReferences": "Madaniy iqtiboslar",
   "roadmapTopicRhetoric": "Yuqori ritorika",
   "roadmapTopicCreativeWriting": "Ijodiy yozuv",
-  "roadmapTopicPresentations": "Ekspert taqdimotlari"
+  "roadmapTopicPresentations": "Ekspert taqdimotlari",
+  "updateTitle": "Yangi versiya mavjud",
+  "updateBody": "Ilovaning yangi versiyasi tayyor. Hozir yangilang va yangi imkoniyatlardan foydalaning.",
+  "updateAction": "Yangilash",
+  "otpEnterCode": "Kodni kiriting"
 }

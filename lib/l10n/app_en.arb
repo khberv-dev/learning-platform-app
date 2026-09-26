@@ -19,8 +19,6 @@
   "commonJoin": "Join",
   "commonLoading": "Loading…",
   "commonSomethingWentWrong": "Something went wrong. Please try again.",
-  "authUsePhone": "Phone",
-  "authUseEmail": "Email",
   "fieldEmail": "Email address",
   "validationEmail": "Enter a valid email address",
   "commonOpenOutsideApp": "Open outside the app",
@@ -248,7 +246,17 @@
   "pdfLoadFailedHint": "It may be damaged, or the connection dropped.",
   "imageLoadFailed": "This image couldn't be loaded",
 
-  "loginTitle": "Welcome back",
+  "loginTitle": "Log in",
+  "loginSubtitlePhone": "Enter your phone number to sign in to your account",
+  "loginSubtitleEmail": "Enter your email to sign in to your account",
+  "loginTabPhone": "Via phone",
+  "loginTabEmail": "Via email",
+  "loginOr": "or",
+  "loginTelegram": "Sign in via Telegram",
+  "loginTelegramUnavailable": "Telegram sign-in isn't available yet",
+  "loginLegalLead": "By continuing you agree to the ",
+  "loginLegalOffer": "public offer",
+  "loginLegalTail": " terms.",
   "loginForgotPassword": "Forgot password?",
   "loginSubmit": "Log in",
   "registerTitle": "Create account",
@@ -280,19 +288,13 @@
   "validationPasswordsMatch": "Passwords do not match",
   "validationFirstName": "Enter your first name",
 
-  "otpTitle": "Verify Your\nPhone Number",
   "otpSubtitle": "We sent a 6-digit code to {phone}",
   "@otpSubtitle": {
     "placeholders": { "phone": { "type": "String" } }
   },
-  "otpEmailTitle": "Verify Your\nEmail Address",
   "otpEmailSubtitle": "We emailed a 6-digit code to {email}",
   "@otpEmailSubtitle": {
     "placeholders": { "email": { "type": "String" } }
-  },
-  "otpResendIn": "Resend code in {seconds}s",
-  "@otpResendIn": {
-    "placeholders": { "seconds": { "type": "int" } }
   },
   "otpResend": "Resend code",
   "otpPasswordUpdated": "Password updated successfully",
@@ -457,5 +459,9 @@
   "roadmapTopicCulturalReferences": "Cultural References",
   "roadmapTopicRhetoric": "Advanced Rhetoric",
   "roadmapTopicCreativeWriting": "Creative Writing",
-  "roadmapTopicPresentations": "Expert Presentations"
+  "roadmapTopicPresentations": "Expert Presentations",
+  "updateTitle": "A new version is available",
+  "updateBody": "A new version of the app is ready. Update now to enjoy the latest features.",
+  "updateAction": "Update",
+  "otpEnterCode": "Enter the code"
 }

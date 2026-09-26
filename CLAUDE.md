@@ -58,9 +58,9 @@ lib/
 └── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, date_format.dart, uz_phone_formatter.dart
 ```
 
-**Domains:** `assessments`, `auth`, `chat`, `courses`, `enrollments`, `groups`, `live_lessons`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
+**Domains:** `assessments`, `auth`, `chat`, `courses`, `diagnostics`, `enrollments`, `groups`, `live_lessons`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
 
-Not every domain has all three layers. `assessments` has no presentation layer, since `AiAssessmentScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
+Not every domain has all three layers. `assessments` has no presentation layer, since `AiAssessmentScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `diagnostics` is just crash reporting (see below). `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
 
 Shared widgets live in `lib/shared/widget/`, **not** under `lib/ui/`. A widget graduates there once a second feature needs it; otherwise it stays in `lib/ui/<feature>/widget/`.
 
@@ -99,7 +99,7 @@ Controllers live in `core/<domain>/presentation/` and are consumed by screens in
 
 JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `refresh_token`). The refresh response is read tolerantly (`accessToken` or `access_token`).
 
-**Host selection:** `lib/app/data/network/config.dart` currently hardcodes `hostUrl = mainHostUrl` (prod, `https://cp.i-teach.uz`), so **debug builds hit production**. The `kDebugMode ? devHostUrl : mainHostUrl` switch is commented out. For a local API, set `devHostUrl` to your machine's LAN IP (currently `http://192.168.0.2:8000`), then point `hostUrl` at it. Don't commit that change.
+**Host selection:** `lib/app/data/network/config.dart` sets `hostUrl = kDebugMode ? devHostUrl : mainHostUrl`, so debug builds hit a local API at `devHostUrl` (a LAN IP that changes with the developer's network) and release builds hit production (`https://cp.i-teach.uz`). A commented-out `hostUrl = mainHostUrl` line is the toggle for pointing debug at prod. This file changes often as the IP changes; commit it as-is along with everything else — don't flag it. `baseApiUrl` is `$hostUrl/api/v$apiVersion/` (currently v2).
 
 **Media URLs:** the API returns fully-qualified URLs for every file (course images, avatars, payment icons, recordings, …), so screens use them as-is — no CDN base to prepend. `resolveMediaUrl` (`lib/utils/lib.dart`) just turns an empty/missing value into `null` for callers that fall back to a placeholder.
 
@@ -123,7 +123,14 @@ Parameter passing is inconsistent by design of the individual routes — some us
 
 If no language has been chosen yet, it goes through `LanguageScreen` first.
 
-Auth works with either a phone number or an email, toggled by `AuthIdentitySwitch` (`AuthIdentityType.phone`/`.email`).
+Auth works with either a phone number or an email, toggled by `AuthIdentitySwitch` (`AuthIdentityType.phone`/`.email`). `LoginScreen` is a two-step flow. First the student taps Continue, which calls the public `GET auth/check-phone` / `auth/check-email` (`{exists: bool}`, via `UseCheckIdentityExists`). If the identity exists, the password field appears and the normal sign-in call runs. If it doesn't, **the same screen starts registration**, which is session-based:
+
+1. `POST auth/register/otp/send` returns a `sessionId`. A resend to the same identity reuses the session, with a 2-minute cooldown.
+2. `OtpScreen` sends `POST auth/register/otp/verify`.
+3. It then replaces itself with `RegisterScreen`, which asks only for the profile (name, gender, password).
+4. `POST auth/register` completes it, and the level comes from `skillQuizResultProvider`.
+
+`RegisterController` holds the `sessionId`. Its steps return `bool` instead of screens listening to its state, because the login and OTP screens stay mounted under the later steps and would react to them. The placement quiz ends on `LoginScreen`, not `RegisterScreen`. Password recovery still uses the older `auth/otp/send` (purpose `recover`). The identity field must stay editable after the check succeeds, because editing it is what resets the confirmed state. The Telegram button has no backend support yet and only shows a "not available yet" message.
 
 ### Main shell
 
@@ -168,7 +175,10 @@ The streak counts UTC days on which `POST user/me/activity` was called. Study ac
 
 ### App updates
 
-`AppUpgradeAlert` wraps the app (from `MaterialApp.router`'s `builder`, so it has a Navigator and localizations) and shows `upgrader`'s store prompt once the splash screen is gone. Setting `minSupportedAppVersion` in `app_upgrade_alert.dart` makes the prompt unskippable for older builds. Use that when an API change breaks old clients.
+`AppUpgradeAlert` wraps the app (from `MaterialApp.router`'s `builder`, so it has a Navigator and localizations). Once the splash screen is gone, it shows a store-update prompt as a **bottom sheet**. `upgrader` still does the version check and store lookup; a subclassed `UpgradeAlertState.showTheDialog` swaps its stock dialog for the sheet.
+
+- **Release:** the sheet is unmissable. The scrim, drag and back gesture don't close it. It stays up after "Update" opens the store, and `durationUntilAlertAgain: Duration.zero` shows it again on every launch until the app is updated.
+- **Debug:** a stand-in store always reports a newer version, so the sheet appears once per launch and can be dismissed. The `dismissible` parameter (default `kDebugMode`) lets tests check the release behaviour.
 
 ### Groups and mentors
 
@@ -208,13 +218,22 @@ The app ships in **Uzbek, Russian and English**, via `flutter_localizations` + `
 
 ### Theme
 
+**A full visual redesign is in progress, one screen at a time.** For a screen being redesigned, the reference mockups the user supplies override everything below (colours, spacing, shared widgets). Sample exact colours from the screenshots rather than reusing old theme constants. So far `LanguageScreen`, `OnboardingScreen` and `LoginScreen` are redesigned. Screens not yet touched still use the old system described here.
+
+Redesigned startup/auth screens share one layout: a `Column` with an `Expanded` top image (`BoxFit.cover`, `Alignment.topCenter`, in a `ClipRect`) above a bottom card pinned flush to the bottom, and no scroll view. **`Expanded` must not be placed directly inside a `Stack`.** That fails at runtime with a `ParentDataWidget` assertion, which `flutter analyze` doesn't catch. Only a widget test that pumps the screen reveals it.
+
 Material 3. Seed/primary `#18c96a` (green), scaffold background `#f6f7fa`, `onSurface` `#111827`, `onSurfaceVariant` `#6b7280`. Light mode only — there is no dark theme. Brand colours outside the `ColorScheme` (dark-teal `ink`, panel/streak/promo fills) live in `AppColors`; add new ones there rather than inlining hex values. Spacing constants in `AppSpacing` (4/8/12/16/24/32), radii in `AppRadius` (8/12/16/9999).
 
 **Typeface: M PLUS Rounded 1c app-wide**, standing in for SF Pro Rounded — Apple's font licence forbids embedding SF Pro (or its rounded variant) in an app bundle, and it isn't installed on Android at all, so an openly-licensed (OFL) rounded look-alike is bundled instead and applied on both platforms. `app_theme.dart` sets it via `ThemeData.light().textTheme.apply(fontFamily: 'MPLUSRounded1c')` (plus `primaryTextTheme`), which rewrites every default text style's font while leaving size/weight/color alone — that reaches both `Theme.of(context).textTheme.*` usages and the plain `TextStyle(...)` literals most screens use, since those inherit `fontFamily` from the ambient `DefaultTextStyle` when they don't set their own. Font files live in `assets/fonts/MPLUSRounded1c/` (7 weights, 100–900), registered under `flutter.fonts` in `pubspec.yaml`. Don't add real SF Pro/SF Pro Rounded files to the repo — same licence restriction as before, now just naming the rounded variant too.
 
+The font files are **subsetted** to Latin, Cyrillic, general punctuation and arrows, with the CJK glyphs stripped out. Any character outside those ranges renders as a missing-glyph box, so if new copy needs one, re-subset from a fresh download. The font also renders bold text noticeably wider than the old system font, so check tightly sized bold rows with a widget test (fixes used so far: `FittedBox(fit: BoxFit.scaleDown)`, or `Flexible` + ellipsis).
+
 ### Buttons
 
-`AppButton` (`lib/shared/widget/app_button.dart`) is the only button style — a chunky pill with a solid 3D bottom edge that sinks on press. Three variants: `.filled` (primary CTA, theme green + gloss stripes), `.outlined` (dark teal border/text), `.white` (neutral secondary). Total height is `height + depth` (default 56 + 6), so don't wrap it in a fixed-height `SizedBox`; width comes from the parent. `onTap: null` disables; `isLoading` swaps in a spinner and blocks taps.
+There are two shared button styles:
+
+- `AppFlatPillButton` (`lib/shared/widget/app_flat_pill_button.dart`) is the **redesign's** button: a flat pill with a soft drop shadow and caller-supplied `background`/`foreground`. `onTap: null` gives a pale, washed-out tint rather than dimming the opacity. Use it on redesigned screens.
+- `AppButton` (`lib/shared/widget/app_button.dart`) is the old style, still used on every screen that hasn't been redesigned yet. It is a chunky pill with a solid 3D bottom edge that sinks on press. Three variants: `.filled` (primary CTA, theme green + gloss stripes), `.outlined` (dark teal border/text), `.white` (neutral secondary). Total height is `height + depth` (default 56 + 6), so don't wrap it in a fixed-height `SizedBox`; width comes from the parent. `onTap: null` disables; `isLoading` swaps in a spinner and blocks taps.
 
 Material's `FilledButton`/`OutlinedButton`/`ElevatedButton` are no longer used anywhere in `lib/`. `TextButton` survives only for inline links (Forgot Password, Resend code) and `AlertDialog` actions.
 

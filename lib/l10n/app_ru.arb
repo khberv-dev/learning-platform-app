@@ -10,8 +10,6 @@
   "commonResume": "Далее",
   "commonCancel": "Отмена",
   "commonRetry": "Повторить",
-  "authUsePhone": "Телефон",
-  "authUseEmail": "Email",
   "fieldEmail": "Электронная почта",
   "validationEmail": "Введите корректный email",
   "commonYes": "Да",
@@ -172,7 +170,17 @@
   "pdfLoadFailedHint": "Файл повреждён или связь прервалась.",
   "imageLoadFailed": "Не удалось загрузить изображение",
 
-  "loginTitle": "С возвращением",
+  "loginTitle": "Вход",
+  "loginSubtitlePhone": "Введите номер телефона, чтобы войти в аккаунт",
+  "loginSubtitleEmail": "Введите email, чтобы войти в аккаунт",
+  "loginTabPhone": "По телефону",
+  "loginTabEmail": "По email",
+  "loginOr": "или",
+  "loginTelegram": "Войти через Telegram",
+  "loginTelegramUnavailable": "Вход через Telegram пока недоступен",
+  "loginLegalLead": "Продолжая, вы соглашаетесь с условиями ",
+  "loginLegalOffer": "публичной оферты",
+  "loginLegalTail": ".",
   "loginForgotPassword": "Забыли пароль?",
   "loginSubmit": "Войти",
   "registerTitle": "Создать аккаунт",
@@ -201,11 +209,8 @@
   "validationPasswordsMatch": "Пароли не совпадают",
   "validationFirstName": "Введите имя",
 
-  "otpTitle": "Подтвердите\nномер телефона",
   "otpSubtitle": "Мы отправили 6-значный код на {phone}",
-  "otpEmailTitle": "Подтвердите адрес\nэлектронной почты",
   "otpEmailSubtitle": "Мы отправили 6-значный код на email {email}",
-  "otpResendIn": "Отправить код повторно через {seconds} с",
   "otpResend": "Отправить код ещё раз",
   "otpPasswordUpdated": "Пароль успешно обновлён",
 
@@ -351,5 +356,9 @@
   "roadmapTopicCulturalReferences": "Культурные отсылки",
   "roadmapTopicRhetoric": "Продвинутая риторика",
   "roadmapTopicCreativeWriting": "Творческое письмо",
-  "roadmapTopicPresentations": "Экспертные презентации"
+  "roadmapTopicPresentations": "Экспертные презентации",
+  "updateTitle": "Доступна новая версия",
+  "updateBody": "Новая версия приложения готова. Обновитесь сейчас и пользуйтесь новыми возможностями.",
+  "updateAction": "Обновить",
+  "otpEnterCode": "Введите код"
 }

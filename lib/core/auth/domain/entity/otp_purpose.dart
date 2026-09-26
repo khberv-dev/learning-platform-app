@@ -1,11 +1,11 @@
-/// Why a code is being asked for, matching the API's `OtpPurpose`.
+/// Why a code is being asked for, matching the API's `OtpPurpose` on
+/// `auth/otp/send`.
 ///
-/// One endpoint serves both flows, but it checks opposite things: a
-/// [registration] code is refused for a number that already has an account,
-/// while [recover] is only ever for a number that does. Send the wrong one and
-/// the flow it belongs to cannot get a code at all.
+/// Only password recovery still uses that endpoint — registration has its own
+/// session-based `auth/register/otp/*` flow — but the API still requires the
+/// purpose, and checks it: a [recover] code is only ever sent to a number
+/// that has an account.
 enum OtpPurpose {
-  registration('registration'),
   recover('recover');
 
   /// Wire value. The API's enum is lower-case, which Dart's names happen to

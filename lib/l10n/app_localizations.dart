@@ -184,18 +184,6 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get commonSomethingWentWrong;
 
-  /// No description provided for @authUsePhone.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone'**
-  String get authUsePhone;
-
-  /// No description provided for @authUseEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get authUseEmail;
-
   /// No description provided for @fieldEmail.
   ///
   /// In en, this message translates to:
@@ -1021,8 +1009,68 @@ abstract class AppLocalizations {
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome back'**
+  /// **'Log in'**
   String get loginTitle;
+
+  /// No description provided for @loginSubtitlePhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number to sign in to your account'**
+  String get loginSubtitlePhone;
+
+  /// No description provided for @loginSubtitleEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to sign in to your account'**
+  String get loginSubtitleEmail;
+
+  /// No description provided for @loginTabPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Via phone'**
+  String get loginTabPhone;
+
+  /// No description provided for @loginTabEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Via email'**
+  String get loginTabEmail;
+
+  /// No description provided for @loginOr.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get loginOr;
+
+  /// No description provided for @loginTelegram.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in via Telegram'**
+  String get loginTelegram;
+
+  /// No description provided for @loginTelegramUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Telegram sign-in isn\'t available yet'**
+  String get loginTelegramUnavailable;
+
+  /// No description provided for @loginLegalLead.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing you agree to the '**
+  String get loginLegalLead;
+
+  /// No description provided for @loginLegalOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'public offer'**
+  String get loginLegalOffer;
+
+  /// No description provided for @loginLegalTail.
+  ///
+  /// In en, this message translates to:
+  /// **' terms.'**
+  String get loginLegalTail;
 
   /// No description provided for @loginForgotPassword.
   ///
@@ -1180,35 +1228,17 @@ abstract class AppLocalizations {
   /// **'Enter your first name'**
   String get validationFirstName;
 
-  /// No description provided for @otpTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Verify Your\nPhone Number'**
-  String get otpTitle;
-
   /// No description provided for @otpSubtitle.
   ///
   /// In en, this message translates to:
   /// **'We sent a 6-digit code to {phone}'**
   String otpSubtitle(String phone);
 
-  /// No description provided for @otpEmailTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Verify Your\nEmail Address'**
-  String get otpEmailTitle;
-
   /// No description provided for @otpEmailSubtitle.
   ///
   /// In en, this message translates to:
   /// **'We emailed a 6-digit code to {email}'**
   String otpEmailSubtitle(String email);
-
-  /// No description provided for @otpResendIn.
-  ///
-  /// In en, this message translates to:
-  /// **'Resend code in {seconds}s'**
-  String otpResendIn(int seconds);
 
   /// No description provided for @otpResend.
   ///
@@ -2031,6 +2061,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expert Presentations'**
   String get roadmapTopicPresentations;
+
+  /// No description provided for @updateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version is available'**
+  String get updateTitle;
+
+  /// No description provided for @updateBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version of the app is ready. Update now to enjoy the latest features.'**
+  String get updateBody;
+
+  /// No description provided for @updateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateAction;
+
+  /// No description provided for @otpEnterCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code'**
+  String get otpEnterCode;
 }
 
 class _AppLocalizationsDelegate

@@ -7,7 +7,7 @@ import 'package:student/core/startup/presentation/skill_quiz_result_controller.d
 import 'package:student/core/user/domain/entity/student_level.dart';
 import 'package:student/shared/widget/app_option_chip.dart';
 import 'package:student/shared/widget/close_icon_button.dart';
-import 'package:student/ui/auth/register_screen.dart';
+import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
@@ -46,10 +46,7 @@ Future<ProviderContainer> _pumpLevelCheck(WidgetTester tester) async {
               path: SkillLevelQuizScreen.path,
               builder: (_, _) => stub('quiz'),
             ),
-            GoRoute(
-              path: RegisterScreen.path,
-              builder: (_, _) => stub('register'),
-            ),
+            GoRoute(path: LoginScreen.path, builder: (_, _) => stub('login')),
             GoRoute(path: SurveyScreen.path, builder: (_, _) => stub('survey')),
             GoRoute(
               path: OnboardingScreen.path,
@@ -82,7 +79,7 @@ void main() {
 
     expect(find.text(_yes), findsOneWidget);
     expect(find.text('quiz'), findsNothing);
-    expect(find.text('register'), findsNothing);
+    expect(find.text('login'), findsNothing);
   });
 
   testWidgets('a student with some English takes the placement quiz', (
@@ -102,7 +99,7 @@ void main() {
 
     await _answer(tester, _no);
 
-    expect(find.text('register'), findsOneWidget);
+    expect(find.text('login'), findsOneWidget);
     expect(find.text('quiz'), findsNothing);
     expect(container.read(skillQuizResultProvider), StudentLevel.a1);
   });

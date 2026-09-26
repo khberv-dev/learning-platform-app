@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/l10n/app_localizations.dart';
+import 'package:student/shared/widget/app_flat_pill_button.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
 
@@ -15,7 +15,9 @@ const _brandGreen = Color(0xFF78C93C);
 /// fresh placement-quiz start or straight to login.
 ///
 /// Same pattern as [LanguageScreen] — the illustration fills all the space
-/// above a fixed-height bottom card, with no scrolling anywhere.
+/// above a fixed-height bottom card, with no scrolling anywhere. Expanded
+/// only works as a direct Column/Row child, not inside a Stack, so this is a
+/// Column, not a Stack+Align.
 class OnboardingScreen extends StatelessWidget {
   static const path = '/onboarding';
 
@@ -37,8 +39,8 @@ class OnboardingScreen extends StatelessWidget {
           child: Stack(
             children: [
               // Fills all the space the bottom card leaves it, cropping
-              // rather than scrolling — anchored top so an overflow trims off
-              // the bottom of the illustration, never the top.
+              // rather than scrolling — anchored top so an overflow trims
+              // off the bottom of the illustration, never the top.
               Expanded(
                 child: ClipRect(
                   child: Image.asset(
@@ -73,14 +75,14 @@ class OnboardingScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xl),
-                      _FlatPillButton(
+                      AppFlatPillButton(
                         label: l10n.onboardingFreshStart,
                         background: _brandGreen,
                         foreground: Colors.white,
                         onTap: () => context.push(SurveyScreen.path),
                       ),
                       const SizedBox(height: AppSpacing.md),
-                      _FlatPillButton(
+                      AppFlatPillButton(
                         label: l10n.onboardingResume,
                         background: Colors.white,
                         foreground: const Color(0xFF111827),
@@ -91,65 +93,6 @@ class OnboardingScreen extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// The redesign's button: a flat pill with a soft drop shadow, no gloss or
-/// 3D press-sink like the old shared `AppButton`. Screen-local for now — see
-/// `AppButton`'s doc comment for why the old style stays put elsewhere.
-class _FlatPillButton extends StatelessWidget {
-  final String label;
-  final Color background;
-  final Color foreground;
-  final VoidCallback onTap;
-
-  const _FlatPillButton({
-    required this.label,
-    required this.background,
-    required this.foreground,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(AppRadius.round);
-
-    return SizedBox(
-      width: double.infinity,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: radius,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Material(
-          color: background,
-          borderRadius: radius,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            child: SizedBox(
-              height: 56,
-              child: Center(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: foreground,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
           ),
         ),
       ),

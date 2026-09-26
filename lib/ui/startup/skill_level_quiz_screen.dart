@@ -12,7 +12,7 @@ import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_option_chip.dart';
 import 'package:student/shared/widget/app_progress_header.dart';
-import 'package:student/ui/auth/register_screen.dart';
+import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/startup/level_check_screen.dart';
 
 class SkillLevelQuizScreen extends ConsumerStatefulWidget {
@@ -81,7 +81,7 @@ class _SkillLevelQuizScreenState extends ConsumerState<SkillLevelQuizScreen> {
               total: questions.length,
             ),
           );
-      context.go(RegisterScreen.path);
+      context.go(LoginScreen.path);
     }
 
     return Scaffold(

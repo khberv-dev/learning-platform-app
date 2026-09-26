@@ -11,7 +11,7 @@ import 'package:student/shared/widget/app_button.dart';
 import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_option_chip.dart';
 import 'package:student/shared/widget/app_progress_header.dart';
-import 'package:student/ui/auth/register_screen.dart';
+import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/startup/onboarding_screen.dart';
 import 'package:student/ui/startup/skill_level_quiz_screen.dart';
 import 'package:student/ui/startup/survey_screen.dart';
@@ -56,7 +56,7 @@ class _LevelCheckScreenState extends ConsumerState<LevelCheckScreen> {
     // earlier run through the quiz can't follow the student to sign-up after
     // they have said they are starting from scratch.
     ref.read(skillQuizResultProvider.notifier).setLevel(StudentLevel.a1);
-    context.go(RegisterScreen.path);
+    context.go(LoginScreen.path);
   }
 
   @override
