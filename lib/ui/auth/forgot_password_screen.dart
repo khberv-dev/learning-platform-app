@@ -7,7 +7,6 @@ import 'package:student/core/auth/presentation/recover_password_controller.dart'
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_bottom_action_bar.dart';
 import 'package:student/shared/widget/app_button.dart';
-import 'package:student/shared/widget/app_gradient_background.dart';
 import 'package:student/shared/widget/app_text_field.dart';
 import 'package:student/shared/widget/back_icon_button.dart';
 import 'package:student/ui/auth/otp_screen.dart';
@@ -54,100 +53,100 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      body: AppGradientBackground(
-        child: Column(
-          children: [
-            Expanded(
-              child: SafeArea(
-                bottom: false,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.xl,
-                    AppSpacing.md,
-                    AppSpacing.xl,
-                    AppSpacing.xl,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const BackIconButton(),
-                        const SizedBox(height: AppSpacing.xl),
-                        Text(
-                          l10n.forgotTitle,
-                          style: const TextStyle(
-                            color: AppColors.deepGreen,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                          ),
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Expanded(
+            child: SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.xl,
+                  AppSpacing.md,
+                  AppSpacing.xl,
+                  AppSpacing.xl,
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const BackIconButton(),
+                      const SizedBox(height: AppSpacing.xl),
+                      Text(
+                        l10n.forgotTitle,
+                        style: const TextStyle(
+                          color: AppColors.deepGreen,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          l10n.forgotSubtitle,
-                          style: const TextStyle(
-                            color: AppColors.ink,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        l10n.forgotSubtitle,
+                        style: const TextStyle(
+                          color: AppColors.ink,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(height: AppSpacing.xl),
-                        AppTextField(
-                          label: l10n.fieldPhone,
-                          controller: _phoneController,
-                          prefixText: '+998 ',
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [UzPhoneFormatter()],
-                          validator: (value) {
-                            final digits = (value ?? '').replaceAll(' ', '');
-                            if (digits.length != 9) {
-                              return l10n.validationPhone;
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        AppTextField(
-                          label: l10n.fieldNewPassword,
-                          controller: _newPasswordController,
-                          obscureText: true,
-                          validator: (value) {
-                            if ((value ?? '').length < 8) {
-                              return l10n.validationPassword;
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        AppTextField(
-                          label: l10n.fieldConfirmPassword,
-                          controller: _confirmPasswordController,
-                          obscureText: true,
-                          validator: (value) {
-                            if (value != _newPasswordController.text) {
-                              return l10n.validationPasswordsMatch;
-                            }
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      AppTextField(
+                        label: l10n.fieldPhone,
+                        controller: _phoneController,
+                        prefixText: '+998',
+                        hintText: '00 000 00 00',
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [UzPhoneFormatter()],
+                        validator: (value) {
+                          final digits = (value ?? '').replaceAll(' ', '');
+                          if (digits.length != 9) {
+                            return l10n.validationPhone;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      AppTextField(
+                        label: l10n.fieldNewPassword,
+                        controller: _newPasswordController,
+                        obscureText: true,
+                        validator: (value) {
+                          if ((value ?? '').length < 8) {
+                            return l10n.validationPassword;
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      AppTextField(
+                        label: l10n.fieldConfirmPassword,
+                        controller: _confirmPasswordController,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value != _newPasswordController.text) {
+                            return l10n.validationPasswordsMatch;
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            AppBottomActionBar(
-              children: [
-                AppButton.filled(
-                  label: l10n.forgotSubmit,
-                  isLoading: isLoading,
-                  onTap: _submit,
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          AppBottomActionBar(
+            children: [
+              AppButton.filled(
+                label: l10n.forgotSubmit,
+                isLoading: isLoading,
+                onTap: _submit,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

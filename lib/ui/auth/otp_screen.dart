@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/auth/domain/entity/otp_purpose.dart';
@@ -14,6 +13,7 @@ import 'package:student/shared/widget/app_flat_pill_button.dart';
 import 'package:student/shared/widget/otp_field.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/register_screen.dart';
+import 'package:student/ui/auth/widget/auth_back_button.dart';
 import 'package:student/utils/messenger.dart';
 
 enum OtpMode { register, recoverPassword }
@@ -210,7 +210,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   children: [
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: _BackButton(onTap: context.pop),
+                      child: AuthBackButton(onTap: context.pop),
                     ),
                     Image.asset('assets/images/ic_key.png', width: 40),
                     const SizedBox(height: AppSpacing.md),
@@ -321,35 +321,3 @@ const _title = Color(0xFF15141A);
 const _destinationInk = Color(0xFF343539);
 const _muted = Color(0xFF989DB5);
 const _timerBlue = Color(0xFF53ADF0);
-
-/// The redesign's back button: a pale rounded square rather than the older
-/// white circle of `BackIconButton`.
-class _BackButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _BackButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFFF4F5FB),
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: SizedBox(
-          width: 44,
-          height: 44,
-          child: Center(
-            child: SvgPicture.asset(
-              'assets/icons/arrow_left.svg',
-              width: 20,
-              height: 20,
-              colorFilter: const ColorFilter.mode(_ink, BlendMode.srcIn),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

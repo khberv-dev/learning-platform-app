@@ -569,28 +569,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginForgotPassword => 'Forgot password?';
 
   @override
+  String get loginPasswordHint => 'Enter your password';
+
+  @override
   String get loginSubmit => 'Log in';
 
   @override
-  String get registerTitle => 'Create account';
-
-  @override
-  String get registerSubmit => 'Create account';
-
-  @override
-  String get registerLegalLead => 'By creating an account you agree to our\n';
-
-  @override
-  String get registerLegalOffer => 'Public Offer';
-
-  @override
-  String get registerLegalAnd => ' and ';
-
-  @override
-  String get registerLegalPrivacy => 'Privacy Policy';
-
-  @override
-  String get registerLegalTail => '';
+  String get registerSubmit => 'Sign up';
 
   @override
   String get registerLegalOpenFailed => 'Couldn\'t open the document';
@@ -617,15 +602,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldConfirmPassword => 'Confirm password';
 
   @override
-  String get fieldFirstName => 'First name';
-
-  @override
-  String get fieldLastName => 'Last name';
-
-  @override
-  String get fieldGender => 'Gender';
-
-  @override
   String get genderMale => 'Male';
 
   @override
@@ -639,9 +615,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get validationPasswordsMatch => 'Passwords do not match';
-
-  @override
-  String get validationFirstName => 'Enter your first name';
 
   @override
   String otpSubtitle(String phone) {
@@ -1105,4 +1078,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otpEnterCode => 'Enter the code';
+
+  @override
+  String get registerPersonalInfo => 'Personal details';
+
+  @override
+  String get registerChangePhoto => 'Change photo';
+
+  @override
+  String get registerFirstName => 'First name';
+
+  @override
+  String get registerFirstNameHint => 'Enter your first name';
+
+  @override
+  String get registerLastName => 'Last name';
+
+  @override
+  String get registerLastNameHint => 'Enter your last name';
+
+  @override
+  String get registerPasswordHint => 'At least 8 characters';
+
+  @override
+  String get registerGender => 'Your gender';
 }

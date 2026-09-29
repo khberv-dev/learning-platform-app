@@ -574,28 +574,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loginForgotPassword => 'Забыли пароль?';
 
   @override
+  String get loginPasswordHint => 'Введите пароль';
+
+  @override
   String get loginSubmit => 'Войти';
 
   @override
-  String get registerTitle => 'Создать аккаунт';
-
-  @override
-  String get registerSubmit => 'Создать аккаунт';
-
-  @override
-  String get registerLegalLead => 'Создавая аккаунт, вы принимаете\n';
-
-  @override
-  String get registerLegalOffer => 'Публичную оферту';
-
-  @override
-  String get registerLegalAnd => ' и ';
-
-  @override
-  String get registerLegalPrivacy => 'Политику конфиденциальности';
-
-  @override
-  String get registerLegalTail => '';
+  String get registerSubmit => 'Зарегистрироваться';
 
   @override
   String get registerLegalOpenFailed => 'Не удалось открыть документ';
@@ -622,15 +607,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get fieldConfirmPassword => 'Повторите пароль';
 
   @override
-  String get fieldFirstName => 'Имя';
-
-  @override
-  String get fieldLastName => 'Фамилия';
-
-  @override
-  String get fieldGender => 'Пол';
-
-  @override
   String get genderMale => 'Мужской';
 
   @override
@@ -644,9 +620,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get validationPasswordsMatch => 'Пароли не совпадают';
-
-  @override
-  String get validationFirstName => 'Введите имя';
 
   @override
   String otpSubtitle(String phone) {
@@ -1115,4 +1088,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get otpEnterCode => 'Введите код';
+
+  @override
+  String get registerPersonalInfo => 'Личные данные';
+
+  @override
+  String get registerChangePhoto => 'Изменить фото';
+
+  @override
+  String get registerFirstName => 'Имя';
+
+  @override
+  String get registerFirstNameHint => 'Введите имя';
+
+  @override
+  String get registerLastName => 'Фамилия';
+
+  @override
+  String get registerLastNameHint => 'Введите фамилию';
+
+  @override
+  String get registerPasswordHint => 'Не менее 8 символов';
+
+  @override
+  String get registerGender => 'Ваш пол';
 }

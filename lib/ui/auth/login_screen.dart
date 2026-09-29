@@ -225,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         : _identityComplete && !_isChecking;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F1F3),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -292,17 +292,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     if (_mode == _IdentityMode.phone)
-                      _PhoneInput(
+                      AppTextField(
+                        key: const ValueKey('login-phone-digits'),
+                        label: l10n.fieldPhone,
                         controller: _phoneController,
+                        prefixText: '+998',
+                        hintText: '00 000 00 00',
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [UzPhoneFormatter()],
                         // Stays editable even once confirmed — correcting a
                         // typo here is what resets the confirmation, via
                         // _onIdentityEdited. Only locked mid-request.
                         enabled: !_isChecking,
                       )
                     else
-                      _EmailInput(
+                      AppTextField(
+                        key: const ValueKey('login-email'),
+                        label: l10n.fieldEmail,
                         controller: _emailController,
-                        semanticsLabel: l10n.fieldEmail,
+                        hintText: 'example@mail.com',
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         enabled: !_isChecking,
                       ),
                     if (_identityConfirmed) ...[
@@ -310,6 +323,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       AppTextField(
                         label: l10n.fieldPassword,
                         controller: _passwordController,
+                        hintText: l10n.loginPasswordHint,
                         obscureText: true,
                       ),
                       Align(
@@ -317,7 +331,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         child: TextButton(
                           onPressed: () =>
                               context.push(ForgotPasswordScreen.path),
-                          style: TextButton.styleFrom(foregroundColor: _muted),
+                          style: TextButton.styleFrom(
+                            foregroundColor: _brandGreen,
+                            textStyle: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                           child: Text(l10n.loginForgotPassword),
                         ),
                       ),
@@ -487,133 +507,6 @@ class _ModeTab extends StatelessWidget {
 }
 
 // ── Big identity inputs ─────────────────────────────────────────────────────
-
-const _bigInputStyle = TextStyle(fontSize: 32, fontWeight: FontWeight.w800);
-
-/// A plain `TextField` look with the theme's fill and outline stripped off —
-/// just the typed text (or hint), a cursor and selection.
-InputDecoration _bareDecoration(String hint, Color hintColor, double size) {
-  return InputDecoration(
-    hintText: hint,
-    hintStyle: _bigInputStyle.copyWith(fontSize: size, color: hintColor),
-    filled: false,
-    border: InputBorder.none,
-    enabledBorder: InputBorder.none,
-    focusedBorder: InputBorder.none,
-    disabledBorder: InputBorder.none,
-    errorBorder: InputBorder.none,
-    focusedErrorBorder: InputBorder.none,
-    isDense: true,
-    contentPadding: EdgeInsets.zero,
-  );
-}
-
-/// The largest font size, up to [_bigInputStyle]'s, at which [sample] fits in
-/// [maxWidth]. M PLUS Rounded 1c is wide enough in bold that the full phone
-/// number or the email hint can outgrow a narrow screen at 32.
-double _fittedFontSize(BuildContext context, String sample, double maxWidth) {
-  final painter = TextPainter(
-    text: TextSpan(
-      text: sample,
-      style: DefaultTextStyle.of(context).style.merge(_bigInputStyle),
-    ),
-    maxLines: 1,
-    textDirection: TextDirection.ltr,
-  )..layout();
-  final natural = painter.width;
-  painter.dispose();
-  // A few pixels of slack for the cursor.
-  final available = maxWidth - 6;
-  final size = _bigInputStyle.fontSize!;
-  return natural <= available ? size : size * available / natural;
-}
-
-/// `+998` and a real, editable field for the 9 digits, grouped `XX XXX XX XX`
-/// by [UzPhoneFormatter] as they're typed.
-class _PhoneInput extends StatelessWidget {
-  final TextEditingController controller;
-  final bool enabled;
-
-  const _PhoneInput({required this.controller, required this.enabled});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = _fittedFontSize(
-          context,
-          '+998 00 000 00 00',
-          constraints.maxWidth,
-        );
-        final style = _bigInputStyle.copyWith(fontSize: size, color: _ink);
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text('+998 ', style: style),
-            Expanded(
-              child: TextField(
-                key: const ValueKey('login-phone-digits'),
-                controller: controller,
-                enabled: enabled,
-                keyboardType: TextInputType.number,
-                inputFormatters: [UzPhoneFormatter()],
-                cursorColor: _ink,
-                style: style,
-                decoration: _bareDecoration(
-                  '00 000 00 00',
-                  const Color(0xFFD1D5DB),
-                  size,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-}
-
-/// A real, editable email field in the same big type, centred, with a pale
-/// `example@mail.com` hint.
-class _EmailInput extends StatelessWidget {
-  final TextEditingController controller;
-  final String semanticsLabel;
-  final bool enabled;
-
-  const _EmailInput({
-    required this.controller,
-    required this.semanticsLabel,
-    required this.enabled,
-  });
-
-  static const _hint = 'example@mail.com';
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = _fittedFontSize(context, _hint, constraints.maxWidth);
-        return Semantics(
-          label: semanticsLabel,
-          child: TextField(
-            key: const ValueKey('login-email'),
-            controller: controller,
-            enabled: enabled,
-            keyboardType: TextInputType.emailAddress,
-            autocorrect: false,
-            enableSuggestions: false,
-            textAlign: TextAlign.center,
-            inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
-            cursorColor: _ink,
-            style: _bigInputStyle.copyWith(fontSize: size, color: _ink),
-            decoration: _bareDecoration(_hint, const Color(0xFFA5A6B9), size),
-          ),
-        );
-      },
-    );
-  }
-}
 
 // ── "or" divider ─────────────────────────────────────────────────────────────
 

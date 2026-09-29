@@ -30,13 +30,15 @@ abstract class IAuthRepository {
   /// [level] is what the placement quiz scored. Omitted when it wasn't taken,
   /// leaving the API to apply its own default. [lastName] and [gender] are
   /// optional too — the API defaults an omitted [gender] to male.
+  /// [avatarPath] is a local image file, uploaded with the same request.
   Future<AuthEntity> register({
     required String sessionId,
     required String firstName,
     String? lastName,
     required String password,
     StudentLevel? level,
-    Gender? gender,
+    required Gender gender,
+    String? avatarPath,
   });
 
   /// Sends a password-recovery code ([OtpPurpose.recover]). Registration has

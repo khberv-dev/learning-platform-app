@@ -82,7 +82,8 @@ class _FakeAuthRepository implements IAuthRepository {
     String? lastName,
     required String password,
     StudentLevel? level,
-    Gender? gender,
+    required Gender gender,
+    String? avatarPath,
   }) async {
     registrations.add((
       sessionId: sessionId,

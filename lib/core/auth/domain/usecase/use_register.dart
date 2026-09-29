@@ -28,7 +28,8 @@ class UseRegister {
     String? lastName,
     required String password,
     StudentLevel? level,
-    Gender? gender,
+    required Gender gender,
+    String? avatarPath,
   }) => _repository.register(
     sessionId: sessionId,
     firstName: firstName,
@@ -36,5 +37,6 @@ class UseRegister {
     password: password,
     level: level,
     gender: gender,
+    avatarPath: avatarPath,
   );
 }

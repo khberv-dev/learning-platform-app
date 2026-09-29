@@ -97,22 +97,24 @@ class AuthRepository implements IAuthRepository, IEmailAuthRepository {
     String? lastName,
     required String password,
     StudentLevel? level,
-    Gender? gender,
+    required Gender gender,
+    String? avatarPath,
   }) async {
-    final response = await _dio.post(
-      'auth/register',
-      data: {
-        'sessionId': sessionId,
-        'firstName': firstName.trim(),
-        'password': password,
-        // Left out rather than sent null: all three are optional, and the API
-        // rejects a null against its enum validators.
-        if (lastName != null && lastName.trim().isNotEmpty)
-          'lastName': lastName.trim(),
-        if (level != null) 'level': level.code,
-        if (gender != null) 'gender': gender.code,
-      },
-    );
+    // Multipart, since the optional avatar rides along in the same request.
+    final form = FormData.fromMap({
+      'sessionId': sessionId,
+      'firstName': firstName.trim(),
+      'password': password,
+      // Left out rather than sent empty: both optional, and the API rejects
+      // an empty value against its validators.
+      if (lastName != null && lastName.trim().isNotEmpty)
+        'lastName': lastName.trim(),
+      if (level != null) 'level': level.code,
+      'gender': gender.code,
+      if (avatarPath != null)
+        'avatar': await MultipartFile.fromFile(avatarPath),
+    });
+    final response = await _dio.post('auth/register', data: form);
     return _saveAndReturn(response.data as Map<String, dynamic>);
   }
 

@@ -571,28 +571,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get loginForgotPassword => 'Parolni unutdingizmi?';
 
   @override
+  String get loginPasswordHint => 'Parolingizni kiriting';
+
+  @override
   String get loginSubmit => 'Kirish';
 
   @override
-  String get registerTitle => 'Hisob yaratish';
-
-  @override
-  String get registerSubmit => 'Hisob yaratish';
-
-  @override
-  String get registerLegalLead => 'Hisob yaratish orqali siz\n';
-
-  @override
-  String get registerLegalOffer => 'Ommaviy oferta';
-
-  @override
-  String get registerLegalAnd => ' va ';
-
-  @override
-  String get registerLegalPrivacy => 'Maxfiylik siyosatiga';
-
-  @override
-  String get registerLegalTail => ' rozilik bildirasiz';
+  String get registerSubmit => 'Ro\'yxatdan o\'tish';
 
   @override
   String get registerLegalOpenFailed => 'Hujjatni ochib bo\'lmadi';
@@ -619,15 +604,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get fieldConfirmPassword => 'Parolni tasdiqlang';
 
   @override
-  String get fieldFirstName => 'Ism';
-
-  @override
-  String get fieldLastName => 'Familiya';
-
-  @override
-  String get fieldGender => 'Jins';
-
-  @override
   String get genderMale => 'Erkak';
 
   @override
@@ -641,9 +617,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get validationPasswordsMatch => 'Parollar mos kelmadi';
-
-  @override
-  String get validationFirstName => 'Ismingizni kiriting';
 
   @override
   String otpSubtitle(String phone) {
@@ -1106,4 +1079,28 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get otpEnterCode => 'Kodni kiriting';
+
+  @override
+  String get registerPersonalInfo => 'Shaxsiy ma\'lumotlar';
+
+  @override
+  String get registerChangePhoto => 'Rasmni o\'zgartirish';
+
+  @override
+  String get registerFirstName => 'Ism';
+
+  @override
+  String get registerFirstNameHint => 'Ismingizni kiriting';
+
+  @override
+  String get registerLastName => 'Familiya';
+
+  @override
+  String get registerLastNameHint => 'Familiyangizni kiriting';
+
+  @override
+  String get registerPasswordHint => 'Kamida 8 ta belgi';
+
+  @override
+  String get registerGender => 'Jinsingiz';
 }

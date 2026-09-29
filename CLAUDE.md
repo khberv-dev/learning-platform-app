@@ -127,8 +127,8 @@ Auth works with either a phone number or an email, toggled by `AuthIdentitySwitc
 
 1. `POST auth/register/otp/send` returns a `sessionId`. A resend to the same identity reuses the session, with a 2-minute cooldown.
 2. `OtpScreen` sends `POST auth/register/otp/verify`.
-3. It then replaces itself with `RegisterScreen`, which asks only for the profile (name, gender, password).
-4. `POST auth/register` completes it, and the level comes from `skillQuizResultProvider`.
+3. It then replaces itself with `RegisterScreen`, which asks for the profile: an optional avatar, a required first name and an optional last name (separate fields, both trimmed before sending), a password, and an optional gender. The verified phone/email is shown read-only, taken from `RegisterController.phoneNumber`/`email`.
+4. `POST auth/register` completes it as **multipart** form data (optional `avatar` image file), with the level from `skillQuizResultProvider`.
 
 `RegisterController` holds the `sessionId`. Its steps return `bool` instead of screens listening to its state, because the login and OTP screens stay mounted under the later steps and would react to them. The placement quiz ends on `LoginScreen`, not `RegisterScreen`. Password recovery still uses the older `auth/otp/send` (purpose `recover`). The identity field must stay editable after the check succeeds, because editing it is what resets the confirmed state. The Telegram button has no backend support yet and only shows a "not available yet" message.
 
@@ -227,6 +227,10 @@ Material 3. Seed/primary `#18c96a` (green), scaffold background `#f6f7fa`, `onSu
 **Typeface: M PLUS Rounded 1c app-wide**, standing in for SF Pro Rounded — Apple's font licence forbids embedding SF Pro (or its rounded variant) in an app bundle, and it isn't installed on Android at all, so an openly-licensed (OFL) rounded look-alike is bundled instead and applied on both platforms. `app_theme.dart` sets it via `ThemeData.light().textTheme.apply(fontFamily: 'MPLUSRounded1c')` (plus `primaryTextTheme`), which rewrites every default text style's font while leaving size/weight/color alone — that reaches both `Theme.of(context).textTheme.*` usages and the plain `TextStyle(...)` literals most screens use, since those inherit `fontFamily` from the ambient `DefaultTextStyle` when they don't set their own. Font files live in `assets/fonts/MPLUSRounded1c/` (7 weights, 100–900), registered under `flutter.fonts` in `pubspec.yaml`. Don't add real SF Pro/SF Pro Rounded files to the repo — same licence restriction as before, now just naming the rounded variant too.
 
 The font files are **subsetted** to Latin, Cyrillic, general punctuation and arrows, with the CJK glyphs stripped out. Any character outside those ranges renders as a missing-glyph box, so if new copy needs one, re-subset from a fresh download. The font also renders bold text noticeably wider than the old system font, so check tightly sized bold rows with a widget test (fixes used so far: `FittedBox(fit: BoxFit.scaleDown)`, or `Flexible` + ellipsis).
+
+### Text fields
+
+`AppTextField` (`lib/shared/widget/app_text_field.dart`) is the redesign's form input, used on login, register and forgot password. It has a grey caption above a borderless `#F2F4F9` field that is 52pt tall with a 16pt radius. It's meant to sit on a **white** background, since `#F2F4F9` vanishes on the old `#F1F1F3` screen colour. `prefixText` (e.g. `+998`) is always visible and followed by a thin divider, unlike Material's own `prefixText`. `obscureText` adds its own show/hide toggle. A `key` on it lands on the wrapper, so tests reach the input with `find.descendant(of: find.byKey(...), matching: find.byType(TextField))`. Chat, task and feedback inputs are their own widgets and don't use it.
 
 ### Buttons
 

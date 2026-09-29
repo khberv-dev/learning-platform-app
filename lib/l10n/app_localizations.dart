@@ -1078,53 +1078,23 @@ abstract class AppLocalizations {
   /// **'Forgot password?'**
   String get loginForgotPassword;
 
+  /// No description provided for @loginPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get loginPasswordHint;
+
   /// No description provided for @loginSubmit.
   ///
   /// In en, this message translates to:
   /// **'Log in'**
   String get loginSubmit;
 
-  /// No description provided for @registerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Create account'**
-  String get registerTitle;
-
   /// No description provided for @registerSubmit.
   ///
   /// In en, this message translates to:
-  /// **'Create account'**
+  /// **'Sign up'**
   String get registerSubmit;
-
-  /// No description provided for @registerLegalLead.
-  ///
-  /// In en, this message translates to:
-  /// **'By creating an account you agree to our\n'**
-  String get registerLegalLead;
-
-  /// No description provided for @registerLegalOffer.
-  ///
-  /// In en, this message translates to:
-  /// **'Public Offer'**
-  String get registerLegalOffer;
-
-  /// No description provided for @registerLegalAnd.
-  ///
-  /// In en, this message translates to:
-  /// **' and '**
-  String get registerLegalAnd;
-
-  /// No description provided for @registerLegalPrivacy.
-  ///
-  /// In en, this message translates to:
-  /// **'Privacy Policy'**
-  String get registerLegalPrivacy;
-
-  /// Text after the privacy link, for languages whose verb follows the objects. Empty in English.
-  ///
-  /// In en, this message translates to:
-  /// **''**
-  String get registerLegalTail;
 
   /// No description provided for @registerLegalOpenFailed.
   ///
@@ -1174,24 +1144,6 @@ abstract class AppLocalizations {
   /// **'Confirm password'**
   String get fieldConfirmPassword;
 
-  /// No description provided for @fieldFirstName.
-  ///
-  /// In en, this message translates to:
-  /// **'First name'**
-  String get fieldFirstName;
-
-  /// No description provided for @fieldLastName.
-  ///
-  /// In en, this message translates to:
-  /// **'Last name'**
-  String get fieldLastName;
-
-  /// No description provided for @fieldGender.
-  ///
-  /// In en, this message translates to:
-  /// **'Gender'**
-  String get fieldGender;
-
   /// No description provided for @genderMale.
   ///
   /// In en, this message translates to:
@@ -1221,12 +1173,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passwords do not match'**
   String get validationPasswordsMatch;
-
-  /// No description provided for @validationFirstName.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter your first name'**
-  String get validationFirstName;
 
   /// No description provided for @otpSubtitle.
   ///
@@ -2085,6 +2031,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter the code'**
   String get otpEnterCode;
+
+  /// No description provided for @registerPersonalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal details'**
+  String get registerPersonalInfo;
+
+  /// No description provided for @registerChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get registerChangePhoto;
+
+  /// No description provided for @registerFirstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get registerFirstName;
+
+  /// No description provided for @registerFirstNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your first name'**
+  String get registerFirstNameHint;
+
+  /// No description provided for @registerLastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get registerLastName;
+
+  /// No description provided for @registerLastNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your last name'**
+  String get registerLastNameHint;
+
+  /// No description provided for @registerPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get registerPasswordHint;
+
+  /// No description provided for @registerGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Your gender'**
+  String get registerGender;
 }
 
 class _AppLocalizationsDelegate

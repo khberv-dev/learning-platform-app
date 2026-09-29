@@ -20,6 +20,14 @@ final registerControllerProvider =
 /// as if it were its own.
 class RegisterController extends AsyncNotifier<void> {
   String? _sessionId;
+  String? _phoneNumber;
+  String? _email;
+
+  /// The identity the code was sent to — whichever one the student typed on
+  /// the login screen. Fixed for the session, so the profile form only shows
+  /// it.
+  String? get phoneNumber => _phoneNumber;
+  String? get email => _email;
 
   @override
   FutureOr<void> build() {}
@@ -27,6 +35,8 @@ class RegisterController extends AsyncNotifier<void> {
   /// Sends the code, or resends it for the same identity — the API then
   /// reuses the session (and un-verifies it), at most once every 2 minutes.
   Future<bool> sendOtp({String? phoneNumber, String? email}) async {
+    _phoneNumber = phoneNumber;
+    _email = email;
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       _sessionId = await ref
@@ -47,14 +57,13 @@ class RegisterController extends AsyncNotifier<void> {
   }
 
   /// [level] comes from the placement quiz and is null when it was skipped.
-  /// [gender] is null when the student didn't pick one, leaving the API to
-  /// apply its own default.
   Future<bool> complete({
     required String firstName,
     String? lastName,
     required String password,
     StudentLevel? level,
-    Gender? gender,
+    required Gender gender,
+    String? avatarPath,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -67,6 +76,7 @@ class RegisterController extends AsyncNotifier<void> {
             password: password,
             level: level,
             gender: gender,
+            avatarPath: avatarPath,
           );
       // Deleted server-side on success, so it can't be replayed anyway.
       _sessionId = null;

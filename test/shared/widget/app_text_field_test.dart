@@ -82,10 +82,18 @@ void main() {
 
   testWidgets('shows a prefix when given one', (tester) async {
     await tester.pumpWidget(
-      _host(const AppTextField(label: 'Phone number', prefixText: '+998 ')),
+      _host(
+        const AppTextField(
+          label: 'Phone number',
+          prefixText: '+998',
+          hintText: '00 000 00 00',
+        ),
+      ),
     );
 
+    // Shown alongside the hint, before anything is focused or typed.
     expect(tester.takeException(), isNull);
-    expect(find.text('+998 '), findsOneWidget);
+    expect(find.text('+998'), findsOneWidget);
+    expect(find.text('00 000 00 00'), findsOneWidget);
   });
 }

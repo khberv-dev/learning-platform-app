@@ -11,7 +11,9 @@ import 'package:student/core/auth/domain/entity/otp_purpose.dart';
 import 'package:student/core/auth/domain/repository/i_auth_repository.dart';
 import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
-import 'package:student/shared/url_launcher.dart';
+import 'package:student/core/auth/presentation/register_controller.dart';
+import 'package:student/core/user/domain/entity/user_entity.dart';
+import 'package:student/core/user/domain/usecase/use_get_me.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
@@ -65,6 +67,17 @@ class _FakeAuthRepository implements IAuthRepository, IEmailAuthRepository {
     required String code,
   }) async {}
 
+  final List<
+    ({
+      String firstName,
+      String? lastName,
+      String password,
+      Gender gender,
+      String? avatarPath,
+    })
+  >
+  registrations = [];
+
   @override
   Future<AuthEntity> register({
     required String sessionId,
@@ -72,8 +85,18 @@ class _FakeAuthRepository implements IAuthRepository, IEmailAuthRepository {
     String? lastName,
     required String password,
     StudentLevel? level,
-    Gender? gender,
-  }) => throw UnimplementedError();
+    required Gender gender,
+    String? avatarPath,
+  }) async {
+    registrations.add((
+      firstName: firstName,
+      lastName: lastName,
+      password: password,
+      gender: gender,
+      avatarPath: avatarPath,
+    ));
+    return const AuthEntity(accessToken: 'a', refreshToken: 'r');
+  }
 
   @override
   Future<void> sendOtp({
@@ -150,19 +173,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(repo.checkedPhones, isEmpty);
 
-      await tester.enterText(
-        find.byKey(const ValueKey('login-phone-digits')),
-        '90123456',
-      );
+      await tester.enterText(_field('login-phone-digits'), '90123456');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
       expect(repo.checkedPhones, isEmpty, reason: 'only 8 digits so far');
 
-      await tester.enterText(
-        find.byKey(const ValueKey('login-phone-digits')),
-        '901234567',
-      );
+      await tester.enterText(_field('login-phone-digits'), '901234567');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
@@ -174,10 +191,7 @@ void main() {
     ) async {
       await pumpLogin(tester);
 
-      await tester.enterText(
-        find.byKey(const ValueKey('login-phone-digits')),
-        '901234567',
-      );
+      await tester.enterText(_field('login-phone-digits'), '901234567');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
@@ -194,10 +208,7 @@ void main() {
       final repo = await pumpLogin(tester);
       repo.phoneExists = false;
 
-      await tester.enterText(
-        find.byKey(const ValueKey('login-phone-digits')),
-        '901234567',
-      );
+      await tester.enterText(_field('login-phone-digits'), '901234567');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
@@ -214,10 +225,7 @@ void main() {
       await tester.tap(find.text('Via email'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.byKey(const ValueKey('login-email')),
-        'Sevara@Example.com',
-      );
+      await tester.enterText(_field('login-email'), 'Sevara@Example.com');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
@@ -236,19 +244,13 @@ void main() {
     ) async {
       await pumpLogin(tester);
 
-      await tester.enterText(
-        find.byKey(const ValueKey('login-phone-digits')),
-        '901234567',
-      );
+      await tester.enterText(_field('login-phone-digits'), '901234567');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
       expect(find.text('Password'), findsOneWidget);
 
-      await tester.enterText(
-        find.byKey(const ValueKey('login-phone-digits')),
-        '901234560',
-      );
+      await tester.enterText(_field('login-phone-digits'), '901234560');
       await tester.pumpAndSettle();
 
       expect(find.text('Password'), findsNothing);
@@ -260,7 +262,7 @@ void main() {
     ) async {
       await pumpLogin(tester);
 
-      final phone = find.byKey(const ValueKey('login-phone-digits'));
+      final phone = _field('login-phone-digits');
       await tester.enterText(phone, '901234567');
       await tester.pumpAndSettle();
       expect(tester.widget<TextField>(phone).controller!.text, '90 123 45 67');
@@ -279,7 +281,7 @@ void main() {
       tester,
     ) async {
       await pumpLogin(tester);
-      final phone = find.byKey(const ValueKey('login-phone-digits'));
+      final phone = _field('login-phone-digits');
       AppFlatPillButton continueButton() => tester.widget<AppFlatPillButton>(
         find.widgetWithText(AppFlatPillButton, 'Continue'),
       );
@@ -298,13 +300,13 @@ void main() {
 
     testWidgets('switching the login type clears the input', (tester) async {
       await pumpLogin(tester);
-      final phone = find.byKey(const ValueKey('login-phone-digits'));
+      final phone = _field('login-phone-digits');
 
       await tester.enterText(phone, '901234567');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Via email'));
       await tester.pumpAndSettle();
-      final email = find.byKey(const ValueKey('login-email'));
+      final email = _field('login-email');
       expect(tester.widget<TextField>(email).controller!.text, isEmpty);
 
       await tester.enterText(email, 'student@mail.com');
@@ -330,7 +332,7 @@ void main() {
       await tester.tap(find.text('Via email'));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const ValueKey('login-email')), findsOneWidget);
+      expect(_field('login-email'), findsOneWidget);
       expect(find.text('example@mail.com'), findsOneWidget);
       expect(
         find.text('Enter your email to sign in to your account'),
@@ -354,7 +356,7 @@ void main() {
       await tester.tap(find.text('Via email'));
       await tester.pumpAndSettle();
 
-      final email = find.byKey(const ValueKey('login-email'));
+      final email = _field('login-email');
       await tester.enterText(email, 'student@mail');
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
@@ -391,60 +393,208 @@ void main() {
     });
   });
 
-  group('RegisterScreen legal notice', () {
-    Future<List<Uri>> pumpRegister(
+  group('RegisterScreen', () {
+    /// Pumps the profile form the way the flow reaches it: a code was
+    /// already sent to [phone] or [email] from the login screen.
+    Future<_FakeAuthRepository> pumpRegister(
       WidgetTester tester, {
-      bool launchSucceeds = true,
+      String? phone = '998901234567',
+      String? email,
+      String? pickedAvatar,
     }) async {
-      final opened = <Uri>[];
-      await _pump(
-        tester,
-        const RegisterScreen(),
+      tester.view.physicalSize = const Size(390, 844) * 2;
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+
+      final repo = _FakeAuthRepository();
+      final container = ProviderContainer(
         overrides: [
-          inAppBrowserLauncherProvider.overrideWithValue((uri) async {
-            opened.add(uri);
-            return launchSucceeds;
-          }),
+          authRepositoryProvider.overrideWithValue(repo),
+          avatarPickerProvider.overrideWithValue(() async => pickedAvatar),
+          // The account is created before /me is fetched; failing here keeps
+          // the test off the network and on this screen.
+          useGetMeProvider.overrideWithValue(_FailingGetMe()),
         ],
       );
-      return opened;
+      addTearDown(container.dispose);
+      await container
+          .read(registerControllerProvider.notifier)
+          .sendOtp(phoneNumber: email == null ? phone : null, email: email);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: localizedApp(
+            theme: container.read(appThemeProvider),
+            routerConfig: GoRouter(
+              routes: [
+                GoRoute(path: '/', builder: (_, _) => const RegisterScreen()),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      return repo;
     }
 
-    // The legal notice sits at the bottom of the form, below the fold now
-    // that the gender picker adds height — scroll it into view first.
-    Future<void> scrollToLegalNotice(WidgetTester tester) async {
-      await tester.drag(find.byType(Scrollable).first, const Offset(0, -400));
-      await tester.pumpAndSettle();
-    }
+    AppFlatPillButton submitButton(WidgetTester tester) =>
+        tester.widget<AppFlatPillButton>(
+          find.widgetWithText(AppFlatPillButton, 'Sign up'),
+        );
 
-    testWidgets('opens the public offer', (tester) async {
-      final opened = await pumpRegister(tester);
-      await scrollToLegalNotice(tester);
+    String fieldText(WidgetTester tester, String key) => tester
+        .widget<TextField>(
+          find
+              .descendant(
+                of: find.byKey(ValueKey(key)),
+                matching: find.byType(TextField),
+              )
+              .first,
+        )
+        .controller!
+        .text;
 
-      await tester.tapOnText(find.textRange.ofSubstring('Public Offer'));
-      await tester.pumpAndSettle();
+    testWidgets('shows the phone typed on login, read-only', (tester) async {
+      await pumpRegister(tester);
 
-      expect(opened, [Uri.parse(publicOfferUrl)]);
+      expect(find.text('Phone number'), findsOneWidget);
+      expect(fieldText(tester, 'register-identity'), '+998 90 123 45 67');
+      final field = tester.widget<TextField>(
+        find.descendant(
+          of: find.byKey(const ValueKey('register-identity')),
+          matching: find.byType(TextField),
+        ),
+      );
+      expect(field.readOnly, isTrue);
     });
 
-    testWidgets('opens the privacy policy', (tester) async {
-      final opened = await pumpRegister(tester);
-      await scrollToLegalNotice(tester);
+    testWidgets('an email sign-up shows the email instead', (tester) async {
+      await pumpRegister(tester, email: 'sevara@example.com');
 
-      await tester.tapOnText(find.textRange.ofSubstring('Privacy Policy'));
-      await tester.pumpAndSettle();
-
-      expect(opened, [Uri.parse(privacyPolicyUrl)]);
+      expect(find.text('Email address'), findsOneWidget);
+      expect(fieldText(tester, 'register-identity'), 'sevara@example.com');
     });
 
-    testWidgets('reports a document that could not be opened', (tester) async {
-      await pumpRegister(tester, launchSucceeds: false);
-      await scrollToLegalNotice(tester);
+    testWidgets(
+      'Sign up waits for a first name, an 8-character password and a gender',
+      (tester) async {
+        await pumpRegister(tester);
+        expect(submitButton(tester).onTap, isNull);
 
-      await tester.tapOnText(find.textRange.ofSubstring('Privacy Policy'));
+        // A last name and password alone aren't enough, nor is a blank first
+        // name.
+        await tester.enterText(
+          find.byKey(const ValueKey('register-last-name')),
+          'Karimova',
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('register-first-name')),
+          '   ',
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('register-password')),
+          'secret123',
+        );
+        await tester.pump();
+        expect(submitButton(tester).onTap, isNull);
+
+        await tester.enterText(
+          find.byKey(const ValueKey('register-first-name')),
+          'Sevara',
+        );
+        await tester.enterText(
+          find.byKey(const ValueKey('register-password')),
+          'short',
+        );
+        await tester.pump();
+        expect(submitButton(tester).onTap, isNull);
+
+        await tester.enterText(
+          find.byKey(const ValueKey('register-password')),
+          'secret123',
+        );
+        await tester.pump();
+        expect(submitButton(tester).onTap, isNull);
+
+        await tester.tap(find.text('Male'));
+        await tester.pump();
+        expect(submitButton(tester).onTap, isNotNull);
+      },
+    );
+
+    testWidgets('sends trimmed first and last names, gender and avatar', (
+      tester,
+    ) async {
+      final repo = await pumpRegister(tester, pickedAvatar: '/tmp/me.jpg');
+
+      await tester.tap(find.text('Change photo'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const ValueKey('register-first-name')),
+        '  Sevara ',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('register-last-name')),
+        ' Karimova Aliyevna  ',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('register-password')),
+        'secret123',
+      );
+      await tester.tap(find.text('Female'));
+      await tester.pump();
+      await tester.tap(find.text('Sign up'));
       await tester.pumpAndSettle();
 
-      expect(find.text("Couldn't open the document"), findsOneWidget);
+      expect(repo.registrations, [
+        (
+          firstName: 'Sevara',
+          lastName: 'Karimova Aliyevna',
+          password: 'secret123',
+          gender: Gender.female,
+          avatarPath: '/tmp/me.jpg',
+        ),
+      ]);
+    });
+
+    testWidgets('a blank last name is sent as null, without an avatar', (
+      tester,
+    ) async {
+      final repo = await pumpRegister(tester);
+
+      await tester.enterText(
+        find.byKey(const ValueKey('register-first-name')),
+        'Sevara',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('register-last-name')),
+        '   ',
+      );
+      await tester.enterText(
+        find.byKey(const ValueKey('register-password')),
+        'secret123',
+      );
+      await tester.tap(find.text('Male'));
+      await tester.pump();
+      await tester.tap(find.text('Sign up'));
+      await tester.pumpAndSettle();
+
+      expect(repo.registrations.single.firstName, 'Sevara');
+      expect(repo.registrations.single.lastName, isNull);
+      expect(repo.registrations.single.avatarPath, isNull);
+      expect(repo.registrations.single.gender, Gender.male);
     });
   });
 }
+
+class _FailingGetMe implements UseGetMe {
+  @override
+  Future<UserEntity> call() async => throw Exception('offline');
+}
+
+/// The `TextField` inside the [AppTextField] keyed [key].
+Finder _field(String key) => find.descendant(
+  of: find.byKey(ValueKey(key)),
+  matching: find.byType(TextField),
+);
