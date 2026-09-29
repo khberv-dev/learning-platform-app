@@ -8,6 +8,7 @@ import 'package:student/core/p2p/presentation/p2p_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/p2p/widget/call_action_button.dart';
+import 'package:student/utils/messenger.dart';
 
 class P2pCallScreen extends ConsumerStatefulWidget {
   static const path = '/p2p-call';
@@ -83,10 +84,10 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
         _ensureTicker();
       } else if (next is P2pEnded) {
         _ticker?.cancel();
-        _showEnded(_endedMessage(l10n, next.reason));
+        _showEnded(_endedMessage(l10n, next.reason), isError: false);
       } else if (next is P2pError) {
         _ticker?.cancel();
-        _showEnded(next.message);
+        _showEnded(next.message, isError: true);
       }
     });
 
@@ -164,11 +165,13 @@ class _P2pCallScreenState extends ConsumerState<P2pCallScreen> {
     );
   }
 
-  void _showEnded(String message) {
+  void _showEnded(String message, {required bool isError}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    if (isError) {
+      showErrorMessage(context, message);
+    } else {
+      showSuccessMessage(context, message);
+    }
     if (context.canPop()) {
       context.pop();
     } else {

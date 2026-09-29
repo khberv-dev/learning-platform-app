@@ -76,10 +76,9 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
           .read(purchaseWatchProvider.notifier)
           .start(knownCourseIds: owned, planId: widget.planId);
 
-      // This screen is about to be replaced, so the messenger has to be held
+      // This screen is about to be replaced, so the overlay has to be held
       // on to for any failure reported after the hand-off.
-      final messenger = ScaffoldMessenger.of(context);
-      final errorColour = Theme.of(context).colorScheme.error;
+      final overlay = messageOverlayOf(context);
       // Read before the screen goes away; its context is unusable after.
       final openFailed = AppLocalizations.of(
         context,
@@ -93,7 +92,7 @@ class _PaymentTypesScreenState extends ConsumerState<PaymentTypesScreen> {
       final opened = await ref.read(urlLauncherProvider)(uri);
       if (!opened) {
         ref.read(purchaseWatchProvider.notifier).stop();
-        showErrorOn(messenger, openFailed, background: errorColour);
+        showErrorOn(overlay, openFailed);
       }
     } catch (e) {
       if (mounted) showErrorMessage(context, apiErrorMessage(context, e));

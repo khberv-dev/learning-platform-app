@@ -217,9 +217,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
       await widget.onSubmit(_rate, _textController.text.trim());
       if (!mounted) return;
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(SnackBar(content: Text(l10n.mentorReviewSent)));
+      showSuccessMessage(context, l10n.mentorReviewSent);
     } catch (e) {
       if (mounted) setState(() => _error = apiErrorMessage(context, e));
     } finally {

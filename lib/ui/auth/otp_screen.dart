@@ -45,6 +45,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   Timer? _resendTimer;
   final _codeController = TextEditingController();
 
+  /// The last code was rejected: the digits show red until the student taps
+  /// the field, which clears it for another try.
+  bool _codeRejected = false;
+
   @override
   void initState() {
     super.initState();
@@ -113,7 +117,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         .verifyOtp(code);
     if (!mounted) return;
     if (!verified) {
-      _showRegisterError();
+      setState(() => _codeRejected = true);
       return;
     }
     // Replaced rather than pushed: the code is spent, so backing out of the
@@ -137,6 +141,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   bool get _codeComplete => _codeController.text.length == 6;
 
+  void _clearRejectedCode() {
+    if (!_codeRejected) return;
+    _codeController.clear();
+    setState(() => _codeRejected = false);
+  }
+
   void _submit() {
     if (_codeComplete) _onCodeCompleted(_codeController.text);
   }
@@ -157,15 +167,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         if (prev?.isLoading != true) return;
         next.whenOrNull(
           data: (_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context).otpPasswordUpdated),
-              ),
+            showSuccessMessage(
+              context,
+              AppLocalizations.of(context).otpPasswordUpdated,
             );
             context.go(LoginScreen.path);
           },
-          error: (e, _) =>
-              showErrorMessage(context, apiErrorMessage(context, e)),
+          error: (_, _) => setState(() => _codeRejected = true),
         );
       });
     }
@@ -253,7 +261,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     OtpField(
                       controller: _codeController,
                       enabled: !isLoading,
-                      onChanged: (_) => setState(() {}),
+                      hasError: _codeRejected,
+                      onTap: _clearRejectedCode,
+                      onChanged: (_) => setState(() => _codeRejected = false),
                       onCompleted: _onCodeCompleted,
                     ),
                     const SizedBox(height: AppSpacing.lg),
@@ -303,7 +313,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     label: l10n.commonContinue,
                     background: _brandGreen,
                     foreground: Colors.white,
-                    onTap: _codeComplete && !isLoading ? _submit : null,
+                    onTap: _codeComplete && !_codeRejected && !isLoading
+                        ? _submit
+                        : null,
                   ),
                 ],
               ),

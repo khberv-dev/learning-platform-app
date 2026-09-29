@@ -6,6 +6,7 @@ import 'package:student/core/p2p/presentation/p2p_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
 import 'package:student/ui/p2p/widget/radar_pulse.dart';
+import 'package:student/utils/messenger.dart';
 
 class P2pMatchmakingScreen extends ConsumerStatefulWidget {
   static const path = '/p2p-matchmaking';
@@ -40,9 +41,7 @@ class _P2pMatchmakingScreenState extends ConsumerState<P2pMatchmakingScreen> {
         _navigatedToCall = true;
         context.replace(P2pCallScreen.path);
       } else if (next is P2pError) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.message)));
+        showErrorMessage(context, next.message);
         if (context.canPop()) context.pop();
       }
     });

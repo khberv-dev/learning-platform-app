@@ -13,6 +13,8 @@ import 'package:student/core/auth/presentation/register_controller.dart';
 import 'package:student/core/user/domain/entity/gender.dart';
 import 'package:student/core/user/domain/entity/student_level.dart';
 import 'package:student/shared/widget/app_flat_pill_button.dart';
+import 'package:student/shared/widget/otp_field.dart';
+import 'package:student/shared/widget/app_floating_message.dart';
 import 'package:student/ui/auth/login_screen.dart';
 import 'package:student/ui/auth/otp_screen.dart';
 import 'package:student/ui/auth/register_screen.dart';
@@ -37,12 +39,17 @@ class _FakeAuthRepository implements IAuthRepository {
     if (sendError != null) throw sendError!;
   }
 
+  /// Thrown by the next [recoverPassword] — a wrong code.
+  Object? resetError;
+
   @override
   Future<void> recoverPassword({
     required String phoneNumber,
     required String code,
     required String newPassword,
-  }) async {}
+  }) async {
+    if (resetError != null) throw resetError!;
+  }
 
   @override
   Future<bool> checkPhoneExists(String phoneNumber) =>
@@ -68,12 +75,16 @@ class _FakeAuthRepository implements IAuthRepository {
     return 'session-1';
   }
 
+  /// Thrown by the next [verifyRegisterOtp] — a wrong code.
+  Object? verifyError;
+
   @override
   Future<void> verifyRegisterOtp({
     required String sessionId,
     required String code,
   }) async {
     verifiedCodes.add(code);
+    if (verifyError != null) throw verifyError!;
   }
 
   @override
@@ -88,6 +99,16 @@ class _FakeAuthRepository implements IAuthRepository {
   }) => throw UnimplementedError();
 }
 
+/// A 400 for a code that doesn't match.
+final _wrongCode = DioException(
+  requestOptions: RequestOptions(path: 'auth/register/otp/verify'),
+  response: Response(
+    requestOptions: RequestOptions(path: 'auth/register/otp/verify'),
+    statusCode: 400,
+    data: {'message': 'Kod noto‘g‘ri', 'statusCode': 400},
+  ),
+);
+
 /// A 429 shaped the way the API sends one, message and all.
 DioException _tooManyRequests(String message) => DioException(
   requestOptions: RequestOptions(path: 'auth/otp/send'),
@@ -101,6 +122,10 @@ DioException _tooManyRequests(String message) => DioException(
 Future<({ProviderContainer container, _FakeAuthRepository repo})> _pumpOtp(
   WidgetTester tester, {
   OtpMode mode = OtpMode.recoverPassword,
+
+  /// Runs before the screen exists, like the forgot-password screen's own
+  /// request does.
+  Future<void> Function(ProviderContainer, _FakeAuthRepository)? before,
 }) async {
   tester.view.physicalSize = const Size(390, 844) * 2;
   tester.view.devicePixelRatio = 2;
@@ -111,6 +136,7 @@ Future<({ProviderContainer container, _FakeAuthRepository repo})> _pumpOtp(
     overrides: [authRepositoryProvider.overrideWithValue(repo)],
   );
   addTearDown(container.dispose);
+  await before?.call(container, repo);
 
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -249,6 +275,59 @@ void main() {
 
     expect(repo.verifiedCodes, ['123456']);
     expect(find.text('register'), findsOneWidget);
+  });
+
+  testWidgets('a wrong code turns the digits red instead of a message', (
+    tester,
+  ) async {
+    final (:container, :repo) = await _pumpOtp(tester, mode: OtpMode.register);
+    await container
+        .read(registerControllerProvider.notifier)
+        .sendOtp(phoneNumber: _phone);
+    repo.verifyError = _wrongCode;
+
+    await tester.enterText(find.byType(EditableText), '123456');
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<OtpField>(find.byType(OtpField)).hasError, isTrue);
+    expect(find.byType(AppFloatingMessage), findsNothing);
+    expect(find.text('register'), findsNothing);
+    // The rejected code can't just be sent again.
+    expect(_button(tester, 'Continue').onTap, isNull);
+
+    // Tapping the field clears it for another try.
+    await tester.tap(find.byType(OtpField));
+    await tester.pump();
+    expect(tester.widget<OtpField>(find.byType(OtpField)).hasError, isFalse);
+    expect(
+      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
+      isEmpty,
+    );
+
+    repo.verifyError = null;
+    await tester.enterText(find.byType(EditableText), '654321');
+    await tester.pumpAndSettle();
+    expect(repo.verifiedCodes, ['123456', '654321']);
+    expect(find.text('register'), findsOneWidget);
+  });
+
+  testWidgets('a wrong recovery code turns the digits red too', (tester) async {
+    await _pumpOtp(
+      tester,
+      before: (container, repo) async {
+        await container
+            .read(recoverPasswordControllerProvider.notifier)
+            .prepareAndSendOtp(phoneNumber: _phone, newPassword: 'n3wSecret');
+        repo.resetError = _wrongCode;
+      },
+    );
+
+    await tester.enterText(find.byType(EditableText), '123456');
+    await tester.pumpAndSettle();
+
+    expect(tester.widget<OtpField>(find.byType(OtpField)).hasError, isTrue);
+    expect(find.byType(AppFloatingMessage), findsNothing);
+    expect(find.text('login'), findsNothing);
   });
 
   testWidgets('a refused resend says so instead of starting a silent wait', (

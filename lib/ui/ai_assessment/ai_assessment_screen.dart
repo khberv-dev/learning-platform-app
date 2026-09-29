@@ -11,6 +11,7 @@ import 'package:student/l10n/app_localizations.dart';
 import 'package:student/ui/ai_assessment/widget/ai_avatar.dart';
 import 'package:student/ui/ai_assessment/widget/listening_indicator.dart';
 import 'package:student/ui/ai_assessment/widget/mic_button.dart';
+import 'package:student/utils/messenger.dart';
 
 enum _RecordState { idle, connecting, recording, processing, playingFeedback }
 
@@ -104,11 +105,7 @@ class _AiAssessmentScreenState extends ConsumerState<AiAssessmentScreen> {
     }
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message)));
-  }
+  void _showError(String message) => showErrorMessage(context, message);
 
   @override
   Widget build(BuildContext context) {
