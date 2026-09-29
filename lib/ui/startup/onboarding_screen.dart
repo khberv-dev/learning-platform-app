@@ -5,14 +5,14 @@ import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_flat_pill_button.dart';
 import 'package:student/ui/auth/login_screen.dart';
-import 'package:student/ui/startup/survey_screen.dart';
 
 /// New brand accent introduced with the redesign — lighter/more lime than the
 /// old theme green, used only where a mockup specifically calls for it.
 const _brandGreen = Color(0xFF78C93C);
 
-/// First screen after picking a language: the pitch, then a fork into a
-/// fresh placement-quiz start or straight to login.
+/// First screen after picking a language: the pitch, then two buttons that
+/// both lead to login — which itself decides between signing in and
+/// registering.
 ///
 /// Same pattern as [LanguageScreen] — the illustration fills all the space
 /// above a fixed-height bottom card, with no scrolling anywhere. Expanded
@@ -79,7 +79,7 @@ class OnboardingScreen extends StatelessWidget {
                         label: l10n.onboardingFreshStart,
                         background: _brandGreen,
                         foreground: Colors.white,
-                        onTap: () => context.push(SurveyScreen.path),
+                        onTap: () => context.push(LoginScreen.path),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       AppFlatPillButton(
