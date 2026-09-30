@@ -71,15 +71,17 @@
   "levelCheckNo": "No, I am starting from zero",
 
   "navHome": "Home",
-  "navCourse": "Course",
-  "navStudy": "Study",
+  "navCourse": "Courses",
+  "navStudy": "Mentor",
   "navProfile": "Profile",
 
-  "levelBeginner": "Beginner",
-  "levelIntermediate": "Intermediate",
-  "levelAdvanced": "Advanced",
-
-  "homeOnFire": "You're on fire",
+  "homeGreeting": "Good day,",
+  "homeGreetingName": "{name}!",
+  "@homeGreetingName": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
   "homeStreakDays": "{count, plural, one{{count} day} other{{count} days}}",
   "@homeStreakDays": {
     "description": "Streaks run into the thousands, so the count is grouped",
@@ -88,9 +90,10 @@
     }
   },
   "homeDontForgetMe": "Don't forget me!",
+  "homeStreakStartTitle": "Start your streak",
+  "homeStreakStartSubtitle": "Finish your first lesson to light up your streak",
   "homeStatsScores": "Scores",
   "homeStatsCoins": "Coins",
-  "homeStatsRanking": "Global ranking",
   "homeLibrary": "Library",
   "homeNoCoursesTitle": "No active courses yet",
   "homeNoCoursesSubtitle": "Browse and start learning today",

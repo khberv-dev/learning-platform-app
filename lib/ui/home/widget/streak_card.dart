@@ -1,139 +1,127 @@
 import 'package:flutter/material.dart';
-import 'package:student/app/theme/app_colors.dart';
-import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/l10n/app_localizations.dart';
-import 'package:student/shared/widget/app_panel.dart';
 
-/// Day initials, Monday first, matching the order of [StreakCard.week].
-const _weekdayInitials = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const _ink = Color(0xFF15141A);
+const _muted = Color(0xFF717384);
 
+/// The pale green glow behind the mascot, fading out towards the text.
+const _glow = Color(0xFFDDF4C6);
+
+const _cardHeight = 102.0;
+const _mascotHeight = 116.0;
+const _mascotWidth = 136.0;
+
+/// How far the mascot rises above the card's top edge. Reserved as padding
+/// so it never overlaps whatever sits above the card.
+const _mascotOverhang = 18.0;
+
+/// Home's streak card: a title and a line of encouragement on the left, and
+/// the cloud mascot on the right, peeking over the top edge. Its artwork
+/// changes with the streak — unlit at 0, a campfire from day 1, and
+/// milestone badges at 20 and 30.
 class StreakCard extends StatelessWidget {
-  /// A week with nothing completed, used while streak data is loading.
-  static const emptyWeek = [false, false, false, false, false, false, false];
-
   /// Consecutive days practised.
   final int days;
 
-  /// Seven flags, Monday first, marking which days of this week are done.
-  /// Shorter lists simply leave the trailing days unticked.
-  final List<bool> week;
+  const StreakCard({super.key, required this.days});
 
-  const StreakCard({super.key, required this.days, required this.week});
+  static String mascotFor(int days) => switch (days) {
+    <= 0 => 'assets/images/mascot_streak_0.png',
+    < 20 => 'assets/images/mascot_streak_1.png',
+    < 30 => 'assets/images/mascot_streak_20.png',
+    _ => 'assets/images/mascot_streak_30.png',
+  };
 
   @override
   Widget build(BuildContext context) {
-    return AppPanel(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.lg,
-        0,
-        AppSpacing.lg,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+    final l10n = AppLocalizations.of(context);
+    final started = days > 0;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: _mascotOverhang),
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+          Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(minHeight: _cardHeight),
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            // A gradient replaces a decoration's colour, so the glow is its
+            // own layer over the white.
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.bottomRight,
+                  radius: 1.1,
+                  colors: [_glow, Color(0x00FFFFFF)],
+                  stops: [0, 0.55],
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                  _mascotWidth - AppSpacing.sm,
+                  AppSpacing.md,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset('assets/images/fire_chip.png', height: 34),
-                    const SizedBox(width: AppSpacing.sm),
-                    Flexible(
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          AppLocalizations.of(context).homeStreakDays(days),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                          ),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        started
+                            ? l10n.homeStreakDays(days)
+                            : l10n.homeStreakStartTitle,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: _ink,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
                         ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      started
+                          ? l10n.homeDontForgetMe
+                          : l10n.homeStreakStartSubtitle,
+                      style: const TextStyle(
+                        color: _muted,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        height: 1.45,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  AppLocalizations.of(context).homeDontForgetMe,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                _WeekStrip(week: week),
-              ],
+              ),
             ),
           ),
-          Image.asset(
-            'assets/images/streak_puppet.png',
-            width: 118,
-            fit: BoxFit.contain,
+          // Pinned from the top, so the overhang holds even when longer text
+          // (Russian, a large font scale) makes the card taller.
+          Positioned(
+            right: 4,
+            top: -_mascotOverhang,
+            child: Image.asset(
+              mascotFor(days),
+              key: const ValueKey('streak-mascot'),
+              width: _mascotWidth,
+              height: _mascotHeight,
+              fit: BoxFit.contain,
+              alignment: Alignment.bottomRight,
+            ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _WeekStrip extends StatelessWidget {
-  final List<bool> week;
-
-  const _WeekStrip({required this.week});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            for (final initial in _weekdayInitials)
-              Expanded(
-                child: Text(
-                  initial,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xff8fa3b0),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Container(
-          height: 28,
-          decoration: BoxDecoration(
-            color: AppColors.streakTrack,
-            borderRadius: BorderRadius.circular(AppRadius.round),
-          ),
-          // Always seven cells so the ticks stay under their day initials,
-          // however many flags the caller passed.
-          child: Row(
-            children: [
-              for (var i = 0; i < _weekdayInitials.length; i++)
-                Expanded(
-                  child: i < week.length && week[i]
-                      ? const Icon(
-                          Icons.check_rounded,
-                          size: 17,
-                          color: AppColors.streakTick,
-                        )
-                      : const SizedBox.shrink(),
-                ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }

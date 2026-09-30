@@ -1,52 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
-import 'package:student/core/notifications/presentation/unread_notifications_count_provider.dart';
 import 'package:student/l10n/app_localizations.dart';
-import 'package:student/shared/widget/notification_icon_button.dart';
-import 'package:student/ui/notifications/notifications_screen.dart';
 import 'package:student/utils/lib.dart';
 
-/// Plain-language name for a CEFR level, which is what the design shows under
-/// the user's name rather than the raw "B1".
-String levelLabel(AppLocalizations l10n, String cefr) =>
-    switch (cefr.toUpperCase()) {
-      'A1' || 'A2' => l10n.levelBeginner,
-      'B1' || 'B2' => l10n.levelIntermediate,
-      'C1' || 'C2' => l10n.levelAdvanced,
-      _ => cefr,
-    };
+const _muted = Color(0xFF717384);
+const _ink = Color(0xFF15141A);
+const _placeholderIcon = Color(0xFFA5A6B9);
 
+/// Home's greeting row: the student's photo (or a person placeholder), a
+/// "Good day, Name!" greeting, and their points and coins.
 class HomeTopbar extends ConsumerWidget {
   const HomeTopbar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final user = ref.watch(currentUserProvider);
-    final unreadCount = ref.watch(unreadNotificationsCountProvider).value ?? 0;
-    final avatarUrl = resolveMediaUrl(user?.avatar);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 27,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-            child: avatarUrl == null
-                ? Text(
-                    user?.initials ?? '?',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  )
-                : null,
-          ),
+          _Avatar(url: resolveMediaUrl(user?.avatar)),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
@@ -54,35 +31,135 @@ class HomeTopbar extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  user?.fullName ?? '',
+                  l10n.homeGreeting,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
+                    color: _muted,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  levelLabel(AppLocalizations.of(context), user?.level ?? ''),
+                  l10n.homeGreetingName(user?.firstName ?? ''),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    color: Color(0xff9aa5ad),
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
+                    color: _ink,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          NotificationIconButton(
-            badgeCount: unreadCount,
-            onTap: () => context.push(NotificationsScreen.path),
+          _BalanceChip(
+            key: const ValueKey('home-points'),
+            imagePath: 'assets/images/ic_point.png',
+            value: user?.points ?? 0,
+            semanticsLabel: l10n.homeStatsScores,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          _BalanceChip(
+            key: const ValueKey('home-coins'),
+            imagePath: 'assets/images/ic_coin.png',
+            value: user?.coins ?? 0,
+            semanticsLabel: l10n.homeStatsCoins,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A white rounded tile: the photo, or a grey person outline without one.
+class _Avatar extends StatelessWidget {
+  final String? url;
+
+  const _Avatar({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    final url = this.url;
+    const placeholder = Center(
+      child: Icon(
+        Icons.person_outline_rounded,
+        size: 26,
+        color: _placeholderIcon,
+      ),
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: 40,
+        height: 40,
+        color: Colors.white,
+        child: url == null
+            ? placeholder
+            : Image.network(
+                url,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => placeholder,
+              ),
+      ),
+    );
+  }
+}
+
+/// A white rounded chip with a currency icon and its balance.
+class _BalanceChip extends StatelessWidget {
+  final String imagePath;
+  final int value;
+  final String semanticsLabel;
+
+  const _BalanceChip({
+    super.key,
+    required this.imagePath,
+    required this.value,
+    required this.semanticsLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: '$semanticsLabel: $value',
+      child: ExcludeSemantics(
+        child: Container(
+          height: 32,
+          constraints: const BoxConstraints(minWidth: 44),
+          padding: const EdgeInsets.fromLTRB(6, 0, 9, 0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(11),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // The artwork has ~8% transparent margin, so 20 shows as ~16.
+              Image.asset(imagePath, width: 20, height: 20),
+              const SizedBox(width: 5),
+              // Up to "12 345" at full size; bigger balances shrink rather
+              // than push the greeting off a narrow screen.
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 48),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    formatNumber(value),
+                    maxLines: 1,
+                    style: const TextStyle(
+                      color: _ink,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

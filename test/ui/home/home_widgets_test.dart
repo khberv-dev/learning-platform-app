@@ -1,53 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:student/l10n/app_localizations_en.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/core/user/domain/entity/user_entity.dart';
+import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/home/widget/home_promo_card.dart';
 import 'package:student/ui/home/widget/home_topbar.dart';
-import 'package:student/ui/home/widget/stats_row.dart';
 import 'package:student/ui/home/widget/streak_card.dart';
 
 import '../../support/localized_app.dart';
-
-final _l10n = AppLocalizationsEn();
 
 Widget _host(Widget child) => localizedHome(
   home: Scaffold(body: Center(child: child)),
 );
 
+Widget _topbar(UserEntity? user, {Locale locale = const Locale('en')}) =>
+    ProviderScope(
+      overrides: [currentUserProvider.overrideWith((ref) => user)],
+      child: localizedHome(
+        locale: locale,
+        home: const Scaffold(body: Center(child: HomeTopbar())),
+      ),
+    );
+
+const _azima = UserEntity(
+  id: 'u1',
+  firstName: 'Azima',
+  lastName: 'Karimova',
+  phoneNumber: '998901234567',
+  points: 1250,
+  coins: 7,
+  level: 'A1',
+);
+
 void main() {
-  group('levelLabel', () {
-    test('maps CEFR levels to plain language', () {
-      expect(levelLabel(_l10n, 'A1'), 'Beginner');
-      expect(levelLabel(_l10n, 'a2'), 'Beginner');
-      expect(levelLabel(_l10n, 'B1'), 'Intermediate');
-      expect(levelLabel(_l10n, 'B2'), 'Intermediate');
-      expect(levelLabel(_l10n, 'C1'), 'Advanced');
-      expect(levelLabel(_l10n, 'C2'), 'Advanced');
+  group('HomeTopbar', () {
+    testWidgets('greets the student by first name', (tester) async {
+      await tester.pumpWidget(_topbar(_azima));
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Good day,'), findsOneWidget);
+      expect(find.text('Azima!'), findsOneWidget);
     });
 
-    test('passes through anything unrecognised', () {
-      expect(levelLabel(_l10n, ''), '');
-      expect(levelLabel(_l10n, 'D9'), 'D9');
-    });
-  });
+    testWidgets('greets in the chosen language', (tester) async {
+      await tester.pumpWidget(_topbar(_azima, locale: const Locale('uz')));
 
-  group('ordinal', () {
-    test('uses the right suffix', () {
-      expect(ordinal(1), '1st');
-      expect(ordinal(2), '2nd');
-      expect(ordinal(3), '3rd');
-      expect(ordinal(4), '4th');
-      expect(ordinal(6), '6th');
-      expect(ordinal(21), '21st');
-      expect(ordinal(102), '102nd');
+      expect(find.text('Hayrli kun,'), findsOneWidget);
     });
 
-    test('teens are all th, not st/nd/rd', () {
-      expect(ordinal(11), '11th');
-      expect(ordinal(12), '12th');
-      expect(ordinal(13), '13th');
-      expect(ordinal(111), '111th');
+    testWidgets('shows points and coins in their chips', (tester) async {
+      await tester.pumpWidget(_topbar(_azima));
+
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('home-points')),
+          matching: find.text('1 250'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('home-coins')),
+          matching: find.text('7'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('no photo shows the person placeholder', (tester) async {
+      await tester.pumpWidget(_topbar(_azima));
+
+      expect(find.byIcon(Icons.person_outline_rounded), findsOneWidget);
+    });
+
+    testWidgets('a long name and big balances fit on a narrow screen', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(320, 640) * 2;
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(
+        _topbar(
+          const UserEntity(
+            id: 'u1',
+            firstName: 'Muhammadamin Abdurahmonov',
+            phoneNumber: '998901234567',
+            points: 1234567,
+            coins: 98765,
+            level: 'A1',
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
     });
   });
 
@@ -107,46 +154,77 @@ void main() {
   });
 
   group('StreakCard', () {
-    testWidgets('ticks only the completed days', (tester) async {
-      await tester.pumpWidget(
-        _host(
-          const StreakCard(
-            days: 3,
-            week: [true, true, false, true, false, false, false],
+    Widget card(int days, {Locale locale = const Locale('en')}) =>
+        localizedHome(
+          locale: locale,
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(width: 342, child: StreakCard(days: days)),
+            ),
           ),
+        );
+
+    String mascot(WidgetTester tester) =>
+        (tester.widget<Image>(find.byKey(const ValueKey('streak-mascot'))).image
+                as AssetImage)
+            .assetName;
+
+    testWidgets('invites a student with no streak to start one', (
+      tester,
+    ) async {
+      await tester.pumpWidget(card(0, locale: const Locale('uz')));
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Seriyani boshlang'), findsOneWidget);
+      expect(
+        find.text('Birinchi darsni tugatib, seriyangizni yoqing'),
+        findsOneWidget,
+      );
+      expect(mascot(tester), 'assets/images/mascot_streak_0.png');
+    });
+
+    testWidgets('a running streak shows its length', (tester) async {
+      await tester.pumpWidget(card(3));
+
+      expect(find.text('3 days'), findsOneWidget);
+      expect(find.text("Don't forget me!"), findsOneWidget);
+      expect(mascot(tester), 'assets/images/mascot_streak_1.png');
+    });
+
+    test('the mascot changes at 1, 20 and 30 days', () {
+      expect(StreakCard.mascotFor(0), 'assets/images/mascot_streak_0.png');
+      expect(StreakCard.mascotFor(1), 'assets/images/mascot_streak_1.png');
+      expect(StreakCard.mascotFor(19), 'assets/images/mascot_streak_1.png');
+      expect(StreakCard.mascotFor(20), 'assets/images/mascot_streak_20.png');
+      expect(StreakCard.mascotFor(29), 'assets/images/mascot_streak_20.png');
+      expect(StreakCard.mascotFor(30), 'assets/images/mascot_streak_30.png');
+      expect(StreakCard.mascotFor(365), 'assets/images/mascot_streak_30.png');
+    });
+
+    testWidgets('the mascot rises above the card without covering the '
+        'content above it', (tester) async {
+      await tester.pumpWidget(card(0));
+
+      final whole = tester.getRect(find.byType(StreakCard));
+      final mascotRect = tester.getRect(
+        find.byKey(const ValueKey('streak-mascot')),
+      );
+      expect(mascotRect.top, greaterThanOrEqualTo(whole.top));
+      final panel = tester.getRect(
+        find.descendant(
+          of: find.byType(StreakCard),
+          matching: find.byType(Container),
         ),
       );
-
-      expect(tester.takeException(), isNull);
-      expect(find.byIcon(Icons.check_rounded), findsNWidgets(3));
-    });
-
-    testWidgets('renders no ticks for an empty week', (tester) async {
-      await tester.pumpWidget(
-        _host(const StreakCard(days: 0, week: StreakCard.emptyWeek)),
-      );
-
-      expect(tester.takeException(), isNull);
-      expect(find.byIcon(Icons.check_rounded), findsNothing);
-    });
-
-    testWidgets('a short week list still lays out seven cells', (tester) async {
-      await tester.pumpWidget(
-        _host(const StreakCard(days: 2, week: [true, true])),
-      );
-
-      expect(tester.takeException(), isNull);
-      expect(find.byIcon(Icons.check_rounded), findsNWidgets(2));
+      expect(mascotRect.top, lessThan(panel.top));
     });
 
     testWidgets('formats large streaks with a thousands separator', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        _host(const StreakCard(days: 1200, week: StreakCard.emptyWeek)),
-      );
+      await tester.pumpWidget(card(1200));
 
-      // Grouped by the locale now — a comma in English, a space in uz/ru.
+      // Grouped by the locale — a comma in English, a space in uz/ru.
       expect(find.text('1,200 days'), findsOneWidget);
     });
   });

@@ -20,7 +20,7 @@ void main() {
     await tester.pumpWidget(_host());
 
     expect(tester.takeException(), isNull);
-    for (final label in ['Home', 'Course', 'Study', 'Profile']) {
+    for (final label in ['Home', 'Courses', 'Mentor', 'Profile']) {
       expect(find.text(label), findsOneWidget);
     }
   });
@@ -30,22 +30,40 @@ void main() {
     await tester.pumpWidget(_host(onItemClick: taps.add));
 
     await tester.tap(find.text('Profile'));
-    await tester.tap(find.text('Course'));
+    await tester.tap(find.text('Courses'));
     await tester.pumpAndSettle();
 
     expect(taps, [3, 1]);
   });
 
-  testWidgets('only the current destination is tinted', (tester) async {
+  testWidgets('the green pill sits under the current destination', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(current: 1));
+    await tester.pumpAndSettle();
 
-    final scheme = ThemeData.light().colorScheme;
-    Color? colorOf(String label) =>
-        tester.widget<Text>(find.text(label)).style?.color;
+    final pill = tester.getRect(find.byKey(const ValueKey('navbar-selection')));
+    final course = tester.getCenter(find.text('Courses'));
+    expect(pill.contains(course), isTrue);
+    expect(pill.contains(tester.getCenter(find.text('Home'))), isFalse);
+  });
 
-    expect(colorOf('Course'), scheme.primary);
-    expect(colorOf('Home'), isNot(scheme.primary));
-    expect(colorOf('Profile'), isNot(scheme.primary));
+  testWidgets('the pill slides to a newly selected destination', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_host(current: 0));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(_host(current: 3));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    // Mid-slide: somewhere between the two.
+    final mid = tester.getRect(find.byKey(const ValueKey('navbar-selection')));
+    expect(mid.contains(tester.getCenter(find.text('Home'))), isFalse);
+    expect(mid.contains(tester.getCenter(find.text('Profile'))), isFalse);
+
+    await tester.pumpAndSettle();
+    final end = tester.getRect(find.byKey(const ValueKey('navbar-selection')));
+    expect(end.contains(tester.getCenter(find.text('Profile'))), isTrue);
   });
 
   testWidgets('under extendBody the body is told to clear the whole bar', (
@@ -88,10 +106,12 @@ void main() {
 
     final bar = tester.getRect(find.byType(AppNavbar));
     final pill = tester.getRect(
-      find.descendant(
-        of: find.byType(AppNavbar),
-        matching: find.byType(Container),
-      ),
+      find
+          .descendant(
+            of: find.byType(AppNavbar),
+            matching: find.byType(Container),
+          )
+          .first,
     );
 
     expect(pill.left, greaterThan(bar.left));

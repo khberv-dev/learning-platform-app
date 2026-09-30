@@ -173,25 +173,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navHome => 'Home';
 
   @override
-  String get navCourse => 'Course';
+  String get navCourse => 'Courses';
 
   @override
-  String get navStudy => 'Study';
+  String get navStudy => 'Mentor';
 
   @override
   String get navProfile => 'Profile';
 
   @override
-  String get levelBeginner => 'Beginner';
+  String get homeGreeting => 'Good day,';
 
   @override
-  String get levelIntermediate => 'Intermediate';
-
-  @override
-  String get levelAdvanced => 'Advanced';
-
-  @override
-  String get homeOnFire => 'You\'re on fire';
+  String homeGreetingName(String name) {
+    return '$name!';
+  }
 
   @override
   String homeStreakDays(int count) {
@@ -212,13 +208,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeDontForgetMe => 'Don\'t forget me!';
 
   @override
+  String get homeStreakStartTitle => 'Start your streak';
+
+  @override
+  String get homeStreakStartSubtitle =>
+      'Finish your first lesson to light up your streak';
+
+  @override
   String get homeStatsScores => 'Scores';
 
   @override
   String get homeStatsCoins => 'Coins';
-
-  @override
-  String get homeStatsRanking => 'Global ranking';
 
   @override
   String get homeLibrary => 'Library';

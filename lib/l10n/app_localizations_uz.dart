@@ -170,28 +170,24 @@ class AppLocalizationsUz extends AppLocalizations {
   String get levelCheckNo => 'Yo\'q, noldan boshlayapman';
 
   @override
-  String get navHome => 'Bosh sahifa';
+  String get navHome => 'Asosiy';
 
   @override
   String get navCourse => 'Kurslar';
 
   @override
-  String get navStudy => 'Ta\'lim';
+  String get navStudy => 'Mentor';
 
   @override
   String get navProfile => 'Profil';
 
   @override
-  String get levelBeginner => 'Boshlang\'ich';
+  String get homeGreeting => 'Hayrli kun,';
 
   @override
-  String get levelIntermediate => 'O\'rta';
-
-  @override
-  String get levelAdvanced => 'Yuqori';
-
-  @override
-  String get homeOnFire => 'Zo\'r ketyapsiz';
+  String homeGreetingName(String name) {
+    return '$name!';
+  }
 
   @override
   String homeStreakDays(int count) {
@@ -212,13 +208,17 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeDontForgetMe => 'Meni unutmang!';
 
   @override
+  String get homeStreakStartTitle => 'Seriyani boshlang';
+
+  @override
+  String get homeStreakStartSubtitle =>
+      'Birinchi darsni tugatib, seriyangizni yoqing';
+
+  @override
   String get homeStatsScores => 'Ballar';
 
   @override
   String get homeStatsCoins => 'Tangalar';
-
-  @override
-  String get homeStatsRanking => 'Umumiy reyting';
 
   @override
   String get homeLibrary => 'Kutubxona';

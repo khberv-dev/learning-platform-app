@@ -176,22 +176,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navCourse => 'Курсы';
 
   @override
-  String get navStudy => 'Обучение';
+  String get navStudy => 'Ментор';
 
   @override
   String get navProfile => 'Профиль';
 
   @override
-  String get levelBeginner => 'Начальный';
+  String get homeGreeting => 'Добрый день,';
 
   @override
-  String get levelIntermediate => 'Средний';
-
-  @override
-  String get levelAdvanced => 'Продвинутый';
-
-  @override
-  String get homeOnFire => 'Вы в ударе';
+  String homeGreetingName(String name) {
+    return '$name!';
+  }
 
   @override
   String homeStreakDays(int count) {
@@ -214,13 +210,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeDontForgetMe => 'Не забывайте про меня!';
 
   @override
+  String get homeStreakStartTitle => 'Начните серию';
+
+  @override
+  String get homeStreakStartSubtitle =>
+      'Пройдите первый урок, чтобы зажечь серию';
+
+  @override
   String get homeStatsScores => 'Баллы';
 
   @override
   String get homeStatsCoins => 'Монеты';
-
-  @override
-  String get homeStatsRanking => 'Место в рейтинге';
 
   @override
   String get homeLibrary => 'Библиотека';

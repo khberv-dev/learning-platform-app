@@ -415,13 +415,13 @@ abstract class AppLocalizations {
   /// No description provided for @navCourse.
   ///
   /// In en, this message translates to:
-  /// **'Course'**
+  /// **'Courses'**
   String get navCourse;
 
   /// No description provided for @navStudy.
   ///
   /// In en, this message translates to:
-  /// **'Study'**
+  /// **'Mentor'**
   String get navStudy;
 
   /// No description provided for @navProfile.
@@ -430,29 +430,17 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get navProfile;
 
-  /// No description provided for @levelBeginner.
+  /// No description provided for @homeGreeting.
   ///
   /// In en, this message translates to:
-  /// **'Beginner'**
-  String get levelBeginner;
+  /// **'Good day,'**
+  String get homeGreeting;
 
-  /// No description provided for @levelIntermediate.
+  /// No description provided for @homeGreetingName.
   ///
   /// In en, this message translates to:
-  /// **'Intermediate'**
-  String get levelIntermediate;
-
-  /// No description provided for @levelAdvanced.
-  ///
-  /// In en, this message translates to:
-  /// **'Advanced'**
-  String get levelAdvanced;
-
-  /// No description provided for @homeOnFire.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'re on fire'**
-  String get homeOnFire;
+  /// **'{name}!'**
+  String homeGreetingName(String name);
 
   /// Streaks run into the thousands, so the count is grouped
   ///
@@ -466,6 +454,18 @@ abstract class AppLocalizations {
   /// **'Don\'t forget me!'**
   String get homeDontForgetMe;
 
+  /// No description provided for @homeStreakStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your streak'**
+  String get homeStreakStartTitle;
+
+  /// No description provided for @homeStreakStartSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your first lesson to light up your streak'**
+  String get homeStreakStartSubtitle;
+
   /// No description provided for @homeStatsScores.
   ///
   /// In en, this message translates to:
@@ -477,12 +477,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Coins'**
   String get homeStatsCoins;
-
-  /// No description provided for @homeStatsRanking.
-  ///
-  /// In en, this message translates to:
-  /// **'Global ranking'**
-  String get homeStatsRanking;
 
   /// No description provided for @homeLibrary.
   ///
