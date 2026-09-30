@@ -42,9 +42,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonOk => 'OK';
 
   @override
-  String get commonJoin => 'Join';
-
-  @override
   String get commonLoading => 'Loading…';
 
   @override
@@ -182,6 +179,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navProfile => 'Profile';
 
   @override
+  String get navMission => 'Mission';
+
+  @override
   String get homeGreeting => 'Good day,';
 
   @override
@@ -239,24 +239,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeResume => 'Resume';
 
   @override
-  String get homeLiveLessons => 'Live lessons';
-
-  @override
-  String get homeLiveNow => 'LIVE NOW';
-
-  @override
-  String get homeUpcoming => 'UPCOMING';
-
-  @override
-  String get homeJoinLesson => 'Join Lesson';
-
-  @override
-  String get homeMoreUpcoming => 'More upcoming lessons';
-
-  @override
-  String get homeNoUpcomingLessons => 'No upcoming lessons';
-
-  @override
   String get homeAiTestTitle => 'Test your skills with AI';
 
   @override
@@ -280,43 +262,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coursesTitle => 'Courses';
 
   @override
-  String get coursesTabCourses => 'Courses';
+  String get coursesSearchHint => 'Search...';
 
   @override
-  String get coursesTabLive => 'Live sessions';
+  String get coursesShowLess => 'Show less';
 
   @override
-  String get coursesRoadmap => 'Roadmap';
+  String get coursesNoResults => 'No courses found';
 
   @override
-  String get coursesMyCourses => 'My courses';
+  String get coursesMyCourses => 'Current courses';
 
   @override
-  String get coursesAvailable => 'Available to purchase';
+  String get coursesAvailable => 'Available courses';
 
   @override
   String get coursesNoneAvailable => 'No courses available.';
 
   @override
-  String get coursesCurrentUpcoming => 'Current & Upcoming';
-
-  @override
-  String get coursesPastSessions => 'Past sessions';
-
-  @override
-  String coursesRecordedCount(int count) {
-    return '$count recorded';
-  }
-
-  @override
-  String get coursesNoRecordedTitle => 'No recorded sessions';
-
-  @override
-  String get coursesNoRecordedSubtitle =>
-      'Recorded live sessions will appear\nhere once available';
-
-  @override
-  String get courseUnits => 'Units';
+  String get courseUnits => 'Modules';
 
   @override
   String courseLessonCount(int count) {
@@ -330,19 +294,47 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get courseChoosePlan => 'Choose a plan';
+  String courseModuleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modules',
+      one: '$count module',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String get courseProgress => 'Progress';
+  String courseHourCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours',
+      one: '$count hour',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String get courseLearnMore => 'Learn more';
+  String get courseAbout => 'About the course';
 
   @override
-  String get courseRecordedSession => 'RECORDED SESSION';
+  String get courseTeacher => 'Teacher';
 
   @override
-  String get courseRecorded => 'RECORDED';
+  String get courseOtherCourses => 'Other courses';
+
+  @override
+  String get courseSeeAll => 'See all';
+
+  @override
+  String get courseNotEnrolledTitle => 'You\'re not enrolled in this course';
+
+  @override
+  String get courseNotEnrolledMessage => 'Buy a plan to open its lessons.';
+
+  @override
+  String get courseChoosePlan => 'Buy a plan';
 
   @override
   String unitNumber(String number) {
@@ -939,6 +931,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsEmptySubtitle => 'You\'re all caught up!';
+
+  @override
+  String get roadmapStart => 'Start';
+
+  @override
+  String roadmapLevelNumber(int number) {
+    return 'Lv.$number';
+  }
 
   @override
   String get roadmapLevelA1 => 'Beginner';

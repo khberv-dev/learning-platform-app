@@ -12,6 +12,7 @@ import 'package:student/ui/courses/widget/purchase_success_dialog.dart';
 import 'package:student/ui/home/home_page.dart';
 import 'package:student/ui/main/widget/app_navbar.dart';
 import 'package:student/ui/profile/profile_page.dart';
+import 'package:student/ui/roadmap/roadmap_page.dart';
 import 'package:student/ui/study/study_page.dart';
 
 class AppScreen extends ConsumerStatefulWidget {
@@ -123,7 +124,13 @@ class _AppScreenState extends ConsumerState<AppScreen>
       // applies the top inset itself.
       body: IndexedStack(
         index: navbarIndex,
-        children: const [HomePage(), CoursesPage(), StudyPage(), ProfilePage()],
+        children: const [
+          HomePage(),
+          CoursesPage(),
+          RoadmapPage(),
+          StudyPage(),
+          ProfilePage(),
+        ],
       ),
     );
   }

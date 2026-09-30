@@ -5,9 +5,14 @@ class UnitEntity {
   final String title;
   final int lessonsCount;
 
+  /// Not yet open to the student, even in a course they own — e.g. until the
+  /// previous unit is finished. False when the API doesn't say.
+  final bool isLocked;
+
   const UnitEntity({
     required this.id,
     required this.title,
     required this.lessonsCount,
+    this.isLocked = false,
   });
 }

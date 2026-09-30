@@ -2,398 +2,283 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/courses/domain/entity/course_entity.dart';
+import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
-import 'package:student/core/live_lessons/presentation/live_lessons_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
-import 'package:student/shared/widget/app_empty_state.dart';
-import 'package:student/shared/widget/no_upcoming_lessons_card.dart';
-import 'package:student/shared/widget/section_title.dart';
-import 'package:student/ui/courses/widget/available_course_card.dart';
-import 'package:student/ui/courses/widget/courses_tab_bar.dart';
-import 'package:student/ui/courses/widget/live_lesson_card.dart';
-import 'package:student/ui/courses/widget/live_session_card.dart';
-import 'package:student/ui/courses/widget/my_course_card.dart';
-import 'package:student/ui/home/widget/home_promo_card.dart';
-import 'package:student/ui/roadmap/roadmap_screen.dart';
+import 'package:student/ui/courses/widget/courses_page_cards.dart';
+import 'package:student/utils/messenger.dart';
 
-class CoursesPage extends StatefulWidget {
+/// How many of each list show before "See all".
+const _myCoursesPreview = 1;
+const _availablePreview = 4;
+
+/// The navbar's Courses tab: a search box, the student's current courses,
+/// and a grid of courses on sale. Each list shows a preview until "See all"
+/// opens it up; a search always shows every match.
+class CoursesPage extends ConsumerStatefulWidget {
   const CoursesPage({super.key});
 
   @override
-  State<CoursesPage> createState() => _CoursesPageState();
+  ConsumerState<CoursesPage> createState() => _CoursesPageState();
 }
 
-class _CoursesPageState extends State<CoursesPage> {
-  int _tab = 0;
+class _CoursesPageState extends ConsumerState<CoursesPage> {
+  final _search = TextEditingController();
+
+  bool _showAllMine = false;
+  bool _showAllAvailable = false;
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.xl,
-            AppSpacing.lg + MediaQuery.paddingOf(context).top,
-            AppSpacing.xl,
-            AppSpacing.lg,
-          ),
-          child: SectionTitle(title: l10n.coursesTitle, fontSize: 30),
-        ),
-        CoursesTabBar(
-          labels: [l10n.coursesTabCourses, l10n.coursesTabLive],
-          current: _tab,
-          onSelected: (i) => setState(() => _tab = i),
-          // Roadmap is its own screen, not a tab, so it never reads as active.
-          actionLabel: l10n.coursesRoadmap,
-          onAction: () => context.push(RoadmapScreen.path),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        Expanded(
-          child: IndexedStack(
-            index: _tab,
-            children: const [_CoursesTab(), _LiveSessionsTab()],
-          ),
-        ),
-      ],
-    );
+  void initState() {
+    super.initState();
+    _search.addListener(() => setState(() {}));
   }
-}
-
-class _CoursesTab extends ConsumerStatefulWidget {
-  const _CoursesTab();
 
   @override
-  ConsumerState<_CoursesTab> createState() => _CoursesTabState();
-}
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
 
-class _CoursesTabState extends ConsumerState<_CoursesTab> {
-  /// Anchors the "Available to purchase" heading so the empty state's button
-  /// can scroll straight to it.
-  final _availableKey = GlobalKey();
+  String get _query => _search.text.trim().toLowerCase();
 
-  void _scrollToAvailable() {
-    final target = _availableKey.currentContext;
-    if (target == null) return;
-    Scrollable.ensureVisible(
-      target,
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOut,
-    );
+  bool _matches(String title) => title.toLowerCase().contains(_query);
+
+  Future<void> _refresh() async {
+    ref.invalidate(myCoursesControllerProvider);
+    ref.invalidate(availableCoursesControllerProvider);
+    await Future.wait([
+      ref.read(myCoursesControllerProvider.future),
+      ref.read(availableCoursesControllerProvider.future),
+    ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    final myCourses = ref.watch(myCoursesControllerProvider);
-    final available = ref.watch(availableCoursesControllerProvider);
     final l10n = AppLocalizations.of(context);
+    final myState = ref.watch(myCoursesControllerProvider);
+    final availableState = ref.watch(availableCoursesControllerProvider);
+    final searching = _query.isNotEmpty;
+    // A student who owns nothing gets no "Current courses" section at all.
+    final ownsNone = myState.value?.isEmpty ?? false;
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(myCoursesControllerProvider);
-        ref.invalidate(availableCoursesControllerProvider);
-        await Future.wait([
-          ref.read(myCoursesControllerProvider.future),
-          ref.read(availableCoursesControllerProvider.future),
-        ]);
-      },
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                20,
-                AppSpacing.xl,
-                12,
-              ),
-              child: SectionTitle(title: l10n.coursesMyCourses, fontSize: 22),
-            ),
-          ),
-          myCourses.when(
-            loading: () => const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-            error: (e, _) => SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                child: Text(
-                  e.toString(),
-                  style: const TextStyle(color: Color(0xFF6B7280)),
-                ),
-              ),
-            ),
-            data: (courses) {
-              if (courses.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xl,
-                    ),
-                    child: _NoMyCourses(onBrowse: _scrollToAvailable),
-                  ),
-                );
-              }
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                sliver: SliverList.separated(
-                  itemCount: courses.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (_, i) => MyCourseCard(course: courses[i]),
-                ),
-              );
-            },
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              key: _availableKey,
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                24,
-                AppSpacing.xl,
-                12,
-              ),
-              child: SectionTitle(title: l10n.coursesAvailable, fontSize: 22),
-            ),
-          ),
-          available.when(
-            loading: () => const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-            error: (e, _) => SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                child: Text(
-                  e.toString(),
-                  style: const TextStyle(color: Color(0xFF6B7280)),
-                ),
-              ),
-            ),
-            data: (courses) {
-              if (courses.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xl,
-                    ),
-                    child: Text(
-                      l10n.coursesNoneAvailable,
-                      style: const TextStyle(color: Color(0xFF6B7280)),
-                    ),
-                  ),
-                );
-              }
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                sliver: SliverGrid.builder(
-                  itemCount: courses.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: AppSpacing.lg,
-                    crossAxisSpacing: AppSpacing.lg,
-                    childAspectRatio: 0.62,
-                  ),
-                  itemBuilder: (_, i) =>
-                      AvailableCourseCard(course: courses[i]),
-                ),
-              );
-            },
-          ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+    final mine = [
+      for (final c in myState.value ?? const <MyCourseEntity>[])
+        if (_matches(c.title)) c,
+    ];
+    final available = [
+      for (final c in availableState.value ?? const <CourseEntity>[])
+        if (_matches(c.title)) c,
+    ];
+    final shownMine = searching || _showAllMine
+        ? mine
+        : mine.take(_myCoursesPreview).toList();
+    final shownAvailable = searching || _showAllAvailable
+        ? available
+        : available.take(_availablePreview).toList();
 
-class _LiveSessionsTab extends ConsumerWidget {
-  const _LiveSessionsTab();
+    // The link reads "See all" until opened, then "Show less"; it only
+    // appears when there's more than the preview to see.
+    String? toggleLabel(bool open, int count, int preview) =>
+        searching || count <= preview
+        ? null
+        : open
+        ? l10n.coursesShowLess
+        : l10n.courseSeeAll;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final recordedState = ref.watch(liveLessonsControllerProvider);
-    final scheduledState = ref.watch(myLiveLessonsProvider);
-    final l10n = AppLocalizations.of(context);
+    const sidePadding = EdgeInsets.symmetric(horizontal: AppSpacing.md);
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(liveLessonsControllerProvider);
-        ref.invalidate(myLiveLessonsProvider);
-        await Future.wait([
-          ref.read(liveLessonsControllerProvider.future),
-          ref.read(myLiveLessonsProvider.future),
-        ]);
-      },
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          // Current & Upcoming section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                20,
-                AppSpacing.xl,
-                12,
+    return ColoredBox(
+      color: coursesPageBackground,
+      child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md + MediaQuery.paddingOf(context).top,
+                AppSpacing.md,
+                AppSpacing.md,
               ),
-              child: SectionTitle(
-                title: l10n.coursesCurrentUpcoming,
-                fontSize: 22,
-              ),
-            ),
-          ),
-          scheduledState.when(
-            loading: () => const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-            error: (e, st) =>
-                const SliverToBoxAdapter(child: _NoUpcomingSessions()),
-            data: (lessons) {
-              final upcoming = lessons
-                  .where((l) => l.isUpcoming || l.isOngoing)
-                  .toList();
-              if (upcoming.isEmpty) {
-                return const SliverToBoxAdapter(child: _NoUpcomingSessions());
-              }
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                sliver: SliverList.separated(
-                  itemCount: upcoming.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (_, i) => LiveLessonCard(lesson: upcoming[i]),
-                ),
-              );
-            },
-          ),
-          // Past / Recorded section
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.xl,
-                24,
-                AppSpacing.xl,
-                12,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SectionTitle(title: l10n.coursesPastSessions, fontSize: 22),
-                  // Only meaningful once something has been recorded.
-                  if ((recordedState.value?.length ?? 0) > 0)
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                     Text(
-                      l10n.coursesRecordedCount(recordedState.value!.length),
+                      l10n.coursesTitle,
                       style: const TextStyle(
-                        color: Color(0xff9aa5ad),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF15141A),
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                ],
+                    const SizedBox(height: AppSpacing.md),
+                    CoursesSearchField(controller: _search),
+                  ],
+                ),
               ),
             ),
-          ),
-          recordedState.when(
-            loading: () => const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-            error: (e, st) =>
-                const SliverToBoxAdapter(child: _NoRecordedSessions()),
-            data: (lessons) {
-              if (lessons.isEmpty) {
-                return const SliverToBoxAdapter(child: _NoRecordedSessions());
-              }
-              return SliverPadding(
+            // ── Current courses ──
+            if (!ownsNone && (!searching || mine.isNotEmpty)) ...[
+              SliverPadding(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xl,
-                  0,
-                  AppSpacing.xl,
-                  96,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
                 ),
-                sliver: SliverList.separated(
-                  itemCount: lessons.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 16),
-                  itemBuilder: (_, i) => LiveSessionCard(lesson: lessons[i]),
+                sliver: SliverToBoxAdapter(
+                  child: CoursesSectionHeader(
+                    title: l10n.coursesMyCourses,
+                    action: toggleLabel(
+                      _showAllMine,
+                      mine.length,
+                      _myCoursesPreview,
+                    ),
+                    onAction: () =>
+                        setState(() => _showAllMine = !_showAllMine),
+                  ),
                 ),
-              );
-            },
-          ),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+              ),
+              SliverPadding(
+                padding: sidePadding,
+                sliver: myState.when(
+                  loading: () => const _LoadingSliver(),
+                  error: (e, _) => _MessageSliver(apiErrorMessage(context, e)),
+                  data: (_) {
+                    return SliverList.separated(
+                      itemCount: shownMine.length,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: AppSpacing.md),
+                      itemBuilder: (context, i) => CurrentCourseCard(
+                        key: ValueKey('my-course-${shownMine[i].courseId}'),
+                        course: shownMine[i],
+                        colorIndex: i,
+                        onTap: () => context.push(
+                          '/course/${shownMine[i].courseId}?owned=true',
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+            // ── Available courses ──
+            if (!searching || available.isNotEmpty) ...[
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.xl,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: CoursesSectionHeader(
+                    title: l10n.coursesAvailable,
+                    action: toggleLabel(
+                      _showAllAvailable,
+                      available.length,
+                      _availablePreview,
+                    ),
+                    onAction: () =>
+                        setState(() => _showAllAvailable = !_showAllAvailable),
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: sidePadding,
+                sliver: availableState.when(
+                  loading: () => const _LoadingSliver(),
+                  error: (e, _) => _MessageSliver(apiErrorMessage(context, e)),
+                  data: (_) {
+                    if (available.isEmpty) {
+                      return _MessageSliver(l10n.coursesNoneAvailable);
+                    }
+                    Widget tile(int i) => AvailableCourseTile(
+                      key: ValueKey('available-${shownAvailable[i].id}'),
+                      course: shownAvailable[i],
+                      colorIndex: i,
+                      onTap: () => context.push(
+                        '/course/${shownAvailable[i].id}?owned=false',
+                      ),
+                    );
+                    // Two to a row, each row as tall as its taller tile —
+                    // a fixed-height grid would clip long titles and
+                    // descriptions, and larger system text.
+                    final rows = (shownAvailable.length + 1) ~/ 2;
+                    return SliverList.separated(
+                      itemCount: rows,
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: AppSpacing.lg),
+                      itemBuilder: (context, row) {
+                        final left = row * 2;
+                        final hasRight = left + 1 < shownAvailable.length;
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: tile(left)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: hasRight
+                                  ? tile(left + 1)
+                                  : const SizedBox.shrink(),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+            if (searching && mine.isEmpty && available.isEmpty)
+              SliverPadding(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                sliver: _MessageSliver(l10n.coursesNoResults),
+              ),
+            // Clear of the floating navbar.
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _NoUpcomingSessions extends StatelessWidget {
-  const _NoUpcomingSessions();
+class _LoadingSliver extends StatelessWidget {
+  const _LoadingSliver();
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      child: NoUpcomingLessonsCard(),
-    );
-  }
-}
-
-class _NoRecordedSessions extends StatelessWidget {
-  const _NoRecordedSessions();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-      child: AppEmptyState(
-        imagePath: 'assets/images/no_recorded_sessions_puppet.png',
-        title: l10n.coursesNoRecordedTitle,
-        subtitle: l10n.coursesNoRecordedSubtitle,
+    return const SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: AppSpacing.xl),
+        child: Center(child: CircularProgressIndicator()),
       ),
     );
   }
 }
 
-class _NoMyCourses extends StatelessWidget {
-  final VoidCallback onBrowse;
+class _MessageSliver extends StatelessWidget {
+  final String text;
 
-  const _NoMyCourses({required this.onBrowse});
+  const _MessageSliver(this.text);
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
-    return HomePromoCard(
-      background: Theme.of(context).colorScheme.surface,
-      title: l10n.homeNoCoursesTitle,
-      subtitle: l10n.homeNoCoursesSubtitle,
-      buttonLabel: l10n.homeNoCoursesButton,
-      imagePath: 'assets/images/no_course_puppet.png',
-      // Already on the courses tab, so browsing means the list below.
-      onTap: onBrowse,
+    return SliverToBoxAdapter(
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: Color(0xFF6D737E), fontSize: 14),
+      ),
     );
   }
 }

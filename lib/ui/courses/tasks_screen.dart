@@ -9,6 +9,7 @@ import 'package:student/core/courses/presentation/tasks_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/task_results_screen.dart';
+import 'package:student/ui/courses/widget/lesson_load_error.dart';
 import 'package:student/ui/courses/widget/task_content_view.dart';
 import 'package:student/utils/messenger.dart';
 
@@ -147,16 +148,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
             Expanded(
               child: state.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (e, _) => Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Text(
-                      e.toString(),
-                      style: const TextStyle(color: Color(0xFF6B7280)),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                error: (e, _) =>
+                    LessonLoadError(error: e, courseId: widget.courseId),
                 data: (allTasks) {
                   // A task with no questions is nothing to answer — content
                   // alone belongs on the lesson, not in the solving queue.

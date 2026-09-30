@@ -3,14 +3,14 @@ import 'package:student/core/groups/data/repository/groups_repository.dart';
 import 'package:student/core/groups/domain/entity/group_entity.dart';
 import 'package:student/core/groups/domain/repository/i_groups_repository.dart';
 
-final useGetMyGroupProvider = Provider<UseGetMyGroup>(
-  (ref) => UseGetMyGroup(ref.read(groupsRepositoryProvider)),
+final useGetMyGroupsProvider = Provider<UseGetMyGroups>(
+  (ref) => UseGetMyGroups(ref.read(groupsRepositoryProvider)),
 );
 
-class UseGetMyGroup {
+class UseGetMyGroups {
   final IGroupsRepository _repository;
 
-  const UseGetMyGroup(this._repository);
+  const UseGetMyGroups(this._repository);
 
-  Future<GroupEntity?> call() => _repository.getMyGroup();
+  Future<List<GroupEntity>> call() => _repository.getMyGroups();
 }

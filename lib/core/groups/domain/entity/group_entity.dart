@@ -1,27 +1,5 @@
 import 'package:student/core/mentors/domain/entity/mentor_entity.dart';
 
-enum GroupMentorRole {
-  primary,
-  support;
-
-  static GroupMentorRole parse(String? raw) => switch (raw) {
-    'primary' => GroupMentorRole.primary,
-    _ => GroupMentorRole.support,
-  };
-}
-
-class GroupMentorEntity {
-  final String id;
-  final GroupMentorRole role;
-  final MentorEntity mentor;
-
-  const GroupMentorEntity({
-    required this.id,
-    required this.role,
-    required this.mentor,
-  });
-}
-
 class GroupStudentEntity {
   final String id;
   final String firstName;
@@ -42,14 +20,27 @@ class GroupStudentEntity {
       : firstName;
 }
 
-/// A named cohort with a mentor team and a student roster — the only way a
-/// student is paired with a mentor. Membership is fully admin-managed.
+/// The course a group studies.
+class GroupCourseEntity {
+  final String id;
+  final String title;
+
+  const GroupCourseEntity({required this.id, required this.title});
+}
+
+/// A named cohort studying one course, led by a single primary mentor — the
+/// only way a student is paired with a mentor. Membership is fully
+/// admin-managed, and a student can be in several groups, one per course.
 class GroupEntity {
   final String id;
   final String title;
   final Map<String, List<String>> schedule;
   final bool isActive;
-  final List<GroupMentorEntity> mentors;
+  final GroupCourseEntity? course;
+
+  /// Null until an admin assigns one.
+  final MentorEntity? primaryMentor;
+
   final List<GroupStudentEntity> students;
 
   const GroupEntity({
@@ -57,17 +48,8 @@ class GroupEntity {
     required this.title,
     required this.isActive,
     this.schedule = const {},
-    this.mentors = const [],
+    this.course,
+    this.primaryMentor,
     this.students = const [],
   });
-
-  GroupMentorEntity? get primaryMentor {
-    for (final m in mentors) {
-      if (m.role == GroupMentorRole.primary) return m;
-    }
-    return null;
-  }
-
-  List<GroupMentorEntity> get supportMentors =>
-      mentors.where((m) => m.role == GroupMentorRole.support).toList();
 }

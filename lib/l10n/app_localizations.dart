@@ -166,12 +166,6 @@ abstract class AppLocalizations {
   /// **'OK'**
   String get commonOk;
 
-  /// No description provided for @commonJoin.
-  ///
-  /// In en, this message translates to:
-  /// **'Join'**
-  String get commonJoin;
-
   /// No description provided for @commonLoading.
   ///
   /// In en, this message translates to:
@@ -430,6 +424,12 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get navProfile;
 
+  /// No description provided for @navMission.
+  ///
+  /// In en, this message translates to:
+  /// **'Mission'**
+  String get navMission;
+
   /// No description provided for @homeGreeting.
   ///
   /// In en, this message translates to:
@@ -514,42 +514,6 @@ abstract class AppLocalizations {
   /// **'Resume'**
   String get homeResume;
 
-  /// No description provided for @homeLiveLessons.
-  ///
-  /// In en, this message translates to:
-  /// **'Live lessons'**
-  String get homeLiveLessons;
-
-  /// No description provided for @homeLiveNow.
-  ///
-  /// In en, this message translates to:
-  /// **'LIVE NOW'**
-  String get homeLiveNow;
-
-  /// No description provided for @homeUpcoming.
-  ///
-  /// In en, this message translates to:
-  /// **'UPCOMING'**
-  String get homeUpcoming;
-
-  /// No description provided for @homeJoinLesson.
-  ///
-  /// In en, this message translates to:
-  /// **'Join Lesson'**
-  String get homeJoinLesson;
-
-  /// No description provided for @homeMoreUpcoming.
-  ///
-  /// In en, this message translates to:
-  /// **'More upcoming lessons'**
-  String get homeMoreUpcoming;
-
-  /// No description provided for @homeNoUpcomingLessons.
-  ///
-  /// In en, this message translates to:
-  /// **'No upcoming lessons'**
-  String get homeNoUpcomingLessons;
-
   /// No description provided for @homeAiTestTitle.
   ///
   /// In en, this message translates to:
@@ -592,34 +556,34 @@ abstract class AppLocalizations {
   /// **'Courses'**
   String get coursesTitle;
 
-  /// No description provided for @coursesTabCourses.
+  /// No description provided for @coursesSearchHint.
   ///
   /// In en, this message translates to:
-  /// **'Courses'**
-  String get coursesTabCourses;
+  /// **'Search...'**
+  String get coursesSearchHint;
 
-  /// No description provided for @coursesTabLive.
+  /// No description provided for @coursesShowLess.
   ///
   /// In en, this message translates to:
-  /// **'Live sessions'**
-  String get coursesTabLive;
+  /// **'Show less'**
+  String get coursesShowLess;
 
-  /// No description provided for @coursesRoadmap.
+  /// No description provided for @coursesNoResults.
   ///
   /// In en, this message translates to:
-  /// **'Roadmap'**
-  String get coursesRoadmap;
+  /// **'No courses found'**
+  String get coursesNoResults;
 
   /// No description provided for @coursesMyCourses.
   ///
   /// In en, this message translates to:
-  /// **'My courses'**
+  /// **'Current courses'**
   String get coursesMyCourses;
 
   /// No description provided for @coursesAvailable.
   ///
   /// In en, this message translates to:
-  /// **'Available to purchase'**
+  /// **'Available courses'**
   String get coursesAvailable;
 
   /// No description provided for @coursesNoneAvailable.
@@ -628,40 +592,10 @@ abstract class AppLocalizations {
   /// **'No courses available.'**
   String get coursesNoneAvailable;
 
-  /// No description provided for @coursesCurrentUpcoming.
-  ///
-  /// In en, this message translates to:
-  /// **'Current & Upcoming'**
-  String get coursesCurrentUpcoming;
-
-  /// No description provided for @coursesPastSessions.
-  ///
-  /// In en, this message translates to:
-  /// **'Past sessions'**
-  String get coursesPastSessions;
-
-  /// No description provided for @coursesRecordedCount.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} recorded'**
-  String coursesRecordedCount(int count);
-
-  /// No description provided for @coursesNoRecordedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No recorded sessions'**
-  String get coursesNoRecordedTitle;
-
-  /// No description provided for @coursesNoRecordedSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Recorded live sessions will appear\nhere once available'**
-  String get coursesNoRecordedSubtitle;
-
   /// No description provided for @courseUnits.
   ///
   /// In en, this message translates to:
-  /// **'Units'**
+  /// **'Modules'**
   String get courseUnits;
 
   /// No description provided for @courseLessonCount.
@@ -670,35 +604,59 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} lesson} other{{count} lessons}}'**
   String courseLessonCount(int count);
 
+  /// No description provided for @courseModuleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} module} other{{count} modules}}'**
+  String courseModuleCount(int count);
+
+  /// No description provided for @courseHourCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} hour} other{{count} hours}}'**
+  String courseHourCount(int count);
+
+  /// No description provided for @courseAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About the course'**
+  String get courseAbout;
+
+  /// No description provided for @courseTeacher.
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher'**
+  String get courseTeacher;
+
+  /// No description provided for @courseOtherCourses.
+  ///
+  /// In en, this message translates to:
+  /// **'Other courses'**
+  String get courseOtherCourses;
+
+  /// No description provided for @courseSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get courseSeeAll;
+
+  /// No description provided for @courseNotEnrolledTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re not enrolled in this course'**
+  String get courseNotEnrolledTitle;
+
+  /// No description provided for @courseNotEnrolledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy a plan to open its lessons.'**
+  String get courseNotEnrolledMessage;
+
   /// No description provided for @courseChoosePlan.
   ///
   /// In en, this message translates to:
-  /// **'Choose a plan'**
+  /// **'Buy a plan'**
   String get courseChoosePlan;
-
-  /// No description provided for @courseProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'Progress'**
-  String get courseProgress;
-
-  /// No description provided for @courseLearnMore.
-  ///
-  /// In en, this message translates to:
-  /// **'Learn more'**
-  String get courseLearnMore;
-
-  /// No description provided for @courseRecordedSession.
-  ///
-  /// In en, this message translates to:
-  /// **'RECORDED SESSION'**
-  String get courseRecordedSession;
-
-  /// No description provided for @courseRecorded.
-  ///
-  /// In en, this message translates to:
-  /// **'RECORDED'**
-  String get courseRecorded;
 
   /// No description provided for @unitNumber.
   ///
@@ -1749,6 +1707,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'re all caught up!'**
   String get notificationsEmptySubtitle;
+
+  /// No description provided for @roadmapStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get roadmapStart;
+
+  /// No description provided for @roadmapLevelNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Lv.{number}'**
+  String roadmapLevelNumber(int number);
 
   /// No description provided for @roadmapLevelA1.
   ///

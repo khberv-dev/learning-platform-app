@@ -21,9 +21,8 @@ class PaymentEntity {
   final int amount;
   final String? planTitle;
 
-  /// The course a settled payment's plan belongs to. Reached through
-  /// `purchases[0].subscription.plan.course` on the wire — a payment no
-  /// longer carries a direct enrolment relation.
+  /// The course the payment's plan belongs to. Reached through
+  /// `purchases[0].plan.course` on the wire, paid or not.
   final String? courseTitle;
 
   final String createdAt;

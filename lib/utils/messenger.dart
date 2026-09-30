@@ -22,6 +22,11 @@ String apiErrorMessage(BuildContext context, Object error) {
   return AppLocalizations.of(context).commonSomethingWentWrong;
 }
 
+/// Whether [error] is the API refusing access — for course content, that the
+/// student isn't enrolled.
+bool isForbidden(Object error) =>
+    error is DioException && error.response?.statusCode == 403;
+
 /// A red message sliding down from the top: [message] as the title, [detail]
 /// as an optional grey line under it.
 void showErrorMessage(BuildContext context, String message, {String? detail}) {

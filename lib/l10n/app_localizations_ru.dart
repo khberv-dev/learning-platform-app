@@ -42,9 +42,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonOk => 'ОК';
 
   @override
-  String get commonJoin => 'Войти';
-
-  @override
   String get commonLoading => 'Загрузка…';
 
   @override
@@ -182,6 +179,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navProfile => 'Профиль';
 
   @override
+  String get navMission => 'Миссия';
+
+  @override
   String get homeGreeting => 'Добрый день,';
 
   @override
@@ -241,24 +241,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeResume => 'Продолжить';
 
   @override
-  String get homeLiveLessons => 'Живые уроки';
-
-  @override
-  String get homeLiveNow => 'СЕЙЧАС В ЭФИРЕ';
-
-  @override
-  String get homeUpcoming => 'СКОРО';
-
-  @override
-  String get homeJoinLesson => 'Присоединиться';
-
-  @override
-  String get homeMoreUpcoming => 'Другие ближайшие уроки';
-
-  @override
-  String get homeNoUpcomingLessons => 'Нет ближайших уроков';
-
-  @override
   String get homeAiTestTitle => 'Проверьте себя с ИИ';
 
   @override
@@ -282,43 +264,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get coursesTitle => 'Курсы';
 
   @override
-  String get coursesTabCourses => 'Курсы';
+  String get coursesSearchHint => 'Поиск...';
 
   @override
-  String get coursesTabLive => 'Живые уроки';
+  String get coursesShowLess => 'Свернуть';
 
   @override
-  String get coursesRoadmap => 'Маршрут';
+  String get coursesNoResults => 'Курсы не найдены';
 
   @override
-  String get coursesMyCourses => 'Мои курсы';
+  String get coursesMyCourses => 'Текущие курсы';
 
   @override
-  String get coursesAvailable => 'Доступны для покупки';
+  String get coursesAvailable => 'Доступные курсы';
 
   @override
   String get coursesNoneAvailable => 'Курсов пока нет.';
 
   @override
-  String get coursesCurrentUpcoming => 'Текущие и ближайшие';
-
-  @override
-  String get coursesPastSessions => 'Прошедшие уроки';
-
-  @override
-  String coursesRecordedCount(int count) {
-    return '$count в записи';
-  }
-
-  @override
-  String get coursesNoRecordedTitle => 'Нет записей';
-
-  @override
-  String get coursesNoRecordedSubtitle =>
-      'Записи живых уроков появятся\nздесь, когда будут готовы';
-
-  @override
-  String get courseUnits => 'Разделы';
+  String get courseUnits => 'Модули';
 
   @override
   String courseLessonCount(int count) {
@@ -334,19 +298,52 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get courseChoosePlan => 'Выбрать тариф';
+  String courseModuleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count модуля',
+      many: '$count модулей',
+      few: '$count модуля',
+      one: '$count модуль',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String get courseProgress => 'Прогресс';
+  String courseHourCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count часа',
+      many: '$count часов',
+      few: '$count часа',
+      one: '$count час',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String get courseLearnMore => 'Подробнее';
+  String get courseAbout => 'О курсе';
 
   @override
-  String get courseRecordedSession => 'ЗАПИСЬ УРОКА';
+  String get courseTeacher => 'Преподаватель';
 
   @override
-  String get courseRecorded => 'ЗАПИСЬ';
+  String get courseOtherCourses => 'Другие курсы';
+
+  @override
+  String get courseSeeAll => 'Все';
+
+  @override
+  String get courseNotEnrolledTitle => 'Вы не записаны на этот курс';
+
+  @override
+  String get courseNotEnrolledMessage =>
+      'Купите тариф, чтобы открыть его уроки.';
+
+  @override
+  String get courseChoosePlan => 'Купить тариф';
 
   @override
   String unitNumber(String number) {
@@ -949,6 +946,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationsEmptySubtitle => 'Вы всё просмотрели!';
+
+  @override
+  String get roadmapStart => 'Начать';
+
+  @override
+  String roadmapLevelNumber(int number) {
+    return 'Ур.$number';
+  }
 
   @override
   String get roadmapLevelA1 => 'Начальный';

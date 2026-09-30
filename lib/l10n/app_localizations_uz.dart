@@ -43,9 +43,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get commonOk => 'OK';
 
   @override
-  String get commonJoin => 'Qo\'shilish';
-
-  @override
   String get commonLoading => 'Yuklanmoqda…';
 
   @override
@@ -182,6 +179,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get navProfile => 'Profil';
 
   @override
+  String get navMission => 'Missiya';
+
+  @override
   String get homeGreeting => 'Hayrli kun,';
 
   @override
@@ -239,24 +239,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeResume => 'Davom etish';
 
   @override
-  String get homeLiveLessons => 'Jonli darslar';
-
-  @override
-  String get homeLiveNow => 'HOZIR EFIRDA';
-
-  @override
-  String get homeUpcoming => 'TEZ ORADA';
-
-  @override
-  String get homeJoinLesson => 'Darsga qo\'shilish';
-
-  @override
-  String get homeMoreUpcoming => 'Boshqa yaqin darslar';
-
-  @override
-  String get homeNoUpcomingLessons => 'Yaqin darslar yo\'q';
-
-  @override
   String get homeAiTestTitle => 'Bilimingizni AI bilan sinang';
 
   @override
@@ -280,43 +262,25 @@ class AppLocalizationsUz extends AppLocalizations {
   String get coursesTitle => 'Kurslar';
 
   @override
-  String get coursesTabCourses => 'Kurslar';
+  String get coursesSearchHint => 'Qidirish...';
 
   @override
-  String get coursesTabLive => 'Jonli darslar';
+  String get coursesShowLess => 'Kamroq';
 
   @override
-  String get coursesRoadmap => 'Yo\'l xaritasi';
+  String get coursesNoResults => 'Kurslar topilmadi';
 
   @override
-  String get coursesMyCourses => 'Mening kurslarim';
+  String get coursesMyCourses => 'Joriy kurslar';
 
   @override
-  String get coursesAvailable => 'Sotib olish mumkin';
+  String get coursesAvailable => 'Mavjud kurslar';
 
   @override
   String get coursesNoneAvailable => 'Hozircha kurslar yo\'q.';
 
   @override
-  String get coursesCurrentUpcoming => 'Joriy va yaqin';
-
-  @override
-  String get coursesPastSessions => 'O\'tgan darslar';
-
-  @override
-  String coursesRecordedCount(int count) {
-    return '$count ta yozuv';
-  }
-
-  @override
-  String get coursesNoRecordedTitle => 'Yozuvlar yo\'q';
-
-  @override
-  String get coursesNoRecordedSubtitle =>
-      'Jonli darslar yozuvlari tayyor bo\'lgach\nshu yerda ko\'rinadi';
-
-  @override
-  String get courseUnits => 'Bo\'limlar';
+  String get courseUnits => 'Modullar';
 
   @override
   String courseLessonCount(int count) {
@@ -330,19 +294,48 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get courseChoosePlan => 'Tarifni tanlash';
+  String courseModuleCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count modul',
+      one: '$count modul',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String get courseProgress => 'Jarayon';
+  String courseHourCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count soat',
+      one: '$count soat',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String get courseLearnMore => 'Batafsil';
+  String get courseAbout => 'Kurs haqida';
 
   @override
-  String get courseRecordedSession => 'DARS YOZUVI';
+  String get courseTeacher => 'O\'qituvchi';
 
   @override
-  String get courseRecorded => 'YOZUV';
+  String get courseOtherCourses => 'Boshqa kurslar';
+
+  @override
+  String get courseSeeAll => 'Barchasi';
+
+  @override
+  String get courseNotEnrolledTitle => 'Siz bu kursga yozilmagansiz';
+
+  @override
+  String get courseNotEnrolledMessage =>
+      'Darslarni ochish uchun tarif sotib oling.';
+
+  @override
+  String get courseChoosePlan => 'Tarif sotib olish';
 
   @override
   String unitNumber(String number) {
@@ -940,6 +933,14 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get notificationsEmptySubtitle => 'Hammasi ko\'rib chiqilgan!';
+
+  @override
+  String get roadmapStart => 'Boshlash';
+
+  @override
+  String roadmapLevelNumber(int number) {
+    return 'Lv.$number';
+  }
 
   @override
   String get roadmapLevelA1 => 'Boshlang\'ich';

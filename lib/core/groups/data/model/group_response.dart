@@ -1,34 +1,6 @@
 import 'package:student/core/groups/domain/entity/group_entity.dart';
 import 'package:student/core/mentors/data/model/mentor_response.dart';
 
-class GroupMentorResponse {
-  final String id;
-  final String role;
-  final MentorResponse mentor;
-
-  const GroupMentorResponse({
-    required this.id,
-    required this.role,
-    required this.mentor,
-  });
-
-  factory GroupMentorResponse.fromJson(Map<String, dynamic> json) {
-    return GroupMentorResponse(
-      id: json['id'] as String? ?? '',
-      role: json['role'] as String? ?? 'support',
-      mentor: MentorResponse.fromJson(
-        json['mentor'] as Map<String, dynamic>? ?? {},
-      ),
-    );
-  }
-
-  GroupMentorEntity toEntity() => GroupMentorEntity(
-    id: id,
-    role: GroupMentorRole.parse(role),
-    mentor: mentor.toEntity(),
-  );
-}
-
 class GroupStudentResponse {
   final String id;
   final String firstName;
@@ -67,7 +39,8 @@ class GroupResponse {
   final String title;
   final Map<String, List<String>> schedule;
   final bool isActive;
-  final List<GroupMentorResponse> mentors;
+  final GroupCourseEntity? course;
+  final MentorResponse? primaryMentor;
   final List<GroupStudentResponse> students;
 
   const GroupResponse({
@@ -75,14 +48,15 @@ class GroupResponse {
     required this.title,
     required this.isActive,
     this.schedule = const {},
-    this.mentors = const [],
+    this.course,
+    this.primaryMentor,
     this.students = const [],
   });
 
   factory GroupResponse.fromJson(Map<String, dynamic> json) {
     final rawSchedule = json['schedule'] as Map<String, dynamic>? ?? {};
-    final rawMentors = json['mentors'] as List<dynamic>? ?? [];
     final rawStudents = json['students'] as List<dynamic>? ?? [];
+    final rawCourse = json['course'] as Map<String, dynamic>?;
 
     return GroupResponse(
       id: json['id'] as String,
@@ -91,13 +65,33 @@ class GroupResponse {
       schedule: rawSchedule.map(
         (day, slots) => MapEntry(day, List<String>.from(slots as List)),
       ),
-      mentors: rawMentors
-          .map((e) => GroupMentorResponse.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      course: rawCourse == null
+          ? null
+          : GroupCourseEntity(
+              id: rawCourse['id'].toString(),
+              title: rawCourse['title'] as String? ?? '',
+            ),
+      primaryMentor: _primaryMentor(json),
       students: rawStudents
           .map((e) => GroupStudentResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
+  }
+
+  /// A flat `primaryMentor` object. Falls back to the older `mentors` team
+  /// list — `{role, mentor}` pairs — picking the one whose role is primary.
+  static MentorResponse? _primaryMentor(Map<String, dynamic> json) {
+    final direct = json['primaryMentor'];
+    if (direct is Map<String, dynamic>) return MentorResponse.fromJson(direct);
+
+    for (final m in json['mentors'] as List<dynamic>? ?? const []) {
+      if (m is Map<String, dynamic> &&
+          m['role'] == 'primary' &&
+          m['mentor'] is Map<String, dynamic>) {
+        return MentorResponse.fromJson(m['mentor'] as Map<String, dynamic>);
+      }
+    }
+    return null;
   }
 
   GroupEntity toEntity() => GroupEntity(
@@ -105,7 +99,8 @@ class GroupResponse {
     title: title,
     isActive: isActive,
     schedule: schedule,
-    mentors: mentors.map((m) => m.toEntity()).toList(),
+    course: course,
+    primaryMentor: primaryMentor?.toEntity(),
     students: students.map((s) => s.toEntity()).toList(),
   );
 }

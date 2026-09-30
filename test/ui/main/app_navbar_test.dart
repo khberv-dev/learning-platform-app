@@ -16,11 +16,11 @@ Widget _host({int current = 0, void Function(int)? onItemClick}) =>
     );
 
 void main() {
-  testWidgets('shows the four default destinations', (tester) async {
+  testWidgets('shows the five destinations', (tester) async {
     await tester.pumpWidget(_host());
 
     expect(tester.takeException(), isNull);
-    for (final label in ['Home', 'Courses', 'Mentor', 'Profile']) {
+    for (final label in ['Home', 'Courses', 'Mission', 'Mentor', 'Profile']) {
       expect(find.text(label), findsOneWidget);
     }
   });
@@ -33,7 +33,7 @@ void main() {
     await tester.tap(find.text('Courses'));
     await tester.pumpAndSettle();
 
-    expect(taps, [3, 1]);
+    expect(taps, [4, 1]);
   });
 
   testWidgets('the green pill sits under the current destination', (
@@ -53,7 +53,7 @@ void main() {
   ) async {
     await tester.pumpWidget(_host(current: 0));
     await tester.pumpAndSettle();
-    await tester.pumpWidget(_host(current: 3));
+    await tester.pumpWidget(_host(current: 4));
     await tester.pump(const Duration(milliseconds: 100));
 
     // Mid-slide: somewhere between the two.

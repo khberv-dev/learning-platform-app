@@ -5,7 +5,6 @@ import 'package:student/core/courses/data/model/course_detail_response.dart';
 import 'package:student/core/courses/data/model/course_response.dart';
 import 'package:student/core/courses/data/model/lesson_detail_response.dart';
 import 'package:student/core/courses/data/model/lesson_response.dart';
-import 'package:student/core/courses/data/model/live_lesson_response.dart';
 import 'package:student/core/courses/data/model/my_course_response.dart';
 import 'package:student/core/courses/data/model/task_response.dart';
 import 'package:student/core/courses/data/model/task_submission_result_response.dart';
@@ -14,7 +13,6 @@ import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
 import 'package:student/core/courses/domain/entity/lesson_detail_entity.dart';
 import 'package:student/core/courses/domain/entity/lesson_entity.dart';
-import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/entity/task_submission_result_entity.dart';
@@ -57,18 +55,6 @@ class CoursesRepository implements ICoursesRepository {
         .map(
           (e) =>
               MyCourseResponse.fromJson(e as Map<String, dynamic>).toEntity(),
-        )
-        .toList();
-  }
-
-  @override
-  Future<List<LiveLessonEntity>> getLiveLessons() async {
-    final response = await _dio.get('student/live-lesson-recordings/my');
-    final list = response.data as List<dynamic>;
-    return list
-        .map(
-          (e) =>
-              LiveLessonResponse.fromJson(e as Map<String, dynamic>).toEntity(),
         )
         .toList();
   }

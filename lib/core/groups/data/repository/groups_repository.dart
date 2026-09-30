@@ -15,10 +15,19 @@ class GroupsRepository implements IGroupsRepository {
   const GroupsRepository({required Dio dio}) : _dio = dio;
 
   @override
-  Future<GroupEntity?> getMyGroup() async {
-    final response = await _dio.get('student/groups/me');
-    final data = response.data;
-    if (data == null) return null;
-    return GroupResponse.fromJson(data as Map<String, dynamic>).toEntity();
+  Future<List<GroupEntity>> getMyGroups() async {
+    // Paginated, but a student is in one group per course, so a single page
+    // holds them all.
+    final response = await _dio.get(
+      'student/groups/me',
+      queryParameters: {'limit': 100},
+    );
+    final envelope = response.data as Map<String, dynamic>;
+    final list = envelope['data'] as List<dynamic>? ?? const [];
+    return list
+        .map(
+          (e) => GroupResponse.fromJson(e as Map<String, dynamic>).toEntity(),
+        )
+        .toList();
   }
 }

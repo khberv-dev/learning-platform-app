@@ -1,3 +1,5 @@
+import 'package:student/core/courses/domain/entity/course_author_entity.dart';
+
 class CourseDetailEntity {
   final String id;
   final String title;
@@ -9,6 +11,9 @@ class CourseDetailEntity {
 
   final DateTime? announcedAt;
 
+  /// Who made the course. Empty when the API credits no one.
+  final List<CourseAuthorEntity> authors;
+
   const CourseDetailEntity({
     required this.id,
     required this.title,
@@ -16,5 +21,6 @@ class CourseDetailEntity {
     this.image,
     this.totalProgress = 0,
     this.announcedAt,
+    this.authors = const [],
   });
 }

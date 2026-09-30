@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/ui/ai_assessment/ai_assessment_screen.dart';
 import 'package:student/ui/ai_assessment/ai_results_screen.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
@@ -11,7 +10,6 @@ import 'package:student/ui/chat/chat_room_screen.dart';
 import 'package:student/ui/courses/course_detail_screen.dart';
 import 'package:student/ui/courses/image_viewer_screen.dart';
 import 'package:student/ui/courses/lesson_screen.dart';
-import 'package:student/ui/courses/live_session_screen.dart';
 import 'package:student/ui/courses/pdf_viewer_screen.dart';
 import 'package:student/ui/courses/task_results_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
@@ -23,7 +21,6 @@ import 'package:student/ui/p2p/p2p_matchmaking_screen.dart';
 import 'package:student/ui/payments/payment_types_screen.dart';
 import 'package:student/ui/payments/purchase_history_screen.dart';
 import 'package:student/ui/plans/plans_screen.dart';
-import 'package:student/ui/roadmap/roadmap_screen.dart';
 import 'package:student/ui/startup/language_screen.dart';
 import 'package:student/ui/startup/level_check_screen.dart';
 import 'package:student/ui/startup/no_connection_screen.dart';
@@ -82,7 +79,6 @@ final _appRouter = GoRouter(
       path: NotificationsScreen.path,
       builder: (_, _) => const NotificationsScreen(),
     ),
-    GoRoute(path: RoadmapScreen.path, builder: (_, _) => const RoadmapScreen()),
     GoRoute(
       path: PlansScreen.path,
       builder: (_, state) =>
@@ -139,11 +135,6 @@ final _appRouter = GoRouter(
         final args = state.extra as TaskResultsArgs;
         return TaskResultsScreen(results: args.results, tasks: args.tasks);
       },
-    ),
-    GoRoute(
-      path: LiveSessionScreen.path,
-      builder: (_, state) =>
-          LiveSessionScreen(session: state.extra as LiveLessonEntity),
     ),
     GoRoute(
       path: ImageViewerScreen.path,

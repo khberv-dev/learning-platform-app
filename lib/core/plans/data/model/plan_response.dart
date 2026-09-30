@@ -5,12 +5,14 @@ class PlanResponse {
   final String title;
   final int price;
   final int month;
+  final bool isActive;
 
   const PlanResponse({
     required this.id,
     required this.title,
     required this.price,
     required this.month,
+    this.isActive = true,
   });
 
   factory PlanResponse.fromJson(Map<String, dynamic> json) => PlanResponse(
@@ -18,6 +20,7 @@ class PlanResponse {
     title: (json['title'] ?? '') as String,
     price: (json['price'] as num?)?.toInt() ?? 0,
     month: (json['month'] as num?)?.toInt() ?? 0,
+    isActive: json['isActive'] as bool? ?? true,
   );
 
   PlanEntity toEntity() =>

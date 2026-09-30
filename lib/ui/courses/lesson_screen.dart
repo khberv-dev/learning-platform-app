@@ -14,6 +14,7 @@ import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
 import 'package:student/ui/courses/widget/lesson_materials_section.dart';
+import 'package:student/ui/courses/widget/lesson_load_error.dart';
 import 'package:student/ui/courses/widget/lesson_video_controls.dart';
 import 'package:video_player/video_player.dart';
 
@@ -116,6 +117,12 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     // (re)initialises the player once that happens.
   }
 
+  Widget _errorScaffold(Object error) => Scaffold(
+    backgroundColor: Colors.white,
+    appBar: AppBar(backgroundColor: Colors.white),
+    body: LessonLoadError(error: error, courseId: widget.courseId),
+  );
+
   @override
   Widget build(BuildContext context) {
     final lessonsState = ref.watch(
@@ -127,7 +134,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
         backgroundColor: Color(0xFF0F172A),
         body: Center(child: CircularProgressIndicator(color: Colors.white)),
       ),
-      error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
+      error: (e, _) => _errorScaffold(e),
       data: (lessons) {
         if (lessons.isEmpty) {
           return Scaffold(
@@ -152,7 +159,7 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
             backgroundColor: Color(0xFF0F172A),
             body: Center(child: CircularProgressIndicator(color: Colors.white)),
           ),
-          error: (e, _) => Scaffold(body: Center(child: Text(e.toString()))),
+          error: (e, _) => _errorScaffold(e),
           data: (lesson) {
             // Init player on first build if not yet initialised
             final mediaUrl = lesson.mediaUrl?.trim();

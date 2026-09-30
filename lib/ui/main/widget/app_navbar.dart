@@ -55,6 +55,10 @@ class AppNavbar extends StatelessWidget {
         iconPath: 'assets/icons/nav_courses.svg',
       ),
       _NavDestination(
+        label: l10n.navMission,
+        iconPath: 'assets/icons/nav_mission.svg',
+      ),
+      _NavDestination(
         label: l10n.navStudy,
         iconPath: 'assets/icons/nav_study.svg',
       ),

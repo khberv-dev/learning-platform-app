@@ -16,7 +16,6 @@
   "commonYes": "Yes",
   "commonNo": "No",
   "commonOk": "OK",
-  "commonJoin": "Join",
   "commonLoading": "Loading…",
   "commonSomethingWentWrong": "Something went wrong. Please try again.",
   "fieldEmail": "Email address",
@@ -74,6 +73,7 @@
   "navCourse": "Courses",
   "navStudy": "Mentor",
   "navProfile": "Profile",
+  "navMission": "Mission",
 
   "homeGreeting": "Good day,",
   "homeGreetingName": "{name}!",
@@ -100,12 +100,6 @@
   "homeNoCoursesButton": "Start practice",
   "homeProgress": "Progress",
   "homeResume": "Resume",
-  "homeLiveLessons": "Live lessons",
-  "homeLiveNow": "LIVE NOW",
-  "homeUpcoming": "UPCOMING",
-  "homeJoinLesson": "Join Lesson",
-  "homeMoreUpcoming": "More upcoming lessons",
-  "homeNoUpcomingLessons": "No upcoming lessons",
   "homeAiTestTitle": "Test your skills with AI",
   "homeAiTestBody": "Speak naturally and let AI evaluate your level — get a full skill report in minutes",
   "homeAiTestButton": "Start test",
@@ -114,30 +108,32 @@
   "homeSpeakingButton": "Find partner",
 
   "coursesTitle": "Courses",
-  "coursesTabCourses": "Courses",
-  "coursesTabLive": "Live sessions",
-  "coursesRoadmap": "Roadmap",
-  "coursesMyCourses": "My courses",
-  "coursesAvailable": "Available to purchase",
+  "coursesSearchHint": "Search...",
+  "coursesShowLess": "Show less",
+  "coursesNoResults": "No courses found",
+  "coursesMyCourses": "Current courses",
+  "coursesAvailable": "Available courses",
   "coursesNoneAvailable": "No courses available.",
-  "coursesCurrentUpcoming": "Current & Upcoming",
-  "coursesPastSessions": "Past sessions",
-  "coursesRecordedCount": "{count} recorded",
-  "@coursesRecordedCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
-  "coursesNoRecordedTitle": "No recorded sessions",
-  "coursesNoRecordedSubtitle": "Recorded live sessions will appear\nhere once available",
-  "courseUnits": "Units",
+  "courseUnits": "Modules",
   "courseLessonCount": "{count, plural, one{{count} lesson} other{{count} lessons}}",
   "@courseLessonCount": {
     "placeholders": { "count": { "type": "int" } }
   },
-  "courseChoosePlan": "Choose a plan",
-  "courseProgress": "Progress",
-  "courseLearnMore": "Learn more",
-  "courseRecordedSession": "RECORDED SESSION",
-  "courseRecorded": "RECORDED",
+  "courseModuleCount": "{count, plural, one{{count} module} other{{count} modules}}",
+  "@courseModuleCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "courseHourCount": "{count, plural, one{{count} hour} other{{count} hours}}",
+  "@courseHourCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "courseAbout":"About the course",
+  "courseTeacher": "Teacher",
+  "courseOtherCourses": "Other courses",
+  "courseSeeAll": "See all",
+  "courseNotEnrolledTitle": "You're not enrolled in this course",
+  "courseNotEnrolledMessage": "Buy a plan to open its lessons.",
+  "courseChoosePlan": "Buy a plan",
 
   "unitNumber": "Unit {number}",
   "@unitNumber": {
@@ -409,6 +405,13 @@
   "notificationsEmptyTitle": "No notifications yet",
   "notificationsEmptySubtitle": "You're all caught up!",
 
+  "roadmapStart": "Start",
+  "roadmapLevelNumber": "Lv.{number}",
+  "@roadmapLevelNumber": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
   "roadmapLevelA1": "Beginner",
   "roadmapLevelA2": "Elementary",
   "roadmapLevelB1": "Intermediate",

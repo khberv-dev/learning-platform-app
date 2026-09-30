@@ -6,7 +6,7 @@ import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
 import 'package:student/core/groups/domain/entity/group_entity.dart';
-import 'package:student/core/groups/presentation/my_group_controller.dart';
+import 'package:student/core/groups/presentation/my_groups_controller.dart';
 import 'package:student/core/mentors/domain/entity/mentor_entity.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
@@ -14,22 +14,20 @@ import 'package:student/shared/widget/app_empty_state.dart';
 import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
 
-/// A single, static "Study" tab — replaces the old Mentor/Chat pair that
-/// swapped in the navbar depending on whether the student had a chat room.
-/// Group membership is fully admin-managed now, so there's nothing left to
-/// browse or book: this just reports the student's current group (if any)
-/// and gets them into its chat.
+/// The "Mentor" tab. Group membership is fully admin-managed, so there's
+/// nothing to browse or book: this lists the student's groups — one per
+/// course — each with its mentor and a way into its chat.
 class StudyPage extends ConsumerWidget {
   const StudyPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(myGroupControllerProvider);
+    final state = ref.watch(myGroupsControllerProvider);
     final l10n = AppLocalizations.of(context);
 
     Future<void> refresh() async {
-      ref.invalidate(myGroupControllerProvider);
-      await ref.read(myGroupControllerProvider.future);
+      ref.invalidate(myGroupsControllerProvider);
+      await ref.read(myGroupsControllerProvider.future);
     }
 
     return Column(
@@ -56,15 +54,27 @@ class StudyPage extends ConsumerWidget {
                   subtitle: l10n.studyPullToRetry,
                 ),
               ),
-              data: (group) => _Scrollable(
-                child: group == null
+              data: (groups) => _Scrollable(
+                child: groups.isEmpty
                     ? AppEmptyState(
                         imagePath:
                             'assets/images/no_recorded_sessions_puppet.png',
                         title: l10n.studyNoGroupTitle,
                         subtitle: l10n.studyNoGroupMessage,
                       )
-                    : _GroupStatus(group: group),
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final group in groups)
+                            _GroupStatus(
+                              key: ValueKey('group-${group.id}'),
+                              group: group,
+                              // One group can use a room the API hasn't tied
+                              // to a group; with several, only an exact match.
+                              fallbackToOnlyRoom: groups.length == 1,
+                            ),
+                        ],
+                      ),
               ),
             ),
           ),
@@ -97,20 +107,28 @@ class _Scrollable extends StatelessWidget {
 
 class _GroupStatus extends ConsumerWidget {
   final GroupEntity group;
+  final bool fallbackToOnlyRoom;
 
-  const _GroupStatus({required this.group});
+  const _GroupStatus({
+    super.key,
+    required this.group,
+    required this.fallbackToOnlyRoom,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final primary = group.primaryMentor;
-    final roomsState = ref.watch(chatRoomsProvider);
-    final roomId = roomsState.value?.firstOrNull?.id;
+    final mentor = group.primaryMentor;
+    final rooms = ref.watch(chatRoomsProvider).value ?? const [];
+    // Each group has its own room.
+    final roomId =
+        rooms.where((r) => r.group?.id == group.id).firstOrNull?.id ??
+        (fallbackToOnlyRoom && rooms.length == 1 ? rooms.single.id : null);
+    final courseTitle = group.course?.title;
 
+    // The list itself clears the navbar; this only spaces the groups apart.
     return Padding(
-      padding: EdgeInsets.only(
-        bottom: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
-      ),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -140,7 +158,18 @@ class _GroupStatus extends ConsumerWidget {
                     letterSpacing: -0.3,
                   ),
                 ),
-                if (primary != null) ...[
+                if (courseTitle != null && courseTitle.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    courseTitle,
+                    style: const TextStyle(
+                      color: Color(0xff8a949b),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+                if (mentor != null) ...[
                   const SizedBox(height: AppSpacing.lg),
                   Text(
                     l10n.studyYourMentor,
@@ -151,7 +180,7 @@ class _GroupStatus extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  _MentorTile(mentor: primary.mentor),
+                  _MentorTile(mentor: mentor),
                 ],
               ],
             ),

@@ -1,102 +1,92 @@
 import 'package:flutter/material.dart';
-import 'package:student/app/theme/app_spacing.dart';
 
 enum RoadStepStatus { completed, current, locked }
 
-/// A marker sitting on the roadmap path, with its label beneath.
+/// One pillar on the Mission path: green once reached, white with a padlock
+/// while still ahead. The current one is green too; the page marks it with a
+/// [RoadStepTooltip].
 class RoadStepNode extends StatelessWidget {
-  static const double diameter = 52;
-
   final String label;
   final RoadStepStatus status;
-  final VoidCallback? onTap;
+  final Size size;
 
   const RoadStepNode({
     super.key,
     required this.label,
     required this.status,
-    this.onTap,
+    required this.size,
   });
+
+  static String imageFor(RoadStepStatus status) =>
+      status == RoadStepStatus.locked
+      ? 'assets/images/roadmap_step_locked.png'
+      : 'assets/images/roadmap_step_done.png';
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      button: onTap != null,
       label: '$label, ${status.name}',
-      child: GestureDetector(
-        onTap: onTap,
-        child: ExcludeSemantics(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox.square(dimension: diameter, child: _badge()),
-              const SizedBox(height: AppSpacing.xs),
-              _Label(text: label, isMuted: status == RoadStepStatus.locked),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _badge() {
-    // Only complete and current artwork ships; locked reuses the completed
-    // badge drained of colour so it still reads as the same object.
-    final image = Image.asset(
-      status == RoadStepStatus.current
-          ? 'assets/images/road_item_current.png'
-          : 'assets/images/road_item_complete.png',
-      fit: BoxFit.contain,
-    );
-
-    if (status != RoadStepStatus.locked) return image;
-
-    return Opacity(
-      opacity: 0.55,
-      child: ColorFiltered(
-        colorFilter: const ColorFilter.matrix(<double>[
-          0.2126, 0.7152, 0.0722, 0, 0, //
-          0.2126, 0.7152, 0.0722, 0, 0, //
-          0.2126, 0.7152, 0.0722, 0, 0, //
-          0, 0, 0, 1, 0, //
-        ]),
-        child: image,
+      child: Image.asset(
+        imageFor(status),
+        width: size.width,
+        height: size.height,
+        fit: BoxFit.contain,
+        excludeFromSemantics: true,
       ),
     );
   }
 }
 
-class _Label extends StatelessWidget {
-  final String text;
-  final bool isMuted;
+/// A black speech bubble pointing down at the current pillar.
+class RoadStepTooltip extends StatelessWidget {
+  static const _ink = Color(0xFF15141A);
+  static const arrowHeight = 7.0;
 
-  const _Label({required this.text, required this.isMuted});
+  final String text;
+
+  const RoadStepTooltip({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: 3,
-      ),
-      decoration: BoxDecoration(
-        // A chip rather than bare text — the field behind varies in tone and
-        // has trees and bushes running through it.
-        color: Colors.white.withAlpha(isMuted ? 150 : 225),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: isMuted ? const Color(0xff6b7a83) : const Color(0xff1f4e5f),
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          height: 1.2,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: _ink,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Text(
+            text,
+            maxLines: 1,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
-      ),
+        CustomPaint(
+          size: const Size(14, arrowHeight),
+          painter: _ArrowPainter(),
+        ),
+      ],
     );
   }
+}
+
+class _ArrowPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width / 2, size.height)
+      ..close();
+    canvas.drawPath(path, Paint()..color = RoadStepTooltip._ink);
+  }
+
+  @override
+  bool shouldRepaint(_ArrowPainter oldDelegate) => false;
 }

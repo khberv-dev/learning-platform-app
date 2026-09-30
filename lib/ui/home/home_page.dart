@@ -7,10 +7,8 @@ import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/ui/home/widget/ai_test_card.dart';
 import 'package:student/ui/home/widget/continue_learning_card.dart';
 import 'package:student/ui/home/widget/home_topbar.dart';
-import 'package:student/ui/home/widget/live_session_card.dart';
 import 'package:student/ui/home/widget/speaking_partner_card.dart';
 import 'package:student/ui/home/widget/streak_card.dart';
-import 'package:student/ui/home/widget/upcoming_section.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -64,10 +62,6 @@ class HomePage extends ConsumerWidget {
                   padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   child: SpeakingPartnerCard(),
                 ),
-                SizedBox(height: AppSpacing.xl),
-                LiveSessionCard(),
-                SizedBox(height: AppSpacing.lg),
-                UpcomingSection(),
               ],
             ),
           ),

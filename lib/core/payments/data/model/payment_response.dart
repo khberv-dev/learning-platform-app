@@ -22,13 +22,16 @@ class PaymentResponse {
 
   factory PaymentResponse.fromJson(Map<String, dynamic> json) {
     final type = json['paymentType'] as Map<String, dynamic>?;
-    // A payment carries no direct plan/enrolment relation anymore — the path
-    // to what it bought is purchases[0].subscription.plan(.course).
+    // What a payment bought is purchases[0].plan(.course). The purchase's
+    // subscription stays null until the payment is paid, so it can't be the
+    // way to the plan; it's only a fallback for older payloads.
     final purchases = json['purchases'] as List<dynamic>? ?? const [];
-    final subscription = purchases.isNotEmpty
-        ? purchases.first['subscription'] as Map<String, dynamic>?
+    final purchase = purchases.isNotEmpty
+        ? purchases.first as Map<String, dynamic>?
         : null;
-    final plan = subscription?['plan'] as Map<String, dynamic>?;
+    final subscription = purchase?['subscription'] as Map<String, dynamic>?;
+    final plan =
+        (purchase?['plan'] ?? subscription?['plan']) as Map<String, dynamic>?;
     final course = plan?['course'] as Map<String, dynamic>?;
     return PaymentResponse(
       id: json['id'].toString(),

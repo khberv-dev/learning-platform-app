@@ -5,15 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_theme.dart';
 import 'package:student/core/courses/data/repository/courses_repository.dart';
 import 'package:student/core/courses/domain/repository/i_courses_repository.dart';
-import 'package:student/core/live_lessons/data/repository/live_lessons_repository.dart';
-import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
-import 'package:student/core/live_lessons/domain/repository/i_live_lessons_repository.dart';
 import 'package:student/core/groups/data/repository/groups_repository.dart';
 import 'package:student/core/groups/domain/entity/group_entity.dart';
 import 'package:student/core/groups/domain/repository/i_groups_repository.dart';
 import 'package:student/core/user/domain/entity/user_entity.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
-import 'package:student/shared/widget/section_title.dart';
 import 'package:student/ui/courses/courses_page.dart';
 import 'package:student/ui/profile/profile_page.dart';
 import 'package:student/ui/profile/widget/profile_hero.dart';
@@ -34,15 +30,10 @@ const _user = UserEntity(
 
 class _Empty implements ICoursesRepository, IGroupsRepository {
   @override
-  Future<GroupEntity?> getMyGroup() async => null;
+  Future<List<GroupEntity>> getMyGroups() async => [];
 
   @override
   dynamic noSuchMethod(Invocation invocation) async => <Never>[];
-}
-
-class _NoLessons implements ILiveLessonsRepository {
-  @override
-  Future<List<LiveLessonScheduledEntity>> getMyLessons() async => [];
 }
 
 Future<void> _pump(WidgetTester tester, Widget page) async {
@@ -61,7 +52,6 @@ Future<void> _pump(WidgetTester tester, Widget page) async {
         currentUserProvider.overrideWith((ref) => _user),
         coursesRepositoryProvider.overrideWithValue(empty),
         groupsRepositoryProvider.overrideWithValue(empty),
-        liveLessonsRepositoryProvider.overrideWithValue(_NoLessons()),
       ],
       child: localizedApp(
         theme: container.read(appThemeProvider),
@@ -86,16 +76,8 @@ void main() {
     await _pump(tester, const CoursesPage());
 
     expect(tester.takeException(), isNull);
-    // Scoped to the heading — the tab pill carries the same label.
     expect(
-      tester
-          .getTopLeft(
-            find.descendant(
-              of: find.byType(SectionTitle),
-              matching: find.text('Courses'),
-            ),
-          )
-          .dy,
+      tester.getTopLeft(find.text('Courses')).dy,
       greaterThanOrEqualTo(_topInset),
     );
   });

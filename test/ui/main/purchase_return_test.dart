@@ -5,12 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_theme.dart';
 import 'package:student/core/courses/data/repository/courses_repository.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
-import 'package:student/core/courses/domain/entity/live_lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/domain/repository/i_courses_repository.dart';
-import 'package:student/core/live_lessons/data/repository/live_lessons_repository.dart';
-import 'package:student/core/live_lessons/domain/entity/live_lesson_scheduled_entity.dart';
-import 'package:student/core/live_lessons/domain/repository/i_live_lessons_repository.dart';
 import 'package:student/core/payments/presentation/purchase_watcher.dart';
 import 'package:student/ui/main/app_screen.dart';
 
@@ -42,15 +38,7 @@ class _Courses implements ICoursesRepository {
   Future<List<CourseEntity>> getAvailable() async => [];
 
   @override
-  Future<List<LiveLessonEntity>> getLiveLessons() async => [];
-
-  @override
   dynamic noSuchMethod(Invocation invocation) async => <Never>[];
-}
-
-class _NoLessons implements ILiveLessonsRepository {
-  @override
-  Future<List<LiveLessonScheduledEntity>> getMyLessons() async => [];
 }
 
 Future<ProviderContainer> _pump(WidgetTester tester, _Courses courses) async {
@@ -59,10 +47,7 @@ Future<ProviderContainer> _pump(WidgetTester tester, _Courses courses) async {
   addTearDown(tester.view.reset);
 
   final container = ProviderContainer(
-    overrides: [
-      coursesRepositoryProvider.overrideWithValue(courses),
-      liveLessonsRepositoryProvider.overrideWithValue(_NoLessons()),
-    ],
+    overrides: [coursesRepositoryProvider.overrideWithValue(courses)],
   );
   addTearDown(container.dispose);
 
@@ -94,8 +79,19 @@ Future<ProviderContainer> _pump(WidgetTester tester, _Courses courses) async {
 
 /// Mimics the student returning from the provider's checkout page.
 Future<void> _returnToApp(WidgetTester tester) async {
-  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+  // Step by step, the way a device reports it: any AppLifecycleListener on
+  // screen (e.g. a text field's) rejects a jump straight from paused to
+  // resumed.
+  for (final state in const [
+    AppLifecycleState.inactive,
+    AppLifecycleState.hidden,
+    AppLifecycleState.paused,
+    AppLifecycleState.hidden,
+    AppLifecycleState.inactive,
+    AppLifecycleState.resumed,
+  ]) {
+    tester.binding.handleAppLifecycleStateChanged(state);
+  }
   // Not pumpAndSettle — the tabs keep a loading spinner running, so nothing
   // ever settles. Timed pumps let the refetch resolve and the dialog animate.
   await tester.pump();

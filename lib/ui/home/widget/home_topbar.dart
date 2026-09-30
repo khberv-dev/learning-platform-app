@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
 import 'package:student/l10n/app_localizations.dart';
+import 'package:student/shared/widget/app_balance_chip.dart';
 import 'package:student/utils/lib.dart';
 
 const _muted = Color(0xFF717384);
@@ -54,14 +55,14 @@ class HomeTopbar extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          _BalanceChip(
+          AppBalanceChip(
             key: const ValueKey('home-points'),
             imagePath: 'assets/images/ic_point.png',
             value: user?.points ?? 0,
             semanticsLabel: l10n.homeStatsScores,
           ),
           const SizedBox(width: AppSpacing.sm),
-          _BalanceChip(
+          AppBalanceChip(
             key: const ValueKey('home-coins'),
             imagePath: 'assets/images/ic_coin.png',
             value: user?.coins ?? 0,
@@ -103,63 +104,6 @@ class _Avatar extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => placeholder,
               ),
-      ),
-    );
-  }
-}
-
-/// A white rounded chip with a currency icon and its balance.
-class _BalanceChip extends StatelessWidget {
-  final String imagePath;
-  final int value;
-  final String semanticsLabel;
-
-  const _BalanceChip({
-    super.key,
-    required this.imagePath,
-    required this.value,
-    required this.semanticsLabel,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: '$semanticsLabel: $value',
-      child: ExcludeSemantics(
-        child: Container(
-          height: 32,
-          constraints: const BoxConstraints(minWidth: 44),
-          padding: const EdgeInsets.fromLTRB(6, 0, 9, 0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(11),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // The artwork has ~8% transparent margin, so 20 shows as ~16.
-              Image.asset(imagePath, width: 20, height: 20),
-              const SizedBox(width: 5),
-              // Up to "12 345" at full size; bigger balances shrink rather
-              // than push the greeting off a narrow screen.
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 48),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    formatNumber(value),
-                    maxLines: 1,
-                    style: const TextStyle(
-                      color: _ink,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

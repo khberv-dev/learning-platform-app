@@ -1,3 +1,4 @@
+import 'package:student/core/courses/data/model/course_author_response.dart';
 import 'package:student/core/courses/domain/entity/course_detail_entity.dart';
 
 class CourseDetailResponse {
@@ -7,6 +8,7 @@ class CourseDetailResponse {
   final String? image;
   final int totalProgress;
   final DateTime? announcedAt;
+  final List<CourseAuthorResponse> authors;
 
   const CourseDetailResponse({
     required this.id,
@@ -15,6 +17,7 @@ class CourseDetailResponse {
     this.image,
     this.totalProgress = 0,
     this.announcedAt,
+    this.authors = const [],
   });
 
   factory CourseDetailResponse.fromJson(Map<String, dynamic> json) {
@@ -25,6 +28,10 @@ class CourseDetailResponse {
       image: json['image'] as String?,
       totalProgress: (json['totalProgress'] as num?)?.toInt() ?? 0,
       announcedAt: DateTime.tryParse(json['announcedAt'] as String? ?? ''),
+      authors: [
+        for (final a in json['authors'] as List? ?? const [])
+          CourseAuthorResponse.fromJson(a as Map<String, dynamic>),
+      ],
     );
   }
 
@@ -35,5 +42,6 @@ class CourseDetailResponse {
     image: image,
     totalProgress: totalProgress,
     announcedAt: announcedAt,
+    authors: [for (final a in authors) a.toEntity()],
   );
 }

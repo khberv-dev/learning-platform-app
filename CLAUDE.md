@@ -58,7 +58,7 @@ lib/
 └── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, date_format.dart, uz_phone_formatter.dart
 ```
 
-**Domains:** `assessments`, `auth`, `chat`, `courses`, `diagnostics`, `enrollments`, `groups`, `live_lessons`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
+**Domains:** `assessments`, `auth`, `chat`, `courses`, `diagnostics`, `enrollments`, `groups`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
 
 Not every domain has all three layers. `assessments` has no presentation layer, since `AiAssessmentScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `diagnostics` is just crash reporting (see below). `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
 
@@ -71,11 +71,11 @@ Shared widgets live in `lib/shared/widget/`, **not** under `lib/ui/`. A widget g
 Each layer exposes a Riverpod provider next to its class:
 
 ```dart
-final liveLessonsRepositoryProvider = Provider<ILiveLessonsRepository>(
-  (ref) => LiveLessonsRepository(dio: ref.read(dioClientProvider)),
+final groupsRepositoryProvider = Provider<IGroupsRepository>(
+  (ref) => GroupsRepository(dio: ref.read(dioClientProvider)),
 );
-final useGetMyLiveLessonsProvider = Provider(...);
-final myLiveLessonsProvider = AsyncNotifierProvider<MyLiveLessonsController, List<...>>(...);
+final useGetMyGroupsProvider = Provider(...);
+final myGroupsControllerProvider = AsyncNotifierProvider<MyGroupsController, List<...>>(...);
 ```
 
 List endpoints often return an envelope — `response.data['data'] as List` — while detail endpoints return the object directly. Check the endpoint before assuming.
@@ -83,7 +83,7 @@ List endpoints often return an envelope — `response.data['data'] as List` — 
 ### State management (Riverpod 3)
 
 - `Provider` — repositories and use cases
-- `AsyncNotifierProvider` / `NotifierProvider` — stateful controllers (`MyLiveLessonsController`, `P2pController`, `SkillQuestionsNotifier`)
+- `AsyncNotifierProvider` / `NotifierProvider` — stateful controllers (`MyGroupsController`, `P2pController`, `SkillQuestionsNotifier`)
 - `StateProvider` / `StateNotifierProvider` — simple shared state (`currentUserProvider`, `navbarControllerProvider`, `chatMessagesProvider`)
 
 **Gotcha:** in Riverpod 3 the legacy APIs (`StateProvider`, `StateNotifierProvider`, `StateNotifier`) require an extra `import 'package:flutter_riverpod/legacy.dart';`. Three files currently do this — new code should prefer `Notifier`/`AsyncNotifier`.
@@ -101,11 +101,13 @@ JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `ref
 
 **Host selection:** `lib/app/data/network/config.dart` sets `hostUrl = kDebugMode ? devHostUrl : mainHostUrl`, so debug builds hit a local API at `devHostUrl` (a LAN IP that changes with the developer's network) and release builds hit production (`https://cp.i-teach.uz`). A commented-out `hostUrl = mainHostUrl` line is the toggle for pointing debug at prod. This file changes often as the IP changes; commit it as-is along with everything else — don't flag it. `baseApiUrl` is `$hostUrl/api/v$apiVersion/` (currently v2).
 
-**Media URLs:** the API returns fully-qualified URLs for every file (course images, avatars, payment icons, recordings, …), so screens use them as-is — no CDN base to prepend. `resolveMediaUrl` (`lib/utils/lib.dart`) just turns an empty/missing value into `null` for callers that fall back to a placeholder.
+**Media URLs:** the API returns fully-qualified URLs for every file (course images, avatars, payment icons, recordings, …), so screens use them as-is — no CDN base to prepend. `resolveMediaUrl` (`lib/utils/lib.dart`) just turns an empty/missing value into `null` for callers that fall back to a placeholder. They're signed Google Cloud Storage links that **expire after 6 hours** (stable for about 3, so caching by URL works). Never persist them; a 403 on a file means it has expired, and refetching the screen's data gets a fresh one.
 
 ### Error handling
 
 `lib/utils/messenger.dart` is the single path for messages. `apiErrorMessage(context, error)` unwraps a `DioException` body (`message` as String or List) into a user-facing string. `showErrorMessage` / `showSuccessMessage(context, title, {detail})` show an `AppFloatingMessage` (`lib/shared/widget/app_floating_message.dart`), the redesign's pale red/green pill with a white badge, a coloured bold title and an optional grey detail line. It isn't a SnackBar: it's an entry on the **root `Overlay`**, pinned under the top safe area. It slides down from above the screen, stays 4s, then slides back up, and a tap or upward swipe dismisses it early. A new message replaces the current one outright. `showErrorOn` / `showSuccessOn` take an `OverlayState` captured with `messageOverlayOf(context)`, for when the screen may be gone by the time the outcome is known. Never use `SnackBar`/`ScaffoldMessenger` directly; there is no neutral variant, so pick success or error.
+
+Course content (lesson detail, lesson materials, tasks) answers **403** when the student isn't enrolled. `isForbidden(error)` detects it, and `LessonLoadError` (`ui/courses/widget/`) turns it into a "buy a plan" prompt instead of an error.
 
 **Crash reporting:** `main.dart` wraps everything in `runZonedGuarded` and installs `FlutterError.onError` / `PlatformDispatcher.instance.onError`, each forwarding to `reportAppError` (`lib/core/diagnostics/error_reporting.dart`). That function is release-build-only (`kReleaseMode`), builds its own bare `Dio` (not `dioClientProvider` — no Riverpod container exists this early, and it must never get pulled into the main client's auth-refresh flow), and posts `{ device, message }` to the public `app-reports` endpoint. It attaches the stored access token as a Bearer header when there is one, since the backend resolves `AppReport.userId` from that token itself rather than a body field — the endpoint has no other place to take a user id from and works fine unauthenticated. Never throws; a failed report must not cause a second crash.
 
@@ -113,7 +115,7 @@ JWTs are stored in `SharedPreferences` via `TokenStorage` (`access_token` / `ref
 
 All routes are registered flat in `app_router.dart`. Each screen declares its own `static const path`. Navigate with `context.go(Screen.path)` / `context.push(...)`.
 
-Parameter passing is inconsistent by design of the individual routes — some use `pathParameters` (`CourseDetailScreen`, `MentorProfileScreen`), most use `uri.queryParameters` (`OtpScreen`, `TasksScreen`, `LessonScreen`, `ChatRoomScreen`), and `LiveSessionScreen` takes the whole entity via `state.extra`. Follow whatever the existing route does.
+Parameter passing is inconsistent by design of the individual routes — some use `pathParameters` (`CourseDetailScreen`, `MentorProfileScreen`), most use `uri.queryParameters` (`OtpScreen`, `TasksScreen`, `LessonScreen`, `ChatRoomScreen`), and `TaskResultsScreen` takes its data via `state.extra`. Follow whatever the existing route does.
 
 `SplashScreen` (`/`) is the auth gate. After its animation it routes to one of:
 - `OnboardingScreen` if there is no token
@@ -134,9 +136,9 @@ Auth works with either a phone number or an email, toggled by `AuthIdentitySwitc
 
 ### Main shell
 
-`AppScreen` (`/app`) is an `IndexedStack` of four tabs — Home, Courses, Study, Profile — driven by `navbarControllerProvider`. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
+`AppScreen` (`/app`) is an `IndexedStack` of five tabs — Home, Courses, Mission, Study (labelled "Mentor"), Profile — driven by `navbarControllerProvider`. Mission is `RoadmapPage` (`ui/roadmap/`), the CEFR ladder drawn as a zigzag of pillars (`RoadmapLayout`); it's a tab only, with no route of its own. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
 
-The navbar is static — four fixed items, `AppNavbar.onItemClick` just sets `navbarControllerProvider`. This used to swap item 2 between *Mentor* and *Chat* depending on `hasChatRoomsProvider`; that's gone now that a student has at most one group (and thus at most one chat room) — `StudyPage` itself shows the group's mentor and an "open chat" button instead.
+The navbar is static — five fixed items (indices 0–4 in that order; Courses is 1), `AppNavbar.onItemClick` just sets `navbarControllerProvider`. Chat has no tab of its own: `StudyPage` shows each group's mentor and an "open chat" button for that group's room.
 
 ### Realtime (Socket.IO)
 
@@ -182,26 +184,25 @@ The streak counts UTC days on which `POST user/me/activity` was called. Study ac
 
 ### Groups and mentors
 
-There is no more 1:1 mentor booking — a student's only mentor relationship is through their
-current **group**, a named cohort (mentor team + student roster + schedule) that's fully
-admin-managed (`core/groups/`, `GET student/groups/me`, nullable if ungrouped). `StudyPage`
-(`ui/study/`, the navbar's Study tab) is the group-status screen: group name, the primary mentor
-(tap through to their profile), and a button into the group's chat room — or, ungrouped, a message
-telling the student to buy a course first. The `core/mentors/` domain is still separate and still
+There is no more 1:1 mentor booking. A student's only mentor relationship is through their
+**groups**. A group is a named cohort studying one `course`, with a single `primaryMentor`, a student
+roster and a schedule, and it's fully admin-managed. A student can be in several groups, one per
+course. `GET student/groups/me` (`core/groups/`) is paginated (`{ data, total, … }`, empty if
+ungrouped). `GroupResponse` still falls back to the older `mentors` role list for the primary mentor.
+`StudyPage` (`ui/study/`, the navbar's "Mentor" tab) lists one card per group: group name, course,
+the primary mentor (tap through to their profile), and a button into that group's chat room.
+`GET student/chat/rooms` returns one room per group, matched by `room.group.id`. Ungrouped, it shows
+a message telling the student to buy a course first. The `core/mentors/` domain is still separate and still
 lets a student view one mentor's profile and leave feedback (`GET student/mentors/:id`, `POST
 student/mentors/:id/feedbacks`) — there's no browse-all-mentors listing anymore, since the only way
 to reach a mentor profile now is through your own group.
 
 ### Live lessons
 
-Two distinct concepts with confusingly similar names:
-- `courses/domain/entity/live_lesson_entity.dart` — a recorded session tied to a **group**
-  (`GET student/live-lesson-recordings/my`), played back with `video_player` + `chewie` in
-  `LiveSessionScreen`. The API only attaches the group relation here, not a mentor, so the card
-  shows the group's title (`groupTitle`) rather than a mentor name.
-- `live_lessons/domain/entity/live_lesson_scheduled_entity.dart` — an upcoming scheduled lesson for
-  the student's current group, from `GET student/live-lessons`, shown on the home page. This one
-  does carry a flat `mentor` relation (whoever scheduled it).
+**Removed for now, pending a refactored version.** The app has no live lessons or recordings: no
+`live_lessons` domain, no `student/live-lessons` or `student/live-lesson-recordings/my` calls, no
+home-page live/upcoming sections, and no "Live sessions" tab on the Courses page (which is now a
+single list with no tab bar).
 
 ### Localization
 
