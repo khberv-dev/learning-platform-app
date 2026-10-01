@@ -14,6 +14,12 @@ class AppFlatPillButton extends StatelessWidget {
   /// Shown before the label when set, tinted to match [foreground].
   final Widget? icon;
 
+  /// Shown after the label when set — e.g. a "go on" arrow.
+  final Widget? trailingIcon;
+
+  final double height;
+  final double fontSize;
+
   const AppFlatPillButton({
     super.key,
     required this.label,
@@ -21,6 +27,9 @@ class AppFlatPillButton extends StatelessWidget {
     required this.background,
     required this.foreground,
     this.icon,
+    this.trailingIcon,
+    this.height = 56,
+    this.fontSize = 17,
   });
 
   bool get _enabled => onTap != null;
@@ -53,7 +62,7 @@ class AppFlatPillButton extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: SizedBox(
-              height: 56,
+              height: height,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(
@@ -73,11 +82,18 @@ class AppFlatPillButton extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           color: ink,
-                          fontSize: 17,
+                          fontSize: fontSize,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
+                    if (trailingIcon != null) ...[
+                      const SizedBox(width: 8),
+                      IconTheme.merge(
+                        data: IconThemeData(color: ink, size: 20),
+                        child: trailingIcon!,
+                      ),
+                    ],
                   ],
                 ),
               ),

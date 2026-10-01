@@ -7,6 +7,7 @@ import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/core/notifications/presentation/push_messaging_service.dart';
 import 'package:student/core/notifications/presentation/unread_notifications_count_provider.dart';
 import 'package:student/core/payments/presentation/purchase_watcher.dart';
+import 'package:student/core/subscriptions/presentation/my_subscriptions_controller.dart';
 import 'package:student/ui/courses/courses_page.dart';
 import 'package:student/ui/courses/widget/purchase_success_dialog.dart';
 import 'package:student/ui/home/home_page.dart';
@@ -65,6 +66,8 @@ class _AppScreenState extends ConsumerState<AppScreen>
     _isCheckingPurchase = true;
 
     try {
+      // A new or renewed plan shows on the profile's plan card.
+      ref.invalidate(mySubscriptionsControllerProvider);
       ref.invalidate(myCoursesControllerProvider);
       final courses = await ref.read(myCoursesControllerProvider.future);
 

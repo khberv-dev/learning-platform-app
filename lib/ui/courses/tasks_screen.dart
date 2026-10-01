@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:student/core/courses/domain/entity/task_entity.dart';
 import 'package:student/core/courses/domain/usecase/use_submit_tasks.dart';
 import 'package:student/core/courses/presentation/course_detail_controller.dart'
-    show lessonDetailProvider;
+    show lessonDetailProvider, unitLessonsProvider;
 import 'package:student/core/courses/presentation/tasks_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_button.dart';
@@ -114,6 +114,11 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
             MapEntry(taskId, answers.map((a) => a.trim()).toList()),
       );
       final results = await ref.read(useSubmitTasksProvider).call(payload);
+      // Passing can unlock the next lessons; refetch the unit's list so the
+      // lesson screen shows them as open straight away.
+      ref.invalidate(
+        unitLessonsProvider((courseId: widget.courseId, unitId: widget.unitId)),
+      );
       ref.invalidate(
         lessonDetailProvider((
           courseId: widget.courseId,

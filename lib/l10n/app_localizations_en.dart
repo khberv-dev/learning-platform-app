@@ -15,9 +15,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageSubtitle => 'You can change it later in your profile';
 
   @override
-  String get languageSettingsTitle => 'Language';
-
-  @override
   String get commonContinue => 'Continue';
 
   @override
@@ -27,19 +24,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonResume => 'Resume';
 
   @override
+  String get commonSave => 'Save';
+
+  @override
   String get commonCancel => 'Cancel';
 
   @override
   String get commonRetry => 'Retry';
-
-  @override
-  String get commonYes => 'Yes';
-
-  @override
-  String get commonNo => 'No';
-
-  @override
-  String get commonOk => 'OK';
 
   @override
   String get commonLoading => 'Loading…';
@@ -173,7 +164,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navCourse => 'Courses';
 
   @override
-  String get navStudy => 'Mentor';
+  String get navStudy => 'Study';
 
   @override
   String get navProfile => 'Profile';
@@ -221,42 +212,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeStatsCoins => 'Coins';
 
   @override
-  String get homeLibrary => 'Library';
+  String get homeAiPartnerTitle => 'AI partner';
 
   @override
-  String get homeNoCoursesTitle => 'No active courses yet';
+  String get homeAiPartnerBody => 'A live conversation with AI';
 
   @override
-  String get homeNoCoursesSubtitle => 'Browse and start learning today';
+  String get homeAiPartnerAction => 'Start talking';
 
   @override
-  String get homeNoCoursesButton => 'Start practice';
+  String get homePartnerTitle => 'Speaking partner';
 
   @override
-  String get homeProgress => 'Progress';
+  String get homePartnerBody => 'A live conversation with a partner';
+
+  @override
+  String get homePartnerAction => 'Find a partner';
 
   @override
   String get homeResume => 'Resume';
-
-  @override
-  String get homeAiTestTitle => 'Test your skills with AI';
-
-  @override
-  String get homeAiTestBody =>
-      'Speak naturally and let AI evaluate your level — get a full skill report in minutes';
-
-  @override
-  String get homeAiTestButton => 'Start test';
-
-  @override
-  String get homeSpeakingTitle => 'Find a speaking partner';
-
-  @override
-  String get homeSpeakingBody =>
-      'Get matched with a real person at your level. Practice conversations that matter';
-
-  @override
-  String get homeSpeakingButton => 'Find partner';
 
   @override
   String get coursesTitle => 'Courses';
@@ -337,48 +311,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get courseChoosePlan => 'Buy a plan';
 
   @override
-  String unitNumber(String number) {
-    return 'Unit $number';
-  }
-
-  @override
   String get unitNoLessonsTitle => 'No lessons yet';
 
   @override
-  String get unitNoLessonsSubtitle => 'Lessons for this unit will appear here.';
+  String get lessonUnitLessons => 'Lessons';
 
   @override
-  String get unitNotFound => 'Unit not found';
-
-  @override
-  String lessonUnitLesson(String unit, String lesson) {
-    return 'Unit $unit · Lesson $lesson';
-  }
-
-  @override
-  String lessonUnitLessonOf(String unit, String lesson, int total) {
-    return 'Unit $unit · Lesson $lesson of $total';
-  }
-
-  @override
-  String get lessonViewTasks => 'View Tasks';
-
-  @override
-  String get lessonTasksCompleted => 'Tasks Completed';
-
-  @override
-  String get lessonTasksInProgress => 'Tasks In Progress';
-
-  @override
-  String lessonScore(int completed, int total, int percent) {
-    return '$completed of $total tasks · $percent%';
-  }
-
-  @override
-  String get lessonRetake => 'Retake';
-
-  @override
-  String get lessonInThisUnit => 'In this unit';
+  String get lessonGoToTest => 'Go to the test';
 
   @override
   String get lessonNoContent => 'No content';
@@ -625,22 +564,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get otpPasswordUpdated => 'Password updated successfully';
 
   @override
-  String get profilePhone => 'Phone number';
+  String get profileCurrentPlan => 'Current plan';
 
   @override
-  String get profileEmail => 'Email address';
+  String get profilePlanActive => 'Active';
 
   @override
-  String get profilePassword => 'Password';
+  String get profilePlanEnds => 'Ends on';
 
   @override
-  String get profileUpdatePassword => 'Update password';
+  String get profileNoPlanTitle => 'No active plan';
 
   @override
-  String get settingsPrivacyPolicy => 'Privacy Policy';
+  String get profileNoPlanBody =>
+      'Choose a plan for group lessons with a mentor and live lessons';
 
   @override
-  String get settingsAppVersion => 'App version';
+  String get profileChoosePlan => 'Choose a plan';
+
+  @override
+  String profilePlanExpired(String course) {
+    return '$course plan has expired';
+  }
+
+  @override
+  String profilePlanEndedOn(String date) {
+    return 'Ended on: $date';
+  }
+
+  @override
+  String get profileRenewPlan => 'Renew plan';
+
+  @override
+  String get profileStreak => 'Current streak';
+
+  @override
+  String get profileTotalXp => 'Total XP';
+
+  @override
+  String get profileCoins => 'Coin balance';
+
+  @override
+  String get profileRank => 'Leaderboard rank';
+
+  @override
+  String profileRankValue(int rank) {
+    return '#$rank';
+  }
+
+  @override
+  String get profileLanguageHint =>
+      'The app will be shown in the language you choose';
+
+  @override
+  String get profileSettings => 'Settings';
+
+  @override
+  String get profileAccount => 'Account';
+
+  @override
+  String get profileAppLanguage => 'App language';
+
+  @override
+  String get profileChangePassword => 'Change password';
 
   @override
   String get settingsLogOut => 'Log out';
@@ -649,11 +635,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsDeleteAccount => 'Delete account';
 
   @override
-  String get settingsLogOutConfirm => 'Are you sure you want to log out?';
+  String get settingsLogOutConfirm => 'Log out?';
 
   @override
-  String get settingsDeleteConfirm =>
-      'Are you sure you want to delete your account? This removes your courses and progress, and cannot be undone.';
+  String get settingsDeleteConfirm => 'Delete your account?';
+
+  @override
+  String get settingsLogOutBody =>
+      'To sign back in, you\'ll need your phone number or email and your password.';
+
+  @override
+  String get settingsLogOutAction => 'Log out';
+
+  @override
+  String get settingsDeleteBody =>
+      'Your profile details, progress, streak and coins will be deleted for good. This can\'t be undone.';
+
+  @override
+  String get settingsDeleteAction => 'Delete';
 
   @override
   String get settingsDeleteRequestedTitle => 'Request sent';
@@ -678,26 +677,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatEmptySubtitle => 'Send a message to start the conversation.';
 
   @override
-  String get studyTitle => 'Study';
+  String get studyEmptyTitle => 'Buy a course to choose your lesson times';
+
+  @override
+  String get studyEmptyBody =>
+      'After buying a course you\'ll choose the days and times that suit you, then we\'ll add you to a group with mentors.';
+
+  @override
+  String get studyBrowseCourses => 'Browse courses';
+
+  @override
+  String get studyWaitingTitle => 'You\'ll be added to a group soon';
+
+  @override
+  String get studyWaitingBody =>
+      'Your course is active. We\'re putting together your group and mentors.';
+
+  @override
+  String get studyJoinGroup => 'Join the group';
+
+  @override
+  String get studyMentors => 'Mentors';
+
+  @override
+  String get studyPrimaryMentor => 'Lead mentor';
+
+  @override
+  String get studySupportMentor => 'Support mentor';
+
+  @override
+  String studyMembers(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString members',
+      one: '$countString member',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get studyLoadFailed => 'Couldn\'t load your group';
 
   @override
   String get studyPullToRetry => 'Pull down to try again';
-
-  @override
-  String get studyYourMentor => 'Your mentor';
-
-  @override
-  String get studyOpenChat => 'Open chat';
-
-  @override
-  String get studyNoGroupTitle => 'You haven\'t joined a group yet';
-
-  @override
-  String get studyNoGroupMessage =>
-      'To start learning, buy a course and we\'ll add you to a group.';
 
   @override
   String get mentorHeader => 'Mentor';
@@ -752,9 +779,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseHistoryStatusCancelled => 'Cancelled';
 
   @override
-  String get settingsPurchaseHistory => 'Purchase history';
-
-  @override
   String get plansTitle => 'Choose a plan';
 
   @override
@@ -805,10 +829,73 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get aiTitle => 'AI Assessment';
+  String get aiTitle => 'AI partner';
 
   @override
-  String get aiInitialPrompt => 'Try to speak anything you want!';
+  String get aiIntroTitle => 'Live conversation with AI';
+
+  @override
+  String get aiIntroBody =>
+      'Tap the button and talk freely in English — the conversation runs in real time, just like a call.';
+
+  @override
+  String get aiFeatureEndAnytime => 'You can end it whenever you like';
+
+  @override
+  String get aiFeatureLiveVoice => 'A live voice conversation, in real time';
+
+  @override
+  String get aiFeatureNoScore => 'No grades or points — just talk';
+
+  @override
+  String get aiMicNote => 'The conversation needs access to your microphone.';
+
+  @override
+  String get aiEnd => 'End conversation';
+
+  @override
+  String get aiConnecting => 'Connecting…';
+
+  @override
+  String get aiInCall => 'Conversation in progress';
+
+  @override
+  String get aiYou => 'You';
+
+  @override
+  String get aiYourTurn => 'Your turn';
+
+  @override
+  String get aiMicOff => 'Mic off';
+
+  @override
+  String get aiStatusListening => 'Listening';
+
+  @override
+  String get aiStatusThinking => 'Thinking';
+
+  @override
+  String get aiStatusSpeaking => 'Speaking';
+
+  @override
+  String get aiMute => 'Mute';
+
+  @override
+  String get aiUnmute => 'Unmute';
+
+  @override
+  String get aiSoundOff => 'Mute the AI\'s voice';
+
+  @override
+  String get aiSoundOn => 'Unmute the AI\'s voice';
+
+  @override
+  String aiAutoEndNote(int minutes) {
+    return 'The conversation ends automatically after $minutes minutes';
+  }
+
+  @override
+  String get aiTimeUp => 'Time\'s up — the conversation has ended';
 
   @override
   String get aiMicDenied => 'Microphone permission denied';
@@ -830,9 +917,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aiTapToSpeak => 'Tap to speak';
-
-  @override
-  String get aiListening => 'Listening…';
 
   @override
   String get aiResultsTitle => 'Skill Results';

@@ -6,6 +6,7 @@ import 'package:student/core/courses/domain/entity/course_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/ui/courses/courses_page.dart';
+import 'package:student/shared/widget/course_tiles.dart';
 import 'package:student/ui/courses/widget/courses_page_cards.dart';
 
 import '../../support/localized_app.dart';

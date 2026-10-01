@@ -3,15 +3,27 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/main/presentation/navbar_controller.dart';
+import 'package:student/core/subscriptions/domain/entity/subscription_entity.dart';
+import 'package:student/core/subscriptions/presentation/my_subscriptions_controller.dart';
 import 'package:student/core/user/domain/usecase/use_upload_avatar.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/core/user/presentation/streak_provider.dart';
 import 'package:student/l10n/app_localizations.dart';
-import 'package:student/ui/auth/forgot_password_screen.dart';
-import 'package:student/ui/profile/widget/profile_hero.dart';
-import 'package:student/ui/profile/widget/profile_pill.dart';
+import 'package:student/ui/plans/plans_screen.dart';
+import 'package:student/ui/profile/widget/profile_header_card.dart';
+import 'package:student/ui/profile/widget/profile_stats_grid.dart';
 import 'package:student/ui/profile/widget/settings_card.dart';
+import 'package:student/ui/profile/widget/subscription_card.dart';
 import 'package:student/utils/lib.dart';
 import 'package:student/utils/messenger.dart';
+
+const _background = Color(0xFFEFEEF4);
+const _ink = Color(0xFF15141A);
+
+/// Tab index of Courses in the navbar, where "Choose a plan" leads — plans
+/// are sold per course.
+const _coursesTabIndex = 1;
 
 class ProfilePage extends ConsumerStatefulWidget {
   const ProfilePage({super.key});
@@ -21,10 +33,16 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
-  bool _uploadingAvatar = false;
+  final _uploadingAvatar = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    _uploadingAvatar.dispose();
+    super.dispose();
+  }
 
   Future<void> _changePhoto() async {
-    if (_uploadingAvatar) return;
+    if (_uploadingAvatar.value) return;
 
     final picked = await ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -32,7 +50,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     );
     if (picked == null || !mounted) return;
 
-    setState(() => _uploadingAvatar = true);
+    _uploadingAvatar.value = true;
     try {
       final updated = await ref.read(useUploadAvatarProvider).call(picked.path);
       final current = ref.read(currentUserProvider);
@@ -41,100 +59,191 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
     } catch (e) {
       if (mounted) showErrorMessage(context, apiErrorMessage(context, e));
     } finally {
-      if (mounted) setState(() => _uploadingAvatar = false);
+      if (mounted) _uploadingAvatar.value = false;
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider);
-    final l10n = AppLocalizations.of(context);
+  Future<void> _refresh() async {
+    ref.invalidate(mySubscriptionsControllerProvider);
+    ref.invalidate(streakProvider);
+    await ref.read(mySubscriptionsControllerProvider.future);
+  }
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Stack(
-            children: [
-              ProfileHero(user: user, photoUrl: user?.avatar),
-              Positioned(
-                right: AppSpacing.lg,
-                bottom: AppSpacing.lg,
-                child: _ChangePhotoButton(
-                  isLoading: _uploadingAvatar,
-                  onTap: _changePhoto,
-                ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              AppSpacing.lg,
-              AppSpacing.xl,
-              AppSpacing.xl,
-            ),
-            child: Column(
-              children: [
-                ProfileField(
-                  label: l10n.profilePhone,
-                  value: formatPhone(user?.phoneNumber),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                ProfileField(
-                  label: l10n.profileEmail,
-                  value: user?.email?.isNotEmpty == true ? user!.email! : '—',
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                ProfileField(
-                  label: l10n.profilePassword,
-                  value: l10n.profileUpdatePassword,
-                  // Reuses the recovery flow — it verifies by OTP and sets a
-                  // new password, which is what updating one means here.
-                  onTap: () => context.push(ForgotPasswordScreen.path),
-                ),
-              ],
-            ),
-          ),
-          const SettingsCard(),
-        ],
+  void _showAccount() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.white,
+      showDragHandle: true,
+      constraints: const BoxConstraints(maxWidth: double.infinity),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _AccountSheet(
+        uploading: _uploadingAvatar,
+        onChangePhoto: _changePhoto,
       ),
     );
   }
-}
-
-/// Small circular camera button floated over the hero photo's corner.
-class _ChangePhotoButton extends StatelessWidget {
-  final bool isLoading;
-  final VoidCallback onTap;
-
-  const _ChangePhotoButton({required this.isLoading, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      shape: const CircleBorder(),
-      elevation: 3,
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: isLoading ? null : onTap,
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: Center(
-            child: isLoading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(
-                    Icons.camera_alt_rounded,
-                    size: 20,
-                    color: Colors.black,
-                  ),
+    final l10n = AppLocalizations.of(context);
+    final user = ref.watch(currentUserProvider);
+    final subscriptions = ref.watch(mySubscriptionsControllerProvider).value;
+    final streak = ref.watch(streakProvider).value;
+    final insets = MediaQuery.paddingOf(context);
+
+    return ColoredBox(
+      color: _background,
+      child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            insets.top + AppSpacing.lg,
+            AppSpacing.lg,
+            insets.bottom + AppSpacing.xl,
           ),
+          children: [
+            Text(
+              l10n.navProfile,
+              style: const TextStyle(
+                color: _ink,
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ProfileHeaderCard(user: user, onTap: _showAccount),
+            // Nothing while loading or on failure — a wrong "no plan" card
+            // would be worse than a moment without one.
+            if (subscriptions != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              ..._planCards(context, subscriptions),
+            ],
+            const SizedBox(height: AppSpacing.lg),
+            ProfileStatsGrid(
+              streakDays: streak?.currentStreak ?? 0,
+              points: user?.points ?? 0,
+              coins: user?.coins ?? 0,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            const SettingsCard(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _planCards(
+    BuildContext context,
+    List<SubscriptionEntity> subscriptions,
+  ) {
+    final status = PlanStatus.of(subscriptions, DateTime.now());
+    return switch (status) {
+      PlanActive(:final subscriptions) => [
+        for (var i = 0; i < subscriptions.length; i++) ...[
+          if (i > 0) const SizedBox(height: AppSpacing.md),
+          ActivePlanCard(
+            key: ValueKey('plan-active-${subscriptions[i].id}'),
+            subscription: subscriptions[i],
+          ),
+        ],
+      ],
+      PlanNone() => [
+        PlanPromptCard.none(
+          context,
+          onChoose: () => ref.read(navbarControllerProvider.notifier).state =
+              _coursesTabIndex,
+        ),
+      ],
+      PlanExpired(:final latest) => [
+        PlanPromptCard.expired(
+          context,
+          latest: latest,
+          onRenew: () =>
+              context.push('${PlansScreen.path}?courseId=${latest.course.id}'),
+        ),
+      ],
+    };
+  }
+}
+
+/// The student's photo (with a way to change it), name, phone and email.
+class _AccountSheet extends ConsumerWidget {
+  final ValueNotifier<bool> uploading;
+  final VoidCallback onChangePhoto;
+
+  const _AccountSheet({required this.uploading, required this.onChangePhoto});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final user = ref.watch(currentUserProvider);
+    final phone = user?.phoneNumber ?? '';
+    final email = user?.email ?? '';
+
+    Widget field(String label, String value) => Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(color: Color(0xFF8A8C9C), fontSize: 14),
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: _ink,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(child: ProfileAvatar(url: user?.avatar, size: 88)),
+            const SizedBox(height: AppSpacing.sm),
+            Center(
+              child: ValueListenableBuilder<bool>(
+                valueListenable: uploading,
+                builder: (_, isUploading, _) => isUploading
+                    ? const Padding(
+                        padding: EdgeInsets.all(AppSpacing.sm),
+                        child: SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : TextButton(
+                        onPressed: onChangePhoto,
+                        child: Text(l10n.registerChangePhoto),
+                      ),
+              ),
+            ),
+            Text(
+              user?.fullName ?? '',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: _ink,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            if (phone.isNotEmpty) field(l10n.fieldPhone, formatPhone(phone)),
+            if (email.isNotEmpty) field(l10n.fieldEmail, email),
+          ],
         ),
       ),
     );

@@ -56,4 +56,48 @@ void main() {
       expect(group.primaryMentor?.id, 'm1');
     });
   });
+
+  group('support mentors', () {
+    test('read from a flat supportMentors list', () {
+      final group = GroupResponse.fromJson({
+        'id': 'g1',
+        'title': 'A1 Morning',
+        'supportMentors': [
+          {'id': 'm2', 'firstName': 'Dilnoza', 'lastName': 'Karimova'},
+        ],
+      }).toEntity();
+
+      expect(group.supportMentors.single.name, 'Dilnoza Karimova');
+    });
+
+    test('or from the support entries of the older mentors list', () {
+      final group = GroupResponse.fromJson({
+        'id': 'g1',
+        'title': 'A1 Morning',
+        'mentors': [
+          {
+            'role': 'primary',
+            'mentor': {'id': 'm1', 'firstName': 'Primary'},
+          },
+          {
+            'role': 'support',
+            'mentor': {'id': 'm2', 'firstName': 'Support'},
+          },
+        ],
+      }).toEntity();
+
+      expect(group.primaryMentor?.id, 'm1');
+      expect(group.supportMentors.map((m) => m.id), ['m2']);
+    });
+
+    test('none when the API sends neither', () {
+      final group = GroupResponse.fromJson({
+        'id': 'g1',
+        'title': 'A1 Morning',
+        'primaryMentor': {'id': 'm1', 'firstName': 'Primary'},
+      }).toEntity();
+
+      expect(group.supportMentors, isEmpty);
+    });
+  });
 }

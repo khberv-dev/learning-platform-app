@@ -112,12 +112,6 @@ abstract class AppLocalizations {
   /// **'You can change it later in your profile'**
   String get languageSubtitle;
 
-  /// No description provided for @languageSettingsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get languageSettingsTitle;
-
   /// No description provided for @commonContinue.
   ///
   /// In en, this message translates to:
@@ -136,6 +130,12 @@ abstract class AppLocalizations {
   /// **'Resume'**
   String get commonResume;
 
+  /// No description provided for @commonSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get commonSave;
+
   /// No description provided for @commonCancel.
   ///
   /// In en, this message translates to:
@@ -147,24 +147,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get commonRetry;
-
-  /// No description provided for @commonYes.
-  ///
-  /// In en, this message translates to:
-  /// **'Yes'**
-  String get commonYes;
-
-  /// No description provided for @commonNo.
-  ///
-  /// In en, this message translates to:
-  /// **'No'**
-  String get commonNo;
-
-  /// No description provided for @commonOk.
-  ///
-  /// In en, this message translates to:
-  /// **'OK'**
-  String get commonOk;
 
   /// No description provided for @commonLoading.
   ///
@@ -415,7 +397,7 @@ abstract class AppLocalizations {
   /// No description provided for @navStudy.
   ///
   /// In en, this message translates to:
-  /// **'Mentor'**
+  /// **'Study'**
   String get navStudy;
 
   /// No description provided for @navProfile.
@@ -478,77 +460,47 @@ abstract class AppLocalizations {
   /// **'Coins'**
   String get homeStatsCoins;
 
-  /// No description provided for @homeLibrary.
+  /// No description provided for @homeAiPartnerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Library'**
-  String get homeLibrary;
+  /// **'AI partner'**
+  String get homeAiPartnerTitle;
 
-  /// No description provided for @homeNoCoursesTitle.
+  /// No description provided for @homeAiPartnerBody.
   ///
   /// In en, this message translates to:
-  /// **'No active courses yet'**
-  String get homeNoCoursesTitle;
+  /// **'A live conversation with AI'**
+  String get homeAiPartnerBody;
 
-  /// No description provided for @homeNoCoursesSubtitle.
+  /// No description provided for @homeAiPartnerAction.
   ///
   /// In en, this message translates to:
-  /// **'Browse and start learning today'**
-  String get homeNoCoursesSubtitle;
+  /// **'Start talking'**
+  String get homeAiPartnerAction;
 
-  /// No description provided for @homeNoCoursesButton.
+  /// No description provided for @homePartnerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Start practice'**
-  String get homeNoCoursesButton;
+  /// **'Speaking partner'**
+  String get homePartnerTitle;
 
-  /// No description provided for @homeProgress.
+  /// No description provided for @homePartnerBody.
   ///
   /// In en, this message translates to:
-  /// **'Progress'**
-  String get homeProgress;
+  /// **'A live conversation with a partner'**
+  String get homePartnerBody;
+
+  /// No description provided for @homePartnerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a partner'**
+  String get homePartnerAction;
 
   /// No description provided for @homeResume.
   ///
   /// In en, this message translates to:
   /// **'Resume'**
   String get homeResume;
-
-  /// No description provided for @homeAiTestTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Test your skills with AI'**
-  String get homeAiTestTitle;
-
-  /// No description provided for @homeAiTestBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Speak naturally and let AI evaluate your level — get a full skill report in minutes'**
-  String get homeAiTestBody;
-
-  /// No description provided for @homeAiTestButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Start test'**
-  String get homeAiTestButton;
-
-  /// No description provided for @homeSpeakingTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Find a speaking partner'**
-  String get homeSpeakingTitle;
-
-  /// No description provided for @homeSpeakingBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Get matched with a real person at your level. Practice conversations that matter'**
-  String get homeSpeakingBody;
-
-  /// No description provided for @homeSpeakingButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Find partner'**
-  String get homeSpeakingButton;
 
   /// No description provided for @coursesTitle.
   ///
@@ -658,77 +610,23 @@ abstract class AppLocalizations {
   /// **'Buy a plan'**
   String get courseChoosePlan;
 
-  /// No description provided for @unitNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Unit {number}'**
-  String unitNumber(String number);
-
   /// No description provided for @unitNoLessonsTitle.
   ///
   /// In en, this message translates to:
   /// **'No lessons yet'**
   String get unitNoLessonsTitle;
 
-  /// No description provided for @unitNoLessonsSubtitle.
+  /// No description provided for @lessonUnitLessons.
   ///
   /// In en, this message translates to:
-  /// **'Lessons for this unit will appear here.'**
-  String get unitNoLessonsSubtitle;
+  /// **'Lessons'**
+  String get lessonUnitLessons;
 
-  /// No description provided for @unitNotFound.
+  /// No description provided for @lessonGoToTest.
   ///
   /// In en, this message translates to:
-  /// **'Unit not found'**
-  String get unitNotFound;
-
-  /// The numbers are zero-padded strings, e.g. 01
-  ///
-  /// In en, this message translates to:
-  /// **'Unit {unit} · Lesson {lesson}'**
-  String lessonUnitLesson(String unit, String lesson);
-
-  /// No description provided for @lessonUnitLessonOf.
-  ///
-  /// In en, this message translates to:
-  /// **'Unit {unit} · Lesson {lesson} of {total}'**
-  String lessonUnitLessonOf(String unit, String lesson, int total);
-
-  /// No description provided for @lessonViewTasks.
-  ///
-  /// In en, this message translates to:
-  /// **'View Tasks'**
-  String get lessonViewTasks;
-
-  /// No description provided for @lessonTasksCompleted.
-  ///
-  /// In en, this message translates to:
-  /// **'Tasks Completed'**
-  String get lessonTasksCompleted;
-
-  /// No description provided for @lessonTasksInProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'Tasks In Progress'**
-  String get lessonTasksInProgress;
-
-  /// No description provided for @lessonScore.
-  ///
-  /// In en, this message translates to:
-  /// **'{completed} of {total} tasks · {percent}%'**
-  String lessonScore(int completed, int total, int percent);
-
-  /// No description provided for @lessonRetake.
-  ///
-  /// In en, this message translates to:
-  /// **'Retake'**
-  String get lessonRetake;
-
-  /// No description provided for @lessonInThisUnit.
-  ///
-  /// In en, this message translates to:
-  /// **'In this unit'**
-  String get lessonInThisUnit;
+  /// **'Go to the test'**
+  String get lessonGoToTest;
 
   /// No description provided for @lessonNoContent.
   ///
@@ -1150,41 +1048,119 @@ abstract class AppLocalizations {
   /// **'Password updated successfully'**
   String get otpPasswordUpdated;
 
-  /// No description provided for @profilePhone.
+  /// No description provided for @profileCurrentPlan.
   ///
   /// In en, this message translates to:
-  /// **'Phone number'**
-  String get profilePhone;
+  /// **'Current plan'**
+  String get profileCurrentPlan;
 
-  /// No description provided for @profileEmail.
+  /// No description provided for @profilePlanActive.
   ///
   /// In en, this message translates to:
-  /// **'Email address'**
-  String get profileEmail;
+  /// **'Active'**
+  String get profilePlanActive;
 
-  /// No description provided for @profilePassword.
+  /// No description provided for @profilePlanEnds.
   ///
   /// In en, this message translates to:
-  /// **'Password'**
-  String get profilePassword;
+  /// **'Ends on'**
+  String get profilePlanEnds;
 
-  /// No description provided for @profileUpdatePassword.
+  /// No description provided for @profileNoPlanTitle.
   ///
   /// In en, this message translates to:
-  /// **'Update password'**
-  String get profileUpdatePassword;
+  /// **'No active plan'**
+  String get profileNoPlanTitle;
 
-  /// No description provided for @settingsPrivacyPolicy.
+  /// No description provided for @profileNoPlanBody.
   ///
   /// In en, this message translates to:
-  /// **'Privacy Policy'**
-  String get settingsPrivacyPolicy;
+  /// **'Choose a plan for group lessons with a mentor and live lessons'**
+  String get profileNoPlanBody;
 
-  /// No description provided for @settingsAppVersion.
+  /// No description provided for @profileChoosePlan.
   ///
   /// In en, this message translates to:
-  /// **'App version'**
-  String get settingsAppVersion;
+  /// **'Choose a plan'**
+  String get profileChoosePlan;
+
+  /// No description provided for @profilePlanExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'{course} plan has expired'**
+  String profilePlanExpired(String course);
+
+  /// No description provided for @profilePlanEndedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended on: {date}'**
+  String profilePlanEndedOn(String date);
+
+  /// No description provided for @profileRenewPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew plan'**
+  String get profileRenewPlan;
+
+  /// No description provided for @profileStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Current streak'**
+  String get profileStreak;
+
+  /// No description provided for @profileTotalXp.
+  ///
+  /// In en, this message translates to:
+  /// **'Total XP'**
+  String get profileTotalXp;
+
+  /// No description provided for @profileCoins.
+  ///
+  /// In en, this message translates to:
+  /// **'Coin balance'**
+  String get profileCoins;
+
+  /// No description provided for @profileRank.
+  ///
+  /// In en, this message translates to:
+  /// **'Leaderboard rank'**
+  String get profileRank;
+
+  /// No description provided for @profileRankValue.
+  ///
+  /// In en, this message translates to:
+  /// **'#{rank}'**
+  String profileRankValue(int rank);
+
+  /// No description provided for @profileLanguageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The app will be shown in the language you choose'**
+  String get profileLanguageHint;
+
+  /// No description provided for @profileSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get profileSettings;
+
+  /// No description provided for @profileAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get profileAccount;
+
+  /// No description provided for @profileAppLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'App language'**
+  String get profileAppLanguage;
+
+  /// No description provided for @profileChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get profileChangePassword;
 
   /// No description provided for @settingsLogOut.
   ///
@@ -1201,14 +1177,38 @@ abstract class AppLocalizations {
   /// No description provided for @settingsLogOutConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to log out?'**
+  /// **'Log out?'**
   String get settingsLogOutConfirm;
 
   /// No description provided for @settingsDeleteConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete your account? This removes your courses and progress, and cannot be undone.'**
+  /// **'Delete your account?'**
   String get settingsDeleteConfirm;
+
+  /// No description provided for @settingsLogOutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To sign back in, you\'ll need your phone number or email and your password.'**
+  String get settingsLogOutBody;
+
+  /// No description provided for @settingsLogOutAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get settingsLogOutAction;
+
+  /// No description provided for @settingsDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile details, progress, streak and coins will be deleted for good. This can\'t be undone.'**
+  String get settingsDeleteBody;
+
+  /// No description provided for @settingsDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get settingsDeleteAction;
 
   /// No description provided for @settingsDeleteRequestedTitle.
   ///
@@ -1252,11 +1252,65 @@ abstract class AppLocalizations {
   /// **'Send a message to start the conversation.'**
   String get chatEmptySubtitle;
 
-  /// No description provided for @studyTitle.
+  /// No description provided for @studyEmptyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Study'**
-  String get studyTitle;
+  /// **'Buy a course to choose your lesson times'**
+  String get studyEmptyTitle;
+
+  /// No description provided for @studyEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'After buying a course you\'ll choose the days and times that suit you, then we\'ll add you to a group with mentors.'**
+  String get studyEmptyBody;
+
+  /// No description provided for @studyBrowseCourses.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse courses'**
+  String get studyBrowseCourses;
+
+  /// No description provided for @studyWaitingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be added to a group soon'**
+  String get studyWaitingTitle;
+
+  /// No description provided for @studyWaitingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your course is active. We\'re putting together your group and mentors.'**
+  String get studyWaitingBody;
+
+  /// No description provided for @studyJoinGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the group'**
+  String get studyJoinGroup;
+
+  /// No description provided for @studyMentors.
+  ///
+  /// In en, this message translates to:
+  /// **'Mentors'**
+  String get studyMentors;
+
+  /// No description provided for @studyPrimaryMentor.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead mentor'**
+  String get studyPrimaryMentor;
+
+  /// No description provided for @studySupportMentor.
+  ///
+  /// In en, this message translates to:
+  /// **'Support mentor'**
+  String get studySupportMentor;
+
+  /// No description provided for @studyMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} member} other{{count} members}}'**
+  String studyMembers(int count);
 
   /// No description provided for @studyLoadFailed.
   ///
@@ -1269,30 +1323,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pull down to try again'**
   String get studyPullToRetry;
-
-  /// No description provided for @studyYourMentor.
-  ///
-  /// In en, this message translates to:
-  /// **'Your mentor'**
-  String get studyYourMentor;
-
-  /// No description provided for @studyOpenChat.
-  ///
-  /// In en, this message translates to:
-  /// **'Open chat'**
-  String get studyOpenChat;
-
-  /// No description provided for @studyNoGroupTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'You haven\'t joined a group yet'**
-  String get studyNoGroupTitle;
-
-  /// No description provided for @studyNoGroupMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'To start learning, buy a course and we\'ll add you to a group.'**
-  String get studyNoGroupMessage;
 
   /// No description provided for @mentorHeader.
   ///
@@ -1396,12 +1426,6 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get purchaseHistoryStatusCancelled;
 
-  /// No description provided for @settingsPurchaseHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Purchase history'**
-  String get settingsPurchaseHistory;
-
   /// No description provided for @plansTitle.
   ///
   /// In en, this message translates to:
@@ -1477,14 +1501,134 @@ abstract class AppLocalizations {
   /// No description provided for @aiTitle.
   ///
   /// In en, this message translates to:
-  /// **'AI Assessment'**
+  /// **'AI partner'**
   String get aiTitle;
 
-  /// No description provided for @aiInitialPrompt.
+  /// No description provided for @aiIntroTitle.
   ///
   /// In en, this message translates to:
-  /// **'Try to speak anything you want!'**
-  String get aiInitialPrompt;
+  /// **'Live conversation with AI'**
+  String get aiIntroTitle;
+
+  /// No description provided for @aiIntroBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the button and talk freely in English — the conversation runs in real time, just like a call.'**
+  String get aiIntroBody;
+
+  /// No description provided for @aiFeatureEndAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'You can end it whenever you like'**
+  String get aiFeatureEndAnytime;
+
+  /// No description provided for @aiFeatureLiveVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'A live voice conversation, in real time'**
+  String get aiFeatureLiveVoice;
+
+  /// No description provided for @aiFeatureNoScore.
+  ///
+  /// In en, this message translates to:
+  /// **'No grades or points — just talk'**
+  String get aiFeatureNoScore;
+
+  /// No description provided for @aiMicNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The conversation needs access to your microphone.'**
+  String get aiMicNote;
+
+  /// No description provided for @aiEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'End conversation'**
+  String get aiEnd;
+
+  /// No description provided for @aiConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting…'**
+  String get aiConnecting;
+
+  /// No description provided for @aiInCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation in progress'**
+  String get aiInCall;
+
+  /// No description provided for @aiYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get aiYou;
+
+  /// No description provided for @aiYourTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'Your turn'**
+  String get aiYourTurn;
+
+  /// No description provided for @aiMicOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Mic off'**
+  String get aiMicOff;
+
+  /// No description provided for @aiStatusListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening'**
+  String get aiStatusListening;
+
+  /// No description provided for @aiStatusThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking'**
+  String get aiStatusThinking;
+
+  /// No description provided for @aiStatusSpeaking.
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking'**
+  String get aiStatusSpeaking;
+
+  /// No description provided for @aiMute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get aiMute;
+
+  /// No description provided for @aiUnmute.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute'**
+  String get aiUnmute;
+
+  /// No description provided for @aiSoundOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute the AI\'s voice'**
+  String get aiSoundOff;
+
+  /// No description provided for @aiSoundOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute the AI\'s voice'**
+  String get aiSoundOn;
+
+  /// No description provided for @aiAutoEndNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The conversation ends automatically after {minutes} minutes'**
+  String aiAutoEndNote(int minutes);
+
+  /// No description provided for @aiTimeUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Time\'s up — the conversation has ended'**
+  String get aiTimeUp;
 
   /// No description provided for @aiMicDenied.
   ///
@@ -1527,12 +1671,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to speak'**
   String get aiTapToSpeak;
-
-  /// No description provided for @aiListening.
-  ///
-  /// In en, this message translates to:
-  /// **'Listening…'**
-  String get aiListening;
 
   /// No description provided for @aiResultsTitle.
   ///

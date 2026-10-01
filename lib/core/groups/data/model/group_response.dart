@@ -41,6 +41,7 @@ class GroupResponse {
   final bool isActive;
   final GroupCourseEntity? course;
   final MentorResponse? primaryMentor;
+  final List<MentorResponse> supportMentors;
   final List<GroupStudentResponse> students;
 
   const GroupResponse({
@@ -50,6 +51,7 @@ class GroupResponse {
     this.schedule = const {},
     this.course,
     this.primaryMentor,
+    this.supportMentors = const [],
     this.students = const [],
   });
 
@@ -72,6 +74,7 @@ class GroupResponse {
               title: rawCourse['title'] as String? ?? '',
             ),
       primaryMentor: _primaryMentor(json),
+      supportMentors: _supportMentors(json),
       students: rawStudents
           .map((e) => GroupStudentResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -94,6 +97,25 @@ class GroupResponse {
     return null;
   }
 
+  /// A flat `supportMentors` list if present, else the support entries of the
+  /// older `mentors` team list.
+  static List<MentorResponse> _supportMentors(Map<String, dynamic> json) {
+    final direct = json['supportMentors'];
+    if (direct is List) {
+      return [
+        for (final m in direct)
+          if (m is Map<String, dynamic>) MentorResponse.fromJson(m),
+      ];
+    }
+    return [
+      for (final m in json['mentors'] as List<dynamic>? ?? const [])
+        if (m is Map<String, dynamic> &&
+            m['role'] == 'support' &&
+            m['mentor'] is Map<String, dynamic>)
+          MentorResponse.fromJson(m['mentor'] as Map<String, dynamic>),
+    ];
+  }
+
   GroupEntity toEntity() => GroupEntity(
     id: id,
     title: title,
@@ -101,6 +123,7 @@ class GroupResponse {
     schedule: schedule,
     course: course,
     primaryMentor: primaryMentor?.toEntity(),
+    supportMentors: [for (final m in supportMentors) m.toEntity()],
     students: students.map((s) => s.toEntity()).toList(),
   );
 }

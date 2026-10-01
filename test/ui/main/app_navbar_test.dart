@@ -20,7 +20,7 @@ void main() {
     await tester.pumpWidget(_host());
 
     expect(tester.takeException(), isNull);
-    for (final label in ['Home', 'Courses', 'Mission', 'Mentor', 'Profile']) {
+    for (final label in ['Home', 'Courses', 'Mission', 'Study', 'Profile']) {
       expect(find.text(label), findsOneWidget);
     }
   });

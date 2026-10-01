@@ -41,6 +41,10 @@ class GroupEntity {
   /// Null until an admin assigns one.
   final MentorEntity? primaryMentor;
 
+  /// Helpers alongside the primary mentor. Empty unless the API lists them —
+  /// groups currently carry only a primary mentor.
+  final List<MentorEntity> supportMentors;
+
   final List<GroupStudentEntity> students;
 
   const GroupEntity({
@@ -50,6 +54,7 @@ class GroupEntity {
     this.schedule = const {},
     this.course,
     this.primaryMentor,
+    this.supportMentors = const [],
     this.students = const [],
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /// Locale-aware dates and times for the lesson and session cards.
 ///
@@ -25,3 +26,13 @@ String formatMonthDayTime(BuildContext context, DateTime dt) =>
 /// room for it.
 String formatShortDate(BuildContext context, DateTime dt) =>
     MaterialLocalizations.of(context).formatShortDate(dt);
+
+/// Day, abbreviated month and year with no weekday — `22-okt, 2026`,
+/// `22 окт. 2026 г.`, `Oct 22, 2026` — for a date that stands on its own,
+/// like when a subscription ends. [MaterialLocalizations.formatMediumDate]
+/// would add a weekday and drop the year.
+///
+/// The date symbols are loaded by `GlobalMaterialLocalizations` for every
+/// locale the app ships.
+String formatMediumDate(BuildContext context, DateTime dt) =>
+    DateFormat.yMMMd(Localizations.localeOf(context).toString()).format(dt);

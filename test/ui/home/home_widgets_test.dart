@@ -1,27 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:student/core/notifications/presentation/unread_notifications_count_provider.dart';
 import 'package:student/core/user/domain/entity/user_entity.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
-import 'package:student/shared/widget/app_button.dart';
-import 'package:student/ui/home/widget/home_promo_card.dart';
 import 'package:student/ui/home/widget/home_topbar.dart';
 import 'package:student/ui/home/widget/streak_card.dart';
+import 'package:student/ui/notifications/notifications_screen.dart';
 
 import '../../support/localized_app.dart';
 
-Widget _host(Widget child) => localizedHome(
-  home: Scaffold(body: Center(child: child)),
+Widget _topbar(
+  UserEntity? user, {
+  Locale locale = const Locale('en'),
+  int unread = 0,
+}) => ProviderScope(
+  overrides: [
+    currentUserProvider.overrideWith((ref) => user),
+    unreadNotificationsCountProvider.overrideWith((ref) async => unread),
+  ],
+  child: localizedApp(
+    locale: locale,
+    routerConfig: GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => const Scaffold(body: Center(child: HomeTopbar())),
+        ),
+        GoRoute(
+          path: NotificationsScreen.path,
+          builder: (_, _) => const Scaffold(body: Text('notifications page')),
+        ),
+      ],
+    ),
+  ),
 );
-
-Widget _topbar(UserEntity? user, {Locale locale = const Locale('en')}) =>
-    ProviderScope(
-      overrides: [currentUserProvider.overrideWith((ref) => user)],
-      child: localizedHome(
-        locale: locale,
-        home: const Scaffold(body: Center(child: HomeTopbar())),
-      ),
-    );
 
 const _azima = UserEntity(
   id: 'u1',
@@ -68,6 +82,35 @@ void main() {
       );
     });
 
+    testWidgets('the bell shows a dot while something is unread', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_topbar(_azima, unread: 3));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('notifications-unread-dot')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('and no dot once everything is read', (tester) async {
+      await tester.pumpWidget(_topbar(_azima));
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const ValueKey('notifications-unread-dot')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('the bell opens notifications', (tester) async {
+      await tester.pumpWidget(_topbar(_azima));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.bySemanticsLabel('Notifications'));
+      await tester.pumpAndSettle();
+      expect(find.text('notifications page'), findsOneWidget);
+    });
+
     testWidgets('no photo shows the person placeholder', (tester) async {
       await tester.pumpWidget(_topbar(_azima));
 
@@ -95,61 +138,6 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
-    });
-  });
-
-  group('HomePromoCard', () {
-    Widget promo({Color background = Colors.white, Color? foreground}) => _host(
-      SizedBox(
-        width: 342,
-        child: HomePromoCard(
-          background: background,
-          foreground: foreground,
-          title: 'No active courses yet',
-          subtitle: 'Browse and start learning today',
-          buttonLabel: 'Start practice',
-          imagePath: 'assets/images/no_course_puppet.png',
-          onTap: () {},
-        ),
-      ),
-    );
-
-    testWidgets('picks readable text for light and dark cards', (tester) async {
-      await tester.pumpWidget(promo());
-      expect(
-        tester.widget<Text>(find.text('No active courses yet')).style?.color,
-        Colors.black,
-      );
-
-      await tester.pumpWidget(promo(background: const Color(0xff1f4a57)));
-      expect(
-        tester.widget<Text>(find.text('No active courses yet')).style?.color,
-        Colors.white,
-      );
-    });
-
-    testWidgets('an explicit foreground overrides the automatic choice', (
-      tester,
-    ) async {
-      // The brand green reads as "light", so the green card has to force this.
-      await tester.pumpWidget(
-        promo(background: const Color(0xff18c96a), foreground: Colors.white),
-      );
-
-      expect(
-        tester.widget<Text>(find.text('No active courses yet')).style?.color,
-        Colors.white,
-      );
-    });
-
-    testWidgets('its action sizes to the label, not the card', (tester) async {
-      await tester.pumpWidget(promo());
-
-      expect(tester.takeException(), isNull);
-      expect(
-        tester.getSize(find.byType(AppButton)).width,
-        lessThan(tester.getSize(find.byType(HomePromoCard)).width),
-      );
     });
   });
 

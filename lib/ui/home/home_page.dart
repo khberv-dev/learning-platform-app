@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/core/user/presentation/streak_provider.dart';
-import 'package:student/app/theme/app_colors.dart';
-import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
-import 'package:student/ui/home/widget/ai_test_card.dart';
-import 'package:student/ui/home/widget/continue_learning_card.dart';
+import 'package:student/ui/home/widget/home_learning_cards.dart';
 import 'package:student/ui/home/widget/home_topbar.dart';
-import 'package:student/ui/home/widget/speaking_partner_card.dart';
 import 'package:student/ui/home/widget/streak_card.dart';
+
+/// Tab index of Courses in the navbar, where the carousel's "See all" leads.
+const _coursesTabIndex = 1;
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -32,38 +32,26 @@ class HomePage extends ConsumerWidget {
             child: StreakCard(days: streak?.currentStreak ?? 0),
           ),
           const SizedBox(height: AppSpacing.xxl),
-          // Everything below sits on a dark teal panel. The navbar clearance
-          // lives inside its padding rather than on the scroll view, so the
-          // panel colour runs under the floating pill instead of leaving a
-          // strip of scaffold background there.
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: AppColors.librarySurface,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppRadius.xl),
-              ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.xl,
+              0,
+              AppSpacing.xl,
+              AppSpacing.xl,
             ),
-            padding: EdgeInsets.only(
-              top: AppSpacing.xl,
-              bottom: AppSpacing.xl + MediaQuery.paddingOf(context).bottom,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [HomeCourseCards(), HomePracticeTiles()],
             ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ContinueLearningCard(),
-                SizedBox(height: AppSpacing.md),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                  child: AiTestCard(),
-                ),
-                SizedBox(height: AppSpacing.md),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-                  child: SpeakingPartnerCard(),
-                ),
-              ],
-            ),
+          ),
+          // Full width, so the carousel scrolls edge to edge.
+          HomeCoursesCarousel(
+            onSeeAll: () => ref.read(navbarControllerProvider.notifier).state =
+                _coursesTabIndex,
+          ),
+          // Clear of the floating navbar.
+          SizedBox(
+            height: AppSpacing.xl + MediaQuery.paddingOf(context).bottom,
           ),
         ],
       ),

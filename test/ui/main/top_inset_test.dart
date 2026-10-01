@@ -8,11 +8,14 @@ import 'package:student/core/courses/domain/repository/i_courses_repository.dart
 import 'package:student/core/groups/data/repository/groups_repository.dart';
 import 'package:student/core/groups/domain/entity/group_entity.dart';
 import 'package:student/core/groups/domain/repository/i_groups_repository.dart';
+import 'package:student/core/subscriptions/data/repository/subscriptions_repository.dart';
+import 'package:student/core/subscriptions/domain/repository/i_subscriptions_repository.dart';
+import 'package:student/core/user/domain/entity/streak_entity.dart';
 import 'package:student/core/user/domain/entity/user_entity.dart';
 import 'package:student/core/user/presentation/current_user_provider.dart';
+import 'package:student/core/user/presentation/streak_provider.dart';
 import 'package:student/ui/courses/courses_page.dart';
 import 'package:student/ui/profile/profile_page.dart';
-import 'package:student/ui/profile/widget/profile_hero.dart';
 import 'package:student/ui/study/study_page.dart';
 
 import '../../support/localized_app.dart';
@@ -28,7 +31,8 @@ const _user = UserEntity(
   level: 'B1',
 );
 
-class _Empty implements ICoursesRepository, IGroupsRepository {
+class _Empty
+    implements ICoursesRepository, IGroupsRepository, ISubscriptionsRepository {
   @override
   Future<List<GroupEntity>> getMyGroups() async => [];
 
@@ -52,6 +56,8 @@ Future<void> _pump(WidgetTester tester, Widget page) async {
         currentUserProvider.overrideWith((ref) => _user),
         coursesRepositoryProvider.overrideWithValue(empty),
         groupsRepositoryProvider.overrideWithValue(empty),
+        subscriptionsRepositoryProvider.overrideWithValue(empty),
+        streakProvider.overrideWith((ref) async => _streak),
       ],
       child: localizedApp(
         theme: container.read(appThemeProvider),
@@ -71,6 +77,14 @@ Future<void> _pump(WidgetTester tester, Widget page) async {
   await tester.pump(const Duration(milliseconds: 100));
 }
 
+const _streak = StreakEntity(
+  currentStreak: 25,
+  longestStreak: 25,
+  totalActiveDays: 40,
+  activeToday: true,
+  lastActiveDate: null,
+);
+
 void main() {
   testWidgets('the courses title clears the status bar', (tester) async {
     await _pump(tester, const CoursesPage());
@@ -82,29 +96,25 @@ void main() {
     );
   });
 
-  testWidgets('the study title clears the status bar', (tester) async {
+  testWidgets('the study page clears the status bar', (tester) async {
     await _pump(tester, const StudyPage());
 
     expect(tester.takeException(), isNull);
     expect(
-      tester.getTopLeft(find.text('Study')).dy,
+      tester
+          .getTopLeft(find.text('Buy a course to choose your lesson times'))
+          .dy,
       greaterThanOrEqualTo(_topInset),
     );
   });
 
-  testWidgets('the profile hero deliberately bleeds under it', (tester) async {
+  testWidgets('the profile title clears the status bar', (tester) async {
     await _pump(tester, const ProfilePage());
 
     expect(tester.takeException(), isNull);
-    expect(tester.getTopLeft(find.byType(ProfileHero)).dy, 0);
-  });
-
-  testWidgets('but the profile name still sits clear of the notch', (
-    tester,
-  ) async {
-    await _pump(tester, const ProfilePage());
-
-    // The name hangs at the bottom of the hero, well below the inset.
-    expect(tester.getTopLeft(find.text('Asror')).dy, greaterThan(_topInset));
+    expect(
+      tester.getTopLeft(find.text('Profile')).dy,
+      greaterThanOrEqualTo(_topInset),
+    );
   });
 }

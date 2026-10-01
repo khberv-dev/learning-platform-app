@@ -15,9 +15,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get languageSubtitle => 'Позже его можно изменить в профиле';
 
   @override
-  String get languageSettingsTitle => 'Язык';
-
-  @override
   String get commonContinue => 'Продолжить';
 
   @override
@@ -27,19 +24,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonResume => 'Далее';
 
   @override
+  String get commonSave => 'Сохранить';
+
+  @override
   String get commonCancel => 'Отмена';
 
   @override
   String get commonRetry => 'Повторить';
-
-  @override
-  String get commonYes => 'Да';
-
-  @override
-  String get commonNo => 'Нет';
-
-  @override
-  String get commonOk => 'ОК';
 
   @override
   String get commonLoading => 'Загрузка…';
@@ -173,7 +164,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navCourse => 'Курсы';
 
   @override
-  String get navStudy => 'Ментор';
+  String get navStudy => 'Обучение';
 
   @override
   String get navProfile => 'Профиль';
@@ -223,42 +214,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeStatsCoins => 'Монеты';
 
   @override
-  String get homeLibrary => 'Библиотека';
+  String get homeAiPartnerTitle => 'ИИ-собеседник';
 
   @override
-  String get homeNoCoursesTitle => 'Пока нет активных курсов';
+  String get homeAiPartnerBody => 'Живой разговор с ИИ';
 
   @override
-  String get homeNoCoursesSubtitle => 'Выберите курс и начните учиться';
+  String get homeAiPartnerAction => 'Начать разговор';
 
   @override
-  String get homeNoCoursesButton => 'Начать практику';
+  String get homePartnerTitle => 'Собеседник';
 
   @override
-  String get homeProgress => 'Прогресс';
+  String get homePartnerBody => 'Живой разговор с собеседником';
+
+  @override
+  String get homePartnerAction => 'Найти собеседника';
 
   @override
   String get homeResume => 'Продолжить';
-
-  @override
-  String get homeAiTestTitle => 'Проверьте себя с ИИ';
-
-  @override
-  String get homeAiTestBody =>
-      'Говорите свободно, а ИИ оценит ваш уровень — полный отчёт за считаные минуты';
-
-  @override
-  String get homeAiTestButton => 'Начать тест';
-
-  @override
-  String get homeSpeakingTitle => 'Найдите собеседника';
-
-  @override
-  String get homeSpeakingBody =>
-      'Мы подберём человека вашего уровня. Практикуйте живое общение';
-
-  @override
-  String get homeSpeakingButton => 'Найти собеседника';
 
   @override
   String get coursesTitle => 'Курсы';
@@ -346,48 +320,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get courseChoosePlan => 'Купить тариф';
 
   @override
-  String unitNumber(String number) {
-    return 'Раздел $number';
-  }
-
-  @override
   String get unitNoLessonsTitle => 'Пока нет уроков';
 
   @override
-  String get unitNoLessonsSubtitle => 'Уроки этого раздела появятся здесь.';
+  String get lessonUnitLessons => 'Уроки';
 
   @override
-  String get unitNotFound => 'Раздел не найден';
-
-  @override
-  String lessonUnitLesson(String unit, String lesson) {
-    return 'Раздел $unit · Урок $lesson';
-  }
-
-  @override
-  String lessonUnitLessonOf(String unit, String lesson, int total) {
-    return 'Раздел $unit · Урок $lesson из $total';
-  }
-
-  @override
-  String get lessonViewTasks => 'К заданиям';
-
-  @override
-  String get lessonTasksCompleted => 'Задания выполнены';
-
-  @override
-  String get lessonTasksInProgress => 'Задания в процессе';
-
-  @override
-  String lessonScore(int completed, int total, int percent) {
-    return '$completed из $total заданий · $percent%';
-  }
-
-  @override
-  String get lessonRetake => 'Пройти заново';
-
-  @override
-  String get lessonInThisUnit => 'В этом разделе';
+  String get lessonGoToTest => 'Перейти к тесту';
 
   @override
   String get lessonNoContent => 'Нет контента';
@@ -635,22 +574,69 @@ class AppLocalizationsRu extends AppLocalizations {
   String get otpPasswordUpdated => 'Пароль успешно обновлён';
 
   @override
-  String get profilePhone => 'Номер телефона';
+  String get profileCurrentPlan => 'Текущий тариф';
 
   @override
-  String get profileEmail => 'Электронная почта';
+  String get profilePlanActive => 'Активен';
 
   @override
-  String get profilePassword => 'Пароль';
+  String get profilePlanEnds => 'Дата окончания';
 
   @override
-  String get profileUpdatePassword => 'Изменить пароль';
+  String get profileNoPlanTitle => 'Нет активного тарифа';
 
   @override
-  String get settingsPrivacyPolicy => 'Политика конфиденциальности';
+  String get profileNoPlanBody =>
+      'Выберите тариф для групповых занятий с ментором и живых уроков';
 
   @override
-  String get settingsAppVersion => 'Версия приложения';
+  String get profileChoosePlan => 'Выбрать тариф';
+
+  @override
+  String profilePlanExpired(String course) {
+    return 'Тариф «$course» истёк';
+  }
+
+  @override
+  String profilePlanEndedOn(String date) {
+    return 'Дата окончания: $date';
+  }
+
+  @override
+  String get profileRenewPlan => 'Продлить тариф';
+
+  @override
+  String get profileStreak => 'Текущая серия';
+
+  @override
+  String get profileTotalXp => 'Всего XP';
+
+  @override
+  String get profileCoins => 'Баланс монет';
+
+  @override
+  String get profileRank => 'Место в рейтинге';
+
+  @override
+  String profileRankValue(int rank) {
+    return '$rank-е место';
+  }
+
+  @override
+  String get profileLanguageHint =>
+      'Интерфейс приложения будет на выбранном языке';
+
+  @override
+  String get profileSettings => 'Настройки';
+
+  @override
+  String get profileAccount => 'Аккаунт';
+
+  @override
+  String get profileAppLanguage => 'Язык приложения';
+
+  @override
+  String get profileChangePassword => 'Сменить пароль';
 
   @override
   String get settingsLogOut => 'Выйти';
@@ -659,11 +645,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsDeleteAccount => 'Удалить аккаунт';
 
   @override
-  String get settingsLogOutConfirm => 'Вы уверены, что хотите выйти?';
+  String get settingsLogOutConfirm => 'Выйти из аккаунта?';
 
   @override
-  String get settingsDeleteConfirm =>
-      'Удалить аккаунт? Ваши курсы и прогресс будут стёрты без возможности восстановления.';
+  String get settingsDeleteConfirm => 'Удалить аккаунт?';
+
+  @override
+  String get settingsLogOutBody =>
+      'Чтобы снова войти, понадобятся номер телефона или email и пароль.';
+
+  @override
+  String get settingsLogOutAction => 'Выйти';
+
+  @override
+  String get settingsDeleteBody =>
+      'Данные профиля, прогресс, серия и монеты будут удалены навсегда. Это действие нельзя отменить.';
+
+  @override
+  String get settingsDeleteAction => 'Удалить';
 
   @override
   String get settingsDeleteRequestedTitle => 'Запрос отправлен';
@@ -688,26 +687,56 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatEmptySubtitle => 'Напишите первым, чтобы начать разговор.';
 
   @override
-  String get studyTitle => 'Обучение';
+  String get studyEmptyTitle => 'Купите курс, чтобы выбрать время занятий';
+
+  @override
+  String get studyEmptyBody =>
+      'После покупки курса вы выберете удобные дни и время, а затем мы добавим вас в группу с менторами.';
+
+  @override
+  String get studyBrowseCourses => 'Смотреть курсы';
+
+  @override
+  String get studyWaitingTitle => 'Скоро мы добавим вас в группу';
+
+  @override
+  String get studyWaitingBody =>
+      'Ваш курс активен. Мы подбираем вам группу и менторов.';
+
+  @override
+  String get studyJoinGroup => 'Перейти в группу';
+
+  @override
+  String get studyMentors => 'Менторы';
+
+  @override
+  String get studyPrimaryMentor => 'Основной ментор';
+
+  @override
+  String get studySupportMentor => 'Ментор поддержки';
+
+  @override
+  String studyMembers(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString участника',
+      many: '$countString участников',
+      few: '$countString участника',
+      one: '$countString участник',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get studyLoadFailed => 'Не удалось загрузить данные группы';
 
   @override
   String get studyPullToRetry => 'Потяните вниз, чтобы повторить';
-
-  @override
-  String get studyYourMentor => 'Ваш ментор';
-
-  @override
-  String get studyOpenChat => 'Открыть чат';
-
-  @override
-  String get studyNoGroupTitle => 'Вы ещё не состоите в группе';
-
-  @override
-  String get studyNoGroupMessage =>
-      'Чтобы начать обучение, купите курс, и мы добавим вас в группу.';
 
   @override
   String get mentorHeader => 'Ментор';
@@ -762,9 +791,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get purchaseHistoryStatusCancelled => 'Отменено';
 
   @override
-  String get settingsPurchaseHistory => 'История покупок';
-
-  @override
   String get plansTitle => 'Выберите тариф';
 
   @override
@@ -817,10 +843,74 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get aiTitle => 'ИИ-оценка';
+  String get aiTitle => 'ИИ-собеседник';
 
   @override
-  String get aiInitialPrompt => 'Скажите что угодно — просто начните говорить!';
+  String get aiIntroTitle => 'Живой разговор с ИИ';
+
+  @override
+  String get aiIntroBody =>
+      'Нажмите кнопку и свободно говорите по-английски — разговор идёт в реальном времени, как звонок.';
+
+  @override
+  String get aiFeatureEndAnytime => 'Можно закончить в любой момент';
+
+  @override
+  String get aiFeatureLiveVoice =>
+      'Живой голосовой разговор в реальном времени';
+
+  @override
+  String get aiFeatureNoScore => 'Без оценок и баллов — просто говорите';
+
+  @override
+  String get aiMicNote => 'Для разговора нужен доступ к микрофону.';
+
+  @override
+  String get aiEnd => 'Завершить разговор';
+
+  @override
+  String get aiConnecting => 'Подключение…';
+
+  @override
+  String get aiInCall => 'Идёт разговор';
+
+  @override
+  String get aiYou => 'Вы';
+
+  @override
+  String get aiYourTurn => 'Ваша очередь';
+
+  @override
+  String get aiMicOff => 'Микрофон выключен';
+
+  @override
+  String get aiStatusListening => 'Слушает';
+
+  @override
+  String get aiStatusThinking => 'Думает';
+
+  @override
+  String get aiStatusSpeaking => 'Говорит';
+
+  @override
+  String get aiMute => 'Выключить микрофон';
+
+  @override
+  String get aiUnmute => 'Включить микрофон';
+
+  @override
+  String get aiSoundOff => 'Выключить голос ИИ';
+
+  @override
+  String get aiSoundOn => 'Включить голос ИИ';
+
+  @override
+  String aiAutoEndNote(int minutes) {
+    return 'Разговор завершится автоматически через $minutes мин.';
+  }
+
+  @override
+  String get aiTimeUp => 'Время вышло — разговор завершён';
 
   @override
   String get aiMicDenied => 'Нет доступа к микрофону';
@@ -843,9 +933,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get aiTapToSpeak => 'Нажмите и говорите';
-
-  @override
-  String get aiListening => 'Слушаю…';
 
   @override
   String get aiResultsTitle => 'Результаты';

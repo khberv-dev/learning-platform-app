@@ -21,12 +21,6 @@ abstract class AppColors {
   static const streakTrack = Color(0xfff2c14e);
   static const streakTick = Color(0xffb07d1a);
 
-  /// Dark teal panel the home page's library sections sit on.
-  static const librarySurface = Color(0xff084f62);
-
-  /// Blue promo card, and the button colour used on the green one.
-  static const promoBlue = Color(0xff3d9ac8);
-
   /// Neutral surface for [AppEmptyState].
   static const emptySurface = Color(0xffefefef);
 

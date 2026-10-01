@@ -58,9 +58,9 @@ lib/
 └── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, date_format.dart, uz_phone_formatter.dart
 ```
 
-**Domains:** `assessments`, `auth`, `chat`, `courses`, `diagnostics`, `enrollments`, `groups`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `user`
+**Domains:** `assessments`, `auth`, `chat`, `courses`, `diagnostics`, `enrollments`, `groups`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `subscriptions`, `user`
 
-Not every domain has all three layers. `assessments` has no presentation layer, since `AiAssessmentScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `diagnostics` is just crash reporting (see below). `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
+Not every domain has all three layers. `assessments` has no presentation layer, since `AiSpeakingPartnerScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `diagnostics` is just crash reporting (see below). `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
 
 Shared widgets live in `lib/shared/widget/`, **not** under `lib/ui/`. A widget graduates there once a second feature needs it; otherwise it stays in `lib/ui/<feature>/widget/`.
 
@@ -136,7 +136,7 @@ Auth works with either a phone number or an email, toggled by `AuthIdentitySwitc
 
 ### Main shell
 
-`AppScreen` (`/app`) is an `IndexedStack` of five tabs — Home, Courses, Mission, Study (labelled "Mentor"), Profile — driven by `navbarControllerProvider`. Mission is `RoadmapPage` (`ui/roadmap/`), the CEFR ladder drawn as a zigzag of pillars (`RoadmapLayout`); it's a tab only, with no route of its own. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
+`AppScreen` (`/app`) is an `IndexedStack` of five tabs — Home, Courses, Mission, Study, Profile — driven by `navbarControllerProvider`. Mission is `RoadmapPage` (`ui/roadmap/`), the CEFR ladder drawn as a zigzag of pillars (`RoadmapLayout`); it's a tab only, with no route of its own. It is the first point where a valid token is guaranteed, so it also starts push messaging and checks for completed purchases on app resume (see below).
 
 The navbar is static — five fixed items (indices 0–4 in that order; Courses is 1), `AppNavbar.onItemClick` just sets `navbarControllerProvider`. Chat has no tab of its own: `StudyPage` shows each group's mentor and an "open chat" button for that group's room.
 
@@ -153,9 +153,22 @@ Chat messages are kept **newest-first** in state to pair with `ListView(reverse:
 
 `P2pController` runs the full lifecycle: Socket.IO matchmaking → `flutter_webrtc` peer connection for audio-only calls. State is a sealed `P2pState` hierarchy (`P2pIdle`, `P2pSearching`, `P2pMatched`, `P2pConnecting`, `P2pConnected`, `P2pEnded`, `P2pError`) with a `P2pRole` enum (`caller`/`callee`). ICE candidates that arrive before the remote description is set are buffered in `_pendingCandidates` and flushed after `setRemoteDescription`.
 
-### AI assessment
+### AI speaking partner
 
-Create a conversation via `POST assessments/conversations`, then record audio locally with the `record` package and upload each turn as `multipart/form-data` (field `audio`, `turn.m4a`, `audio/mp4`) to `assessments/conversations/{id}/messages`. The backend returns the assessment turn with feedback.
+`AiSpeakingPartnerScreen` (`/ai-speaking-partner`, `ui/ai_assessment/`) is a free, unscored, real-time voice
+conversation in English. The home page's "AI suhbatdosh" tile opens it. It starts on an intro, and Start asks for
+the microphone. It then fetches an AssemblyAI key from the API (`assessmentRepositoryProvider.getAssemblyAiKey`)
+and runs `AssemblyAiVoiceAgent` (`core/assessments/data/`), which streams mic audio over a WebSocket and plays back
+the agent's replies. The agent's state (connecting / listening / thinking / speaking) drives the dark in-call view (`AiCallView`).
+A green blob marks whoever has the floor: the AI while `speaking`, the student while it's `listening`.
+The view shows an elapsed clock that starts on connect, and the call **auto-ends after 10 minutes**
+(`callLimit`). Mic mute stops sending audio (`micMuted`). The speaker button silences the AI's voice
+(`outputMuted`) rather than switching to the loudspeaker. `flutter_pcm_sound` has no output routing, so a real
+speaker toggle would need a new native dependency. Ending, by the red button or the back arrow, leaves the
+screen, which disposes the agent. The agent's system prompt is a friendly conversation partner and never
+grades the student. Hearing the student
+(`listening`) records streak activity. `AiResultsScreen` is a leftover of the old scored assessment and nothing
+links to it.
 
 ### Push notifications
 
@@ -189,13 +202,32 @@ There is no more 1:1 mentor booking. A student's only mentor relationship is thr
 roster and a schedule, and it's fully admin-managed. A student can be in several groups, one per
 course. `GET student/groups/me` (`core/groups/`) is paginated (`{ data, total, … }`, empty if
 ungrouped). `GroupResponse` still falls back to the older `mentors` role list for the primary mentor.
-`StudyPage` (`ui/study/`, the navbar's "Mentor" tab) lists one card per group: group name, course,
-the primary mentor (tap through to their profile), and a button into that group's chat room.
-`GET student/chat/rooms` returns one room per group, matched by `room.group.id`. Ungrouped, it shows
-a message telling the student to buy a course first. The `core/mentors/` domain is still separate and still
+`StudyPage` (`ui/study/`, the navbar's Study tab) shows each group as a card and then its mentors:
+- **Card:** the group picture, name, member count, and a "join the group" button into that group's chat room.
+  `GET student/chat/rooms` returns one room per group, matched by `room.group.id`. The button is hidden when
+  the group has no room.
+- **Mentors:** the primary mentor, then any `supportMentors`. The API sends none at the moment, so that row
+  only appears if it does.
+
+With no groups, it shows a "buy a course" prompt that opens the Courses tab. A student who already owns a
+course but isn't grouped yet sees "you'll be added soon" instead. The `core/mentors/` domain is still separate and still
 lets a student view one mentor's profile and leave feedback (`GET student/mentors/:id`, `POST
 student/mentors/:id/feedbacks`) — there's no browse-all-mentors listing anymore, since the only way
 to reach a mentor profile now is through your own group.
+
+### Profile and subscriptions
+
+A subscription is paid access to one course for a period. A student can hold several, one per course
+(`core/subscriptions/`, `GET student/subscriptions`, paginated). `SubscriptionEntity.isCurrentAt(now)`
+means flagged `isActive` *and* not yet past `end`. `ProfilePage` picks its plan card via `PlanStatus.of`
+(`ui/profile/widget/subscription_card.dart`):
+- **Active:** one blue card per current subscription, soonest to end first.
+- **None:** a "choose a plan" card that opens the Courses tab, since plans are sold per course.
+- **Expired:** a "renew" card for the one that ended last, opening that course's plans.
+
+`AppScreen` refetches subscriptions on every post-checkout resume. Language, log out and delete account
+all confirm in bottom sheets (`language_sheet.dart`, and the shared `showConfirmSheet` in
+`lib/shared/widget/app_confirm_sheet.dart`), not dialogs.
 
 ### Live lessons
 
@@ -242,7 +274,7 @@ There are two shared button styles:
 
 Material's `FilledButton`/`OutlinedButton`/`ElevatedButton` are no longer used anywhere in `lib/`. `TextButton` survives only for inline links (Forgot Password, Resend code) and `AlertDialog` actions.
 
-Navbar and several UI icons are SVGs in `assets/icons/` rendered with `flutter_svg` and tinted via `ColorFilter`.
+Navbar and several UI icons are SVGs in `assets/icons/` rendered with `flutter_svg` and tinted via `ColorFilter`. **SVG gotcha:** Figma exports often wrap the artwork in an inner-shadow `filter` plus a full-canvas `clip-path` and `mask`. `flutter_svg` draws nothing for that combination, with no error. Strip the wrappers and keep the drawing `<path>`s (as done for `trash.svg` and `crown.svg`). A golden render is the only way to catch it.
 
 ## Backend
 

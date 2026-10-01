@@ -16,9 +16,6 @@ class AppLocalizationsUz extends AppLocalizations {
       'Keyinroq profilingizdan o\'zgartirishingiz mumkin';
 
   @override
-  String get languageSettingsTitle => 'Til';
-
-  @override
   String get commonContinue => 'Davom etish';
 
   @override
@@ -28,19 +25,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get commonResume => 'Davom etish';
 
   @override
+  String get commonSave => 'Saqlash';
+
+  @override
   String get commonCancel => 'Bekor qilish';
 
   @override
   String get commonRetry => 'Qayta urinish';
-
-  @override
-  String get commonYes => 'Ha';
-
-  @override
-  String get commonNo => 'Yo\'q';
-
-  @override
-  String get commonOk => 'OK';
 
   @override
   String get commonLoading => 'Yuklanmoqda…';
@@ -173,7 +164,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get navCourse => 'Kurslar';
 
   @override
-  String get navStudy => 'Mentor';
+  String get navStudy => 'Ta\'lim';
 
   @override
   String get navProfile => 'Profil';
@@ -221,42 +212,25 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeStatsCoins => 'Tangalar';
 
   @override
-  String get homeLibrary => 'Kutubxona';
+  String get homeAiPartnerTitle => 'AI suhbatdosh';
 
   @override
-  String get homeNoCoursesTitle => 'Faol kurslar yo\'q';
+  String get homeAiPartnerBody => 'AI bilan jonli suhbat';
 
   @override
-  String get homeNoCoursesSubtitle => 'Kurs tanlab, bugunoq boshlang';
+  String get homeAiPartnerAction => 'Suhbatni boshlash';
 
   @override
-  String get homeNoCoursesButton => 'Mashqni boshlash';
+  String get homePartnerTitle => 'Suhbatdosh';
 
   @override
-  String get homeProgress => 'Jarayon';
+  String get homePartnerBody => 'Suhbatdosh bilan jonli suhbat';
+
+  @override
+  String get homePartnerAction => 'Suhbatdosh qidirish';
 
   @override
   String get homeResume => 'Davom etish';
-
-  @override
-  String get homeAiTestTitle => 'Bilimingizni AI bilan sinang';
-
-  @override
-  String get homeAiTestBody =>
-      'Erkin gapiring, AI darajangizni baholaydi — bir necha daqiqada to\'liq hisobot';
-
-  @override
-  String get homeAiTestButton => 'Testni boshlash';
-
-  @override
-  String get homeSpeakingTitle => 'Suhbatdosh toping';
-
-  @override
-  String get homeSpeakingBody =>
-      'Sizning darajangizdagi odam bilan bog\'laymiz. Jonli suhbatda mashq qiling';
-
-  @override
-  String get homeSpeakingButton => 'Suhbatdosh topish';
 
   @override
   String get coursesTitle => 'Kurslar';
@@ -338,49 +312,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get courseChoosePlan => 'Tarif sotib olish';
 
   @override
-  String unitNumber(String number) {
-    return '$number-bo\'lim';
-  }
-
-  @override
   String get unitNoLessonsTitle => 'Hozircha darslar yo\'q';
 
   @override
-  String get unitNoLessonsSubtitle =>
-      'Bu bo\'lim darslari shu yerda paydo bo\'ladi.';
+  String get lessonUnitLessons => 'Bo\'limlar';
 
   @override
-  String get unitNotFound => 'Bo\'lim topilmadi';
-
-  @override
-  String lessonUnitLesson(String unit, String lesson) {
-    return '$unit-bo\'lim · $lesson-dars';
-  }
-
-  @override
-  String lessonUnitLessonOf(String unit, String lesson, int total) {
-    return '$unit-bo\'lim · $total tadan $lesson-dars';
-  }
-
-  @override
-  String get lessonViewTasks => 'Topshiriqlar';
-
-  @override
-  String get lessonTasksCompleted => 'Topshiriqlar bajarildi';
-
-  @override
-  String get lessonTasksInProgress => 'Topshiriqlar jarayonda';
-
-  @override
-  String lessonScore(int completed, int total, int percent) {
-    return '$total tadan $completed ta bajarildi · $percent%';
-  }
-
-  @override
-  String get lessonRetake => 'Qayta ishlash';
-
-  @override
-  String get lessonInThisUnit => 'Shu bo\'limda';
+  String get lessonGoToTest => 'Testga o\'tish';
 
   @override
   String get lessonNoContent => 'Kontent yo\'q';
@@ -628,35 +566,95 @@ class AppLocalizationsUz extends AppLocalizations {
   String get otpPasswordUpdated => 'Parol muvaffaqiyatli yangilandi';
 
   @override
-  String get profilePhone => 'Telefon raqami';
+  String get profileCurrentPlan => 'Joriy tarif';
 
   @override
-  String get profileEmail => 'Email manzil';
+  String get profilePlanActive => 'Faol';
 
   @override
-  String get profilePassword => 'Parol';
+  String get profilePlanEnds => 'Tugash sanasi';
 
   @override
-  String get profileUpdatePassword => 'Parolni yangilash';
+  String get profileNoPlanTitle => 'Faol tarif yo\'q';
 
   @override
-  String get settingsPrivacyPolicy => 'Maxfiylik siyosati';
+  String get profileNoPlanBody =>
+      'Mentor bilan guruh darslari va jonli darslar uchun tarif tanlang';
 
   @override
-  String get settingsAppVersion => 'Ilova versiyasi';
+  String get profileChoosePlan => 'Tarif tanlash';
 
   @override
-  String get settingsLogOut => 'Chiqish';
+  String profilePlanExpired(String course) {
+    return '$course tarifi muddati tugadi';
+  }
+
+  @override
+  String profilePlanEndedOn(String date) {
+    return 'Tugagan sana: $date';
+  }
+
+  @override
+  String get profileRenewPlan => 'Tarifni yangilash';
+
+  @override
+  String get profileStreak => 'Joriy seriya';
+
+  @override
+  String get profileTotalXp => 'Jami XP';
+
+  @override
+  String get profileCoins => 'Coin balansi';
+
+  @override
+  String get profileRank => 'Reytingdagi o\'rin';
+
+  @override
+  String profileRankValue(int rank) {
+    return '$rank-o\'rin';
+  }
+
+  @override
+  String get profileLanguageHint =>
+      'Ilova interfeysi tanlangan tilda ko\'rsatiladi';
+
+  @override
+  String get profileSettings => 'Sozlamalar';
+
+  @override
+  String get profileAccount => 'Hisob';
+
+  @override
+  String get profileAppLanguage => 'Ilova tili';
+
+  @override
+  String get profileChangePassword => 'Parolni o\'zgartirish';
+
+  @override
+  String get settingsLogOut => 'Hisobdan chiqish';
 
   @override
   String get settingsDeleteAccount => 'Hisobni o\'chirish';
 
   @override
-  String get settingsLogOutConfirm => 'Hisobdan chiqmoqchimisiz?';
+  String get settingsLogOutConfirm => 'Hisobdan chiqasizmi?';
 
   @override
-  String get settingsDeleteConfirm =>
-      'Hisobingizni o\'chirmoqchimisiz? Kurslaringiz va natijalaringiz butunlay yo\'qoladi.';
+  String get settingsDeleteConfirm => 'Hisobni o\'chirasizmi?';
+
+  @override
+  String get settingsLogOutBody =>
+      'Qayta kirish uchun telefon raqam yoki email va parolingizni kiritishingiz kerak bo\'ladi.';
+
+  @override
+  String get settingsLogOutAction => 'Chiqish';
+
+  @override
+  String get settingsDeleteBody =>
+      'Profil ma\'lumotlari, progress, seriya va coinlaringiz butunlay o\'chiriladi. Bu amalni ortga qaytarib bo\'lmaydi.';
+
+  @override
+  String get settingsDeleteAction => 'O\'chirish';
 
   @override
   String get settingsDeleteRequestedTitle => 'So\'rov yuborildi';
@@ -681,26 +679,55 @@ class AppLocalizationsUz extends AppLocalizations {
   String get chatEmptySubtitle => 'Suhbatni boshlash uchun xabar yuboring.';
 
   @override
-  String get studyTitle => 'Ta\'lim';
+  String get studyEmptyTitle =>
+      'Dars vaqtlarini tanlash uchun kurs sotib oling';
+
+  @override
+  String get studyEmptyBody =>
+      'Kurs sotib olganingizdan so\'ng o\'zingizga qulay kun va vaqtlarni tanlaysiz, keyin sizni guruhga va mentorlarga biriktiramiz.';
+
+  @override
+  String get studyBrowseCourses => 'Kurslarni ko\'rish';
+
+  @override
+  String get studyWaitingTitle => 'Tez orada sizni guruhga qo\'shamiz';
+
+  @override
+  String get studyWaitingBody =>
+      'Kursingiz faol. Guruh va mentorlaringizni tayyorlayapmiz.';
+
+  @override
+  String get studyJoinGroup => 'Guruhga qo\'shilish';
+
+  @override
+  String get studyMentors => 'Mentorlar';
+
+  @override
+  String get studyPrimaryMentor => 'Asosiy mentor';
+
+  @override
+  String get studySupportMentor => 'Support mentor';
+
+  @override
+  String studyMembers(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString a\'zo',
+      one: '$countString a\'zo',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get studyLoadFailed => 'Guruh ma\'lumotlarini yuklab bo\'lmadi';
 
   @override
   String get studyPullToRetry => 'Qayta urinish uchun pastga torting';
-
-  @override
-  String get studyYourMentor => 'Sizning mentoringiz';
-
-  @override
-  String get studyOpenChat => 'Chatni ochish';
-
-  @override
-  String get studyNoGroupTitle => 'Siz hali guruhga qo\'shilmagansiz';
-
-  @override
-  String get studyNoGroupMessage =>
-      'O\'qishni boshlash uchun kurs sotib oling, biz sizni guruhga qo\'shamiz.';
 
   @override
   String get mentorHeader => 'Mentor';
@@ -754,9 +781,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get purchaseHistoryStatusCancelled => 'Bekor qilindi';
 
   @override
-  String get settingsPurchaseHistory => 'Xaridlar tarixi';
-
-  @override
   String get plansTitle => 'Tarifni tanlang';
 
   @override
@@ -807,10 +831,73 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get aiTitle => 'AI baholash';
+  String get aiTitle => 'AI suhbatdosh';
 
   @override
-  String get aiInitialPrompt => 'Xohlagan narsangizni gapirib ko\'ring!';
+  String get aiIntroTitle => 'AI bilan jonli suhbat';
+
+  @override
+  String get aiIntroBody =>
+      'Tugmani bosing va ingliz tilida erkin gaplashing — suhbat real vaqtda, xuddi qo\'ng\'iroq kabi bo\'ladi.';
+
+  @override
+  String get aiFeatureEndAnytime => 'Xohlagan payt tugatishingiz mumkin';
+
+  @override
+  String get aiFeatureLiveVoice => 'Jonli ovozli suhbat, real vaqtda';
+
+  @override
+  String get aiFeatureNoScore => 'Baholash va ball yo\'q — shunchaki gapiring';
+
+  @override
+  String get aiMicNote => 'Suhbat uchun mikrofonga ruxsat kerak bo\'ladi.';
+
+  @override
+  String get aiEnd => 'Suhbatni tugatish';
+
+  @override
+  String get aiConnecting => 'Ulanmoqda…';
+
+  @override
+  String get aiInCall => 'Suhbat davom etmoqda';
+
+  @override
+  String get aiYou => 'Siz';
+
+  @override
+  String get aiYourTurn => 'Sizning navbatingiz';
+
+  @override
+  String get aiMicOff => 'Mikrofon o\'chiq';
+
+  @override
+  String get aiStatusListening => 'Tinglamoqda';
+
+  @override
+  String get aiStatusThinking => 'O\'ylamoqda';
+
+  @override
+  String get aiStatusSpeaking => 'Gapirmoqda';
+
+  @override
+  String get aiMute => 'Mikrofonni o\'chirish';
+
+  @override
+  String get aiUnmute => 'Mikrofonni yoqish';
+
+  @override
+  String get aiSoundOff => 'AI ovozini o\'chirish';
+
+  @override
+  String get aiSoundOn => 'AI ovozini yoqish';
+
+  @override
+  String aiAutoEndNote(int minutes) {
+    return 'Suhbat $minutes daqiqadan so\'ng avtomatik yakunlanadi';
+  }
+
+  @override
+  String get aiTimeUp => 'Vaqt tugadi — suhbat yakunlandi';
 
   @override
   String get aiMicDenied => 'Mikrofonga ruxsat berilmadi';
@@ -832,9 +919,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get aiTapToSpeak => 'Gapirish uchun bosing';
-
-  @override
-  String get aiListening => 'Tinglanmoqda…';
 
   @override
   String get aiResultsTitle => 'Natijalar';

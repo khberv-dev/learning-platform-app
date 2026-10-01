@@ -6,6 +6,7 @@ import 'package:student/core/courses/domain/entity/course_entity.dart';
 import 'package:student/core/courses/domain/entity/my_course_entity.dart';
 import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
+import 'package:student/shared/widget/course_tiles.dart';
 import 'package:student/ui/courses/widget/courses_page_cards.dart';
 import 'package:student/utils/messenger.dart';
 
@@ -131,7 +132,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                   AppSpacing.md,
                 ),
                 sliver: SliverToBoxAdapter(
-                  child: CoursesSectionHeader(
+                  child: CourseSectionHeader(
                     title: l10n.coursesMyCourses,
                     action: toggleLabel(
                       _showAllMine,
@@ -176,7 +177,7 @@ class _CoursesPageState extends ConsumerState<CoursesPage> {
                   AppSpacing.md,
                 ),
                 sliver: SliverToBoxAdapter(
-                  child: CoursesSectionHeader(
+                  child: CourseSectionHeader(
                     title: l10n.coursesAvailable,
                     action: toggleLabel(
                       _showAllAvailable,

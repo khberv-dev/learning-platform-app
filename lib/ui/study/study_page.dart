@@ -1,296 +1,465 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/app/theme/app_colors.dart';
-import 'package:student/app/theme/app_radius.dart';
 import 'package:student/app/theme/app_spacing.dart';
+import 'package:student/core/chat/domain/entity/chat_room_entity.dart';
 import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
+import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/groups/domain/entity/group_entity.dart';
 import 'package:student/core/groups/presentation/my_groups_controller.dart';
+import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/core/mentors/domain/entity/mentor_entity.dart';
 import 'package:student/l10n/app_localizations.dart';
-import 'package:student/shared/widget/app_button.dart';
-import 'package:student/shared/widget/app_empty_state.dart';
-import 'package:student/shared/widget/section_title.dart';
+import 'package:student/shared/widget/app_flat_pill_button.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
+import 'package:student/utils/lib.dart';
 
-/// The "Mentor" tab. Group membership is fully admin-managed, so there's
-/// nothing to browse or book: this lists the student's groups — one per
-/// course — each with its mentor and a way into its chat.
+const _background = Color(0xFFEFEEF4);
+const _ink = Color(0xFF15141A);
+const _muted = Color(0xFF6D737E);
+const _caption = Color(0xFF8A8C9C);
+const _green = Color(0xFF78C93C);
+
+/// Tab index of Courses in the navbar, where "Browse courses" leads.
+const _coursesTabIndex = 1;
+
+/// Roughly the title's height plus its gap, kept out of the space the
+/// empty states centre themselves in.
+const _titleBlockHeight = 56.0;
+
+/// The navbar's Study tab: the student's groups — one per course — each
+/// with a way into its chat and the mentors who lead it. Group membership is
+/// fully admin-managed, so there's nothing to browse or book here.
 class StudyPage extends ConsumerWidget {
   const StudyPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(myGroupsControllerProvider);
     final l10n = AppLocalizations.of(context);
+    final state = ref.watch(myGroupsControllerProvider);
+    final insets = MediaQuery.paddingOf(context);
 
     Future<void> refresh() async {
       ref.invalidate(myGroupsControllerProvider);
+      ref.invalidate(chatRoomsProvider);
       await ref.read(myGroupsControllerProvider.future);
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(
-            AppSpacing.xl,
-            AppSpacing.lg + MediaQuery.paddingOf(context).top,
-            AppSpacing.xl,
-            AppSpacing.lg,
-          ),
-          child: SectionTitle(title: l10n.studyTitle, fontSize: 30),
+    final title = Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: Text(
+        l10n.navStudy,
+        style: const TextStyle(
+          color: _ink,
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
         ),
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: refresh,
-            child: state.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => _Scrollable(
-                child: AppEmptyState(
-                  imagePath: 'assets/images/no_recorded_sessions_puppet.png',
-                  title: l10n.studyLoadFailed,
-                  subtitle: l10n.studyPullToRetry,
-                ),
+      ),
+    );
+
+    Widget scrollable(Widget child, {bool centred = false}) => LayoutBuilder(
+      builder: (context, constraints) => ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          insets.top + AppSpacing.lg,
+          AppSpacing.lg,
+          insets.bottom + AppSpacing.xl,
+        ),
+        children: [
+          title,
+          if (centred)
+            // Vertically centred below the title, yet still
+            // pull-to-refreshable.
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight:
+                    constraints.maxHeight -
+                    insets.top -
+                    insets.bottom -
+                    AppSpacing.lg -
+                    AppSpacing.xl -
+                    _titleBlockHeight,
               ),
-              data: (groups) => _Scrollable(
-                child: groups.isEmpty
-                    ? AppEmptyState(
-                        imagePath:
-                            'assets/images/no_recorded_sessions_puppet.png',
-                        title: l10n.studyNoGroupTitle,
-                        subtitle: l10n.studyNoGroupMessage,
+              child: Center(child: child),
+            )
+          else
+            child,
+        ],
+      ),
+    );
+
+    return ColoredBox(
+      color: _background,
+      child: RefreshIndicator(
+        onRefresh: refresh,
+        child: state.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => scrollable(
+            _Message(title: l10n.studyLoadFailed, body: l10n.studyPullToRetry),
+            centred: true,
+          ),
+          data: (groups) {
+            if (groups.isEmpty) {
+              final ownsCourse =
+                  ref.watch(myCoursesControllerProvider).value?.isNotEmpty ??
+                  false;
+              return scrollable(
+                ownsCourse
+                    ? _Message(
+                        key: const ValueKey('study-waiting'),
+                        title: l10n.studyWaitingTitle,
+                        body: l10n.studyWaitingBody,
                       )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          for (final group in groups)
-                            _GroupStatus(
-                              key: ValueKey('group-${group.id}'),
-                              group: group,
-                              // One group can use a room the API hasn't tied
-                              // to a group; with several, only an exact match.
-                              fallbackToOnlyRoom: groups.length == 1,
-                            ),
-                        ],
+                    : _Message(
+                        key: const ValueKey('study-no-course'),
+                        title: l10n.studyEmptyTitle,
+                        body: l10n.studyEmptyBody,
+                        action: l10n.studyBrowseCourses,
+                        onAction: () =>
+                            ref.read(navbarControllerProvider.notifier).state =
+                                _coursesTabIndex,
                       ),
+                centred: true,
+              );
+            }
+            final rooms = ref.watch(chatRoomsProvider).value ?? const [];
+            return scrollable(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = 0; i < groups.length; i++) ...[
+                    if (i > 0) const SizedBox(height: AppSpacing.xl),
+                    _GroupSection(
+                      key: ValueKey('group-${groups[i].id}'),
+                      group: groups[i],
+                      roomId: _roomFor(
+                        groups[i],
+                        rooms,
+                        // One group can use a room the API hasn't tied to a
+                        // group; with several, only an exact match.
+                        fallbackToOnlyRoom: groups.length == 1,
+                      ),
+                    ),
+                  ],
+                ],
               ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  static String? _roomFor(
+    GroupEntity group,
+    List<ChatRoomEntity> rooms, {
+    required bool fallbackToOnlyRoom,
+  }) =>
+      rooms.where((r) => r.group?.id == group.id).firstOrNull?.id ??
+      (fallbackToOnlyRoom && rooms.length == 1 ? rooms.single.id : null);
+}
+
+/// A centred icon, title, body and optional green button — for when there's
+/// no group to show.
+class _Message extends StatelessWidget {
+  final String title;
+  final String body;
+  final String? action;
+  final VoidCallback? onAction;
+
+  const _Message({
+    super.key,
+    required this.title,
+    required this.body,
+    this.action,
+    this.onAction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final action = this.action;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SvgPicture.asset(
+          'assets/icons/nav_study.svg',
+          width: 48,
+          colorFilter: const ColorFilter.mode(
+            Color(0xFFA5A6B9),
+            BlendMode.srcIn,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: _ink,
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
+            height: 1.3,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          body,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: _muted,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            height: 1.4,
+          ),
+        ),
+        if (action != null) ...[
+          const SizedBox(height: AppSpacing.lg),
+          // Sized to its label, not the screen.
+          IntrinsicWidth(
+            child: AppFlatPillButton(
+              label: action,
+              background: _green,
+              foreground: Colors.white,
+              onTap: onAction,
+              height: 48,
+              fontSize: 15,
             ),
           ),
-        ),
+        ],
       ],
     );
   }
 }
 
-/// Keeps an empty/error state pull-to-refreshable.
-class _Scrollable extends StatelessWidget {
-  final Widget child;
+/// One group: its card, then its mentors.
+class _GroupSection extends StatelessWidget {
+  final GroupEntity group;
+  final String? roomId;
 
-  const _Scrollable({required this.child});
+  const _GroupSection({super.key, required this.group, required this.roomId});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.xl,
-        AppSpacing.xxl,
-        AppSpacing.xl,
-        AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
-      ),
-      children: [child],
+    final l10n = AppLocalizations.of(context);
+    final primary = group.primaryMentor;
+    final hasMentors = primary != null || group.supportMentors.isNotEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _GroupCard(group: group, roomId: roomId),
+        if (hasMentors) ...[
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            l10n.studyMentors,
+            style: const TextStyle(
+              color: _ink,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          if (primary != null)
+            _MentorRow(
+              mentor: primary,
+              role: l10n.studyPrimaryMentor,
+              badge: 'assets/images/ic_primary_mentor.png',
+            ),
+          for (final support in group.supportMentors) ...[
+            const SizedBox(height: AppSpacing.md),
+            _MentorRow(
+              mentor: support,
+              role: l10n.studySupportMentor,
+              badge: 'assets/images/ic_support_mentor.png',
+            ),
+          ],
+        ],
+      ],
     );
   }
 }
 
-class _GroupStatus extends ConsumerWidget {
+/// White card: the group's picture, name, member count, and the way into
+/// its chat.
+class _GroupCard extends StatelessWidget {
   final GroupEntity group;
-  final bool fallbackToOnlyRoom;
+  final String? roomId;
 
-  const _GroupStatus({
-    super.key,
-    required this.group,
-    required this.fallbackToOnlyRoom,
-  });
+  const _GroupCard({required this.group, required this.roomId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final mentor = group.primaryMentor;
-    final rooms = ref.watch(chatRoomsProvider).value ?? const [];
-    // Each group has its own room.
-    final roomId =
-        rooms.where((r) => r.group?.id == group.id).firstOrNull?.id ??
-        (fallbackToOnlyRoom && rooms.length == 1 ? rooms.single.id : null);
-    final courseTitle = group.course?.title;
+    final roomId = this.roomId;
 
-    // The list itself clears the navbar; this only spaces the groups apart.
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(AppRadius.xl),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.cardEdge,
-                  offset: Offset(0, 5),
-                  blurRadius: 3,
-                ),
-              ],
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFE8EAF0), width: 2),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  group.title,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                if (courseTitle != null && courseTitle.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    courseTitle,
-                    style: const TextStyle(
-                      color: Color(0xff8a949b),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-                if (mentor != null) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  Text(
-                    l10n.studyYourMentor,
-                    style: const TextStyle(
-                      color: Color(0xff8a949b),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  _MentorTile(mentor: mentor),
-                ],
-              ],
+            child: ClipOval(
+              child: Image.asset(
+                'assets/images/group_avatar.png',
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          if (roomId != null)
-            AppButton.filled(
-              label: l10n.studyOpenChat,
-              onTap: () =>
-                  context.push('${ChatRoomScreen.path}?roomId=$roomId'),
+          Text(
+            group.title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: _ink,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
             ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MentorTile extends StatelessWidget {
-  final MentorEntity mentor;
-
-  const _MentorTile({required this.mentor});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push('/mentor/${mentor.id}'),
-      child: Row(
-        children: [
-          _Avatar(url: mentor.avatarUrl, name: mentor.name, size: 52),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  mentor.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.studyMembers(group.students.length),
+            style: const TextStyle(
+              color: _caption,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          if (roomId != null) ...[
+            const SizedBox(height: AppSpacing.lg),
+            Material(
+              color: const Color(0xFFF2F4F9),
+              borderRadius: BorderRadius.circular(999),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(999),
+                onTap: () =>
+                    context.push('${ChatRoomScreen.path}?roomId=$roomId'),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.people_alt_rounded,
+                        size: 20,
+                        color: Color(0xFF66BB3C),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Flexible(
+                        child: Text(
+                          l10n.studyJoinGroup,
+                          style: const TextStyle(
+                            color: _ink,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                if (mentor.profession != null)
-                  Text(
-                    mentor.profession!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color(0xff8a949b),
-                      fontSize: 13,
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            size: 24,
-            color: Color(0xff8a949b),
-          ),
+          ],
         ],
       ),
     );
   }
 }
 
-class _Avatar extends StatelessWidget {
-  final String? url;
-  final String name;
-  final double size;
+/// A white stadium: the mentor's photo with their role badge, the role, and
+/// their name. Tapping opens their profile.
+class _MentorRow extends StatelessWidget {
+  final MentorEntity mentor;
+  final String role;
+  final String badge;
 
-  const _Avatar({this.url, required this.name, required this.size});
-
-  String get _initials {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    if (parts.length >= 2 && parts[1].isNotEmpty) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name.isNotEmpty ? name[0].toUpperCase() : '?';
-  }
+  const _MentorRow({
+    required this.mentor,
+    required this.role,
+    required this.badge,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ClipOval(
-      child: SizedBox.square(
-        dimension: size,
-        child: url == null
-            ? _fallback(context)
-            : Image.network(
-                url!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => _fallback(context),
-              ),
-      ),
+    final url = resolveMediaUrl(mentor.avatarUrl);
+    const placeholder = ColoredBox(
+      color: Color(0xFFF2F4F9),
+      child: Icon(Icons.person_rounded, size: 30, color: Color(0xFFA5A6B9)),
     );
-  }
 
-  Widget _fallback(BuildContext context) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.primary,
-      child: Center(
-        child: Text(
-          _initials,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: size * 0.34,
-            fontWeight: FontWeight.w800,
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: () => context.push('/mentor/${mentor.id}'),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 4, 16, 4),
+          child: Row(
+            children: [
+              SizedBox.square(
+                dimension: 60,
+                child: Stack(
+                  children: [
+                    ClipOval(
+                      child: SizedBox.square(
+                        dimension: 58,
+                        child: url == null
+                            ? placeholder
+                            : Image.network(
+                                url,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, _, _) => placeholder,
+                              ),
+                      ),
+                    ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Image.asset(badge, width: 22, height: 22),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      role,
+                      style: const TextStyle(
+                        color: _caption,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      mentor.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: _ink,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

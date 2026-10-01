@@ -33,6 +33,21 @@ class AssemblyAiVoiceAgent {
   bool _agentSpeaking = false;
   bool _disposed = false;
 
+  /// While true, microphone audio isn't sent — the agent hears silence.
+  bool micMuted = false;
+
+  bool _outputMuted = false;
+
+  /// While true, the agent's voice is dropped instead of played. The
+  /// conversation carries on, and its text still arrives.
+  bool get outputMuted => _outputMuted;
+  set outputMuted(bool value) {
+    if (_outputMuted == value) return;
+    _outputMuted = value;
+    // Cut off whatever is already queued, so muting takes effect at once.
+    if (value && _agentSpeaking) unawaited(_resetPlayback());
+  }
+
   AssemblyAiVoiceAgent({
     required AudioRecorder recorder,
     required this.onAgentText,
@@ -65,12 +80,12 @@ class AssemblyAiVoiceAgent {
         'type': 'session.update',
         'session': {
           'system_prompt':
-              'You are a friendly English speaking assessor. Conduct a short '
-              'CEFR-style spoken assessment, one concise question at a time. '
-              'Adapt questions to the learner\'s level. Briefly acknowledge '
-              'their answer, then ask the next question. Focus on grammar, '
-              'vocabulary, fluency, and pronunciation. Keep every response '
-              'under three sentences and never use markdown.',
+              'You are a friendly English conversation partner for a '
+              'language learner. Chat naturally about everyday topics, ask '
+              'one simple follow-up question at a time, and match the '
+              'learner\'s level. Never grade, score or formally correct them; '
+              'if they struggle, gently rephrase or offer a word. Keep every '
+              'response under three sentences and never use markdown.',
           'input': {
             'format': {'encoding': 'audio/pcm'},
             'turn_detection': {
@@ -121,7 +136,7 @@ class AssemblyAiVoiceAgent {
       ),
     );
     _microphoneSubscription = audio.listen((bytes) {
-      if (socket.readyState == WebSocket.open) {
+      if (!micMuted && socket.readyState == WebSocket.open) {
         socket.add(
           jsonEncode({'type': 'input.audio', 'audio': base64Encode(bytes)}),
         );
@@ -176,7 +191,7 @@ class AssemblyAiVoiceAgent {
   void _queueAudio(Uint8List audioBytes) {
     _playbackQueue = _playbackQueue
         .then((_) async {
-          if (_disposed) return;
+          if (_disposed || _outputMuted) return;
           await pcm.FlutterPcmSound.feed(
             pcm.PcmArrayInt16(bytes: ByteData.sublistView(audioBytes)),
           );

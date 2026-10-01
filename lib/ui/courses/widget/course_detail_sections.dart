@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/courses/domain/entity/course_author_entity.dart';
 import 'package:student/core/courses/domain/entity/course_entity.dart';
+import 'package:student/core/courses/domain/entity/lesson_entity.dart';
 import 'package:student/core/courses/domain/entity/unit_entity.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/course_cover_tile.dart';
@@ -433,6 +434,76 @@ class CourseModuleRow extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One lesson inside an opened module: its number when open, a padlock when
+/// not, with the lesson's short description beneath its title.
+class CourseLessonRow extends StatelessWidget {
+  final LessonEntity lesson;
+  final int index;
+  final VoidCallback? onTap;
+
+  const CourseLessonRow({
+    super.key,
+    required this.lesson,
+    required this.index,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final description = lesson.description;
+    return Semantics(
+      button: onTap != null,
+      child: _RowCard(
+        onTap: onTap,
+        badge: lesson.isLocked
+            ? SvgPicture.asset(
+                'assets/icons/lock.svg',
+                key: const ValueKey('lesson-lock'),
+                width: 20,
+                height: 20,
+              )
+            : Text(
+                (index + 1).toString().padLeft(2, '0'),
+                style: const TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+        text: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              lesson.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: lesson.isLocked ? _label : _ink,
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (description != null && description.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Text(
+                description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: _caption,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ],
         ),
       ),

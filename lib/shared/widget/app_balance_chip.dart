@@ -36,10 +36,10 @@ class AppBalanceChip extends StatelessWidget {
               // The artwork has ~8% transparent margin, so 20 shows as ~16.
               Image.asset(imagePath, width: 20, height: 20),
               const SizedBox(width: 5),
-              // Up to "12 345" at full size; bigger balances shrink rather
-              // than push the rest of the header off a narrow screen.
+              // Four digits ("1 240") at full size; bigger balances shrink
+              // rather than push the rest of the header off a narrow screen.
               ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 48),
+                constraints: const BoxConstraints(maxWidth: 40),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(

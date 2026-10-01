@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:student/ui/ai_assessment/ai_assessment_screen.dart';
+import 'package:student/ui/ai_assessment/ai_speaking_partner_screen.dart';
 import 'package:student/ui/ai_assessment/ai_results_screen.dart';
 import 'package:student/ui/auth/forgot_password_screen.dart';
 import 'package:student/ui/auth/login_screen.dart';
@@ -13,7 +13,6 @@ import 'package:student/ui/courses/lesson_screen.dart';
 import 'package:student/ui/courses/pdf_viewer_screen.dart';
 import 'package:student/ui/courses/task_results_screen.dart';
 import 'package:student/ui/courses/tasks_screen.dart';
-import 'package:student/ui/courses/unit_screen.dart';
 import 'package:student/ui/main/app_screen.dart';
 import 'package:student/ui/notifications/notifications_screen.dart';
 import 'package:student/ui/p2p/p2p_call_screen.dart';
@@ -94,8 +93,8 @@ final _appRouter = GoRouter(
       builder: (_, _) => const PurchaseHistoryScreen(),
     ),
     GoRoute(
-      path: AiAssessmentScreen.path,
-      builder: (_, _) => AiAssessmentScreen(),
+      path: AiSpeakingPartnerScreen.path,
+      builder: (_, _) => const AiSpeakingPartnerScreen(),
     ),
     GoRoute(path: AiResultsScreen.path, builder: (_, _) => AiResultsScreen()),
     GoRoute(
@@ -148,14 +147,6 @@ final _appRouter = GoRouter(
       builder: (_, state) => PdfViewerScreen(
         url: state.uri.queryParameters['url']!,
         title: state.uri.queryParameters['title'] ?? '',
-      ),
-    ),
-    GoRoute(
-      path: UnitScreen.path,
-      builder: (_, state) => UnitScreen(
-        courseId: state.uri.queryParameters['courseId']!,
-        unitIndex:
-            int.tryParse(state.uri.queryParameters['unitIndex'] ?? '0') ?? 0,
       ),
     ),
     GoRoute(
