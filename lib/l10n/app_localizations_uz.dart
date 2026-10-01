@@ -212,6 +212,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeStatsCoins => 'Tangalar';
 
   @override
+  String get homeGoTo => 'O\'tish';
+
+  @override
   String get homeAiPartnerTitle => 'AI suhbatdosh';
 
   @override
@@ -225,9 +228,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get homePartnerBody => 'Suhbatdosh bilan jonli suhbat';
-
-  @override
-  String get homePartnerAction => 'Suhbatdosh qidirish';
 
   @override
   String get homeResume => 'Davom etish';
@@ -690,13 +690,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get studyBrowseCourses => 'Kurslarni ko\'rish';
 
   @override
-  String get studyWaitingTitle => 'Tez orada sizni guruhga qo\'shamiz';
-
-  @override
-  String get studyWaitingBody =>
-      'Kursingiz faol. Guruh va mentorlaringizni tayyorlayapmiz.';
-
-  @override
   String get studyJoinGroup => 'Guruhga qo\'shilish';
 
   @override
@@ -722,6 +715,45 @@ class AppLocalizationsUz extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get studyPickTitle => 'Tez orada guruhga qo\'shilasiz';
+
+  @override
+  String studyPickBody(int count) {
+    return 'Darslar uchun hafta kuni va vaqtni tanlang — $count ta';
+  }
+
+  @override
+  String get studyWeekdays => 'Hafta kunlari';
+
+  @override
+  String studyTimeFor(String day) {
+    return 'Vaqt — $day';
+  }
+
+  @override
+  String get studyWeekdayLetters => 'Du,Se,Ch,Pa,Ju,Sh,Ya';
+
+  @override
+  String studyConfirm(int count, int total) {
+    return 'Tasdiqlash ($count/$total)';
+  }
+
+  @override
+  String studyTooManySlots(int count) {
+    return 'Faqat $count ta kun tanlash mumkin — avval birini olib tashlang';
+  }
+
+  @override
+  String get studyRequestSent =>
+      'So\'rov yuborildi — tez orada guruhga qo\'shamiz';
+
+  @override
+  String get studyMentorPending => 'Mentor hali biriktirilmagan';
+
+  @override
+  String get studyTaskTimes => 'Vazifa topshirish vaqtlari';
 
   @override
   String get studyLoadFailed => 'Guruh ma\'lumotlarini yuklab bo\'lmadi';

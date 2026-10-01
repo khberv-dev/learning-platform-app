@@ -460,6 +460,12 @@ abstract class AppLocalizations {
   /// **'Coins'**
   String get homeStatsCoins;
 
+  /// No description provided for @homeGoTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to'**
+  String get homeGoTo;
+
   /// No description provided for @homeAiPartnerTitle.
   ///
   /// In en, this message translates to:
@@ -489,12 +495,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A live conversation with a partner'**
   String get homePartnerBody;
-
-  /// No description provided for @homePartnerAction.
-  ///
-  /// In en, this message translates to:
-  /// **'Find a partner'**
-  String get homePartnerAction;
 
   /// No description provided for @homeResume.
   ///
@@ -1270,18 +1270,6 @@ abstract class AppLocalizations {
   /// **'Browse courses'**
   String get studyBrowseCourses;
 
-  /// No description provided for @studyWaitingTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'ll be added to a group soon'**
-  String get studyWaitingTitle;
-
-  /// No description provided for @studyWaitingBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Your course is active. We\'re putting together your group and mentors.'**
-  String get studyWaitingBody;
-
   /// No description provided for @studyJoinGroup.
   ///
   /// In en, this message translates to:
@@ -1311,6 +1299,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one{{count} member} other{{count} members}}'**
   String studyMembers(int count);
+
+  /// No description provided for @studyPickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll join a group soon'**
+  String get studyPickTitle;
+
+  /// No description provided for @studyPickBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose {count} weekday times for your lessons'**
+  String studyPickBody(int count);
+
+  /// No description provided for @studyWeekdays.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get studyWeekdays;
+
+  /// No description provided for @studyTimeFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Time — {day}'**
+  String studyTimeFor(String day);
+
+  /// No description provided for @studyWeekdayLetters.
+  ///
+  /// In en, this message translates to:
+  /// **'Mo,Tu,We,Th,Fr,Sa,Su'**
+  String get studyWeekdayLetters;
+
+  /// No description provided for @studyConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm ({count}/{total})'**
+  String studyConfirm(int count, int total);
+
+  /// No description provided for @studyTooManySlots.
+  ///
+  /// In en, this message translates to:
+  /// **'You can choose only {count} days — remove one first'**
+  String studyTooManySlots(int count);
+
+  /// No description provided for @studyRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent — we\'ll add you to a group soon'**
+  String get studyRequestSent;
+
+  /// No description provided for @studyMentorPending.
+  ///
+  /// In en, this message translates to:
+  /// **'A mentor hasn\'t been assigned yet'**
+  String get studyMentorPending;
+
+  /// No description provided for @studyTaskTimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Task submission times'**
+  String get studyTaskTimes;
 
   /// No description provided for @studyLoadFailed.
   ///

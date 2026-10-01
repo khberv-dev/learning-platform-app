@@ -4,15 +4,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_spacing.dart';
 import 'package:student/core/chat/domain/entity/chat_room_entity.dart';
+import 'package:student/core/assignments/domain/entity/assignment_entity.dart';
+import 'package:student/core/assignments/presentation/my_assignments_controller.dart';
 import 'package:student/core/chat/presentation/chat_rooms_controller.dart';
-import 'package:student/core/courses/presentation/courses_controller.dart';
 import 'package:student/core/groups/domain/entity/group_entity.dart';
 import 'package:student/core/groups/presentation/my_groups_controller.dart';
 import 'package:student/core/main/presentation/navbar_controller.dart';
 import 'package:student/core/mentors/domain/entity/mentor_entity.dart';
+import 'package:student/core/subscriptions/presentation/my_subscriptions_controller.dart';
 import 'package:student/l10n/app_localizations.dart';
 import 'package:student/shared/widget/app_flat_pill_button.dart';
 import 'package:student/ui/chat/chat_room_screen.dart';
+import 'package:student/ui/study/widget/schedule_picker.dart';
 import 'package:student/utils/lib.dart';
 
 const _background = Color(0xFFEFEEF4);
@@ -43,6 +46,8 @@ class StudyPage extends ConsumerWidget {
     Future<void> refresh() async {
       ref.invalidate(myGroupsControllerProvider);
       ref.invalidate(chatRoomsProvider);
+      ref.invalidate(mySubscriptionsControllerProvider);
+      ref.invalidate(myAssignmentsControllerProvider);
       await ref.read(myGroupsControllerProvider.future);
     }
 
@@ -102,29 +107,91 @@ class StudyPage extends ConsumerWidget {
           ),
           data: (groups) {
             if (groups.isEmpty) {
-              final ownsCourse =
-                  ref.watch(myCoursesControllerProvider).value?.isNotEmpty ??
-                  false;
+              final subscriptions = ref.watch(
+                mySubscriptionsControllerProvider,
+              );
+              final assignments = ref.watch(myAssignmentsControllerProvider);
+              if (!subscriptions.hasValue || !assignments.hasValue) {
+                if (subscriptions.hasError || assignments.hasError) {
+                  return scrollable(
+                    _Message(
+                      title: l10n.studyLoadFailed,
+                      body: l10n.studyPullToRetry,
+                    ),
+                    centred: true,
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              }
+              final now = DateTime.now();
+              final current = [
+                for (final s in subscriptions.value!)
+                  if (s.isCurrentAt(now)) s,
+              ];
+              // A running subscription with no group request yet gets the
+              // schedule picker; once each has one, the student just waits.
+              final requested = {
+                for (final a in assignments.value!) a.subscriptionId,
+              };
+              final unrequested = current
+                  .where((s) => !requested.contains(s.id))
+                  .firstOrNull;
+              if (unrequested != null) {
+                return SchedulePicker(
+                  key: ValueKey('schedule-${unrequested.id}'),
+                  subscriptionId: unrequested.id,
+                  header: title,
+                );
+              }
+              // Requested but not yet in a group: the request itself, and its
+              // mentor once one is assigned — no group info.
+              final waiting = [
+                for (final a in assignments.value!)
+                  if (current.any((s) => s.id == a.subscriptionId)) a,
+              ];
+              if (waiting.isNotEmpty) {
+                return scrollable(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (var i = 0; i < waiting.length; i++) ...[
+                        if (i > 0) const SizedBox(height: AppSpacing.xl),
+                        _AssignmentSection(
+                          key: ValueKey('assignment-${waiting[i].id}'),
+                          assignment: waiting[i],
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }
+              // Nothing running: time to buy a course.
               return scrollable(
-                ownsCourse
-                    ? _Message(
-                        key: const ValueKey('study-waiting'),
-                        title: l10n.studyWaitingTitle,
-                        body: l10n.studyWaitingBody,
-                      )
-                    : _Message(
-                        key: const ValueKey('study-no-course'),
-                        title: l10n.studyEmptyTitle,
-                        body: l10n.studyEmptyBody,
-                        action: l10n.studyBrowseCourses,
-                        onAction: () =>
-                            ref.read(navbarControllerProvider.notifier).state =
-                                _coursesTabIndex,
-                      ),
+                _Message(
+                  key: const ValueKey('study-no-course'),
+                  title: l10n.studyEmptyTitle,
+                  body: l10n.studyEmptyBody,
+                  action: l10n.studyBrowseCourses,
+                  onAction: () =>
+                      ref.read(navbarControllerProvider.notifier).state =
+                          _coursesTabIndex,
+                ),
                 centred: true,
               );
             }
             final rooms = ref.watch(chatRoomsProvider).value ?? const [];
+            // The support mentor and task times are separate from groups; a
+            // request for a group's course sits under that group's mentors,
+            // and any other request gets a section of its own.
+            final requests = _runningRequests(ref);
+            final groupCourses = {
+              for (final g in groups)
+                if (g.course != null) g.course!.id,
+            };
+            final unmatched = [
+              for (final a in requests)
+                if (!groupCourses.contains(a.courseId)) a,
+            ];
             return scrollable(
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -134,6 +201,9 @@ class StudyPage extends ConsumerWidget {
                     _GroupSection(
                       key: ValueKey('group-${groups[i].id}'),
                       group: groups[i],
+                      assignment: requests
+                          .where((a) => a.courseId == groups[i].course?.id)
+                          .firstOrNull,
                       roomId: _roomFor(
                         groups[i],
                         rooms,
@@ -143,6 +213,13 @@ class StudyPage extends ConsumerWidget {
                       ),
                     ),
                   ],
+                  for (final a in unmatched) ...[
+                    const SizedBox(height: AppSpacing.xl),
+                    _AssignmentSection(
+                      key: ValueKey('assignment-${a.id}'),
+                      assignment: a,
+                    ),
+                  ],
                 ],
               ),
             );
@@ -150,6 +227,23 @@ class StudyPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Group requests for subscriptions that are still running. Empty while
+  /// either list loads, so the groups show without waiting on them.
+  static List<AssignmentEntity> _runningRequests(WidgetRef ref) {
+    final subscriptions = ref.watch(mySubscriptionsControllerProvider).value;
+    final assignments = ref.watch(myAssignmentsControllerProvider).value;
+    if (subscriptions == null || assignments == null) return const [];
+    final now = DateTime.now();
+    final running = {
+      for (final s in subscriptions)
+        if (s.isCurrentAt(now)) s.id,
+    };
+    return [
+      for (final a in assignments)
+        if (running.contains(a.subscriptionId)) a,
+    ];
   }
 
   static String? _roomFor(
@@ -237,13 +331,25 @@ class _GroupSection extends StatelessWidget {
   final GroupEntity group;
   final String? roomId;
 
-  const _GroupSection({super.key, required this.group, required this.roomId});
+  /// The student's request for this group's course, if any — its support
+  /// mentor joins the mentors, and its task times follow them.
+  final AssignmentEntity? assignment;
+
+  const _GroupSection({
+    super.key,
+    required this.group,
+    required this.roomId,
+    this.assignment,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final primary = group.primaryMentor;
-    final hasMentors = primary != null || group.supportMentors.isNotEmpty;
+    final assignment = this.assignment;
+    final assigned = assignment?.mentor;
+    final hasMentors =
+        primary != null || group.supportMentors.isNotEmpty || assigned != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -266,7 +372,14 @@ class _GroupSection extends StatelessWidget {
               role: l10n.studyPrimaryMentor,
               badge: 'assets/images/ic_primary_mentor.png',
             ),
-          for (final support in group.supportMentors) ...[
+          for (final support in [
+            ...group.supportMentors,
+            // The request's mentor, unless the group already lists them.
+            if (assigned != null &&
+                !group.supportMentors.any((m) => m.id == assigned.id) &&
+                primary?.id != assigned.id)
+              assigned,
+          ]) ...[
             const SizedBox(height: AppSpacing.md),
             _MentorRow(
               mentor: support,
@@ -274,6 +387,10 @@ class _GroupSection extends StatelessWidget {
               badge: 'assets/images/ic_support_mentor.png',
             ),
           ],
+        ],
+        if (assignment != null && assignment.schedule.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.lg),
+          _TaskTimes(schedule: assignment.schedule),
         ],
       ],
     );
@@ -463,6 +580,158 @@ class _MentorRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// A request outside any group: its support mentor — or a note that one is
+/// still to come — and the weekly task times beneath.
+class _AssignmentSection extends StatelessWidget {
+  final AssignmentEntity assignment;
+
+  const _AssignmentSection({super.key, required this.assignment});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final mentor = assignment.mentor;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.studyMentors,
+          style: const TextStyle(
+            color: _ink,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        if (mentor != null)
+          _MentorRow(
+            mentor: mentor,
+            role: l10n.studySupportMentor,
+            badge: 'assets/images/ic_support_mentor.png',
+          )
+        else
+          Container(
+            key: const ValueKey('assignment-no-mentor'),
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.access_time_filled_rounded,
+                  color: _green,
+                  size: 24,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Text(
+                    l10n.studyMentorPending,
+                    style: const TextStyle(
+                      color: _muted,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (assignment.schedule.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.lg),
+          _TaskTimes(schedule: assignment.schedule),
+        ],
+      ],
+    );
+  }
+}
+
+/// "Task submission times": one white tile per weekly slot — a calendar
+/// icon, the weekday's full name, and the time.
+class _TaskTimes extends StatelessWidget {
+  final List<ScheduleSlot> schedule;
+
+  const _TaskTimes({required this.schedule});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
+
+    return Column(
+      key: const ValueKey('task-times'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          l10n.studyTaskTimes,
+          style: const TextStyle(
+            color: _caption,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < schedule.length; i++) ...[
+                if (i > 0) const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.lg,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/calendar.svg',
+                          key: const ValueKey('task-time-icon'),
+                          width: 22,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            weekdayName(schedule[i].day, locale),
+                            maxLines: 1,
+                            style: const TextStyle(
+                              color: _caption,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          schedule[i].time,
+                          style: const TextStyle(
+                            color: _ink,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            fontFeatures: [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

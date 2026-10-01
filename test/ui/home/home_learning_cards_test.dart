@@ -134,7 +134,14 @@ void main() {
   testWidgets('the AI tile opens the AI partner', (tester) async {
     await _pump(tester);
 
-    await tester.tap(find.textContaining('Start talking'));
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('home-ai-partner')),
+        matching: find.textContaining('Go to'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('home-ai-partner')));
     await tester.pumpAndSettle();
     expect(find.text('ai partner'), findsOneWidget);
   });
@@ -142,7 +149,14 @@ void main() {
   testWidgets('the partner tile opens matchmaking', (tester) async {
     await _pump(tester);
 
-    await tester.tap(find.textContaining('Find a partner'));
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey('home-find-partner')),
+        matching: find.textContaining('Go to'),
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('home-find-partner')));
     await tester.pumpAndSettle();
     expect(find.text('matchmaking'), findsOneWidget);
   });

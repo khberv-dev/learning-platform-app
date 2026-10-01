@@ -3,12 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:student/app/theme/app_theme.dart';
+import 'package:student/core/assignments/data/repository/assignments_repository.dart';
+import 'package:student/core/assignments/domain/entity/assignment_entity.dart';
+import 'package:student/core/assignments/domain/repository/i_assignments_repository.dart';
 import 'package:student/core/courses/data/repository/courses_repository.dart';
 import 'package:student/core/courses/domain/repository/i_courses_repository.dart';
 import 'package:student/core/groups/data/repository/groups_repository.dart';
 import 'package:student/core/groups/domain/entity/group_entity.dart';
 import 'package:student/core/groups/domain/repository/i_groups_repository.dart';
 import 'package:student/core/subscriptions/data/repository/subscriptions_repository.dart';
+import 'package:student/core/subscriptions/domain/entity/subscription_entity.dart';
 import 'package:student/core/subscriptions/domain/repository/i_subscriptions_repository.dart';
 import 'package:student/core/user/domain/entity/streak_entity.dart';
 import 'package:student/core/user/domain/entity/user_entity.dart';
@@ -32,9 +36,19 @@ const _user = UserEntity(
 );
 
 class _Empty
-    implements ICoursesRepository, IGroupsRepository, ISubscriptionsRepository {
+    implements
+        ICoursesRepository,
+        IGroupsRepository,
+        ISubscriptionsRepository,
+        IAssignmentsRepository {
   @override
   Future<List<GroupEntity>> getMyGroups() async => [];
+
+  @override
+  Future<List<SubscriptionEntity>> getMySubscriptions() async => [];
+
+  @override
+  Future<List<AssignmentEntity>> getMyAssignments() async => [];
 
   @override
   dynamic noSuchMethod(Invocation invocation) async => <Never>[];
@@ -57,6 +71,7 @@ Future<void> _pump(WidgetTester tester, Widget page) async {
         coursesRepositoryProvider.overrideWithValue(empty),
         groupsRepositoryProvider.overrideWithValue(empty),
         subscriptionsRepositoryProvider.overrideWithValue(empty),
+        assignmentsRepositoryProvider.overrideWithValue(empty),
         streakProvider.overrideWith((ref) async => _streak),
       ],
       child: localizedApp(

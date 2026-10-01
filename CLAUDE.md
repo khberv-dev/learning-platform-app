@@ -58,7 +58,7 @@ lib/
 └── utils/             # lib.dart (formatPhone/formatNumber), messenger.dart, date_format.dart, uz_phone_formatter.dart
 ```
 
-**Domains:** `assessments`, `auth`, `chat`, `courses`, `diagnostics`, `enrollments`, `groups`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `subscriptions`, `user`
+**Domains:** `assessments`, `auth`, `chat`, `courses`, `diagnostics`, `enrollments`, `groups`, `main`, `mentors`, `notifications`, `p2p`, `payments`, `plans`, `startup`, `subscriptions`, `user`, `assignments`
 
 Not every domain has all three layers. `assessments` has no presentation layer, since `AiSpeakingPartnerScreen` drives it directly. `p2p` uses sockets and WebRTC only, with no data layer. `main` is just `navbar_controller.dart`. `diagnostics` is just crash reporting (see below). `startup` keeps UI-only value objects in `domain/model/` (survey queries, illustrations) alongside its entities.
 
@@ -209,8 +209,20 @@ ungrouped). `GroupResponse` still falls back to the older `mentors` role list fo
 - **Mentors:** the primary mentor, then any `supportMentors`. The API sends none at the moment, so that row
   only appears if it does.
 
-With no groups, it shows a "buy a course" prompt that opens the Courses tab. A student who already owns a
-course but isn't grouped yet sees "you'll be added soon" instead. The `core/mentors/` domain is still separate and still
+With no groups, the Study tab checks the student's subscriptions (`core/subscriptions/`) against their group
+requests (`core/assignments/`, `GET student/assignments`, each `pending` or `active` and tied to one
+subscription):
+- **No running subscription:** a "buy a course" prompt that opens the Courses tab.
+- **A running subscription with no request yet:** `SchedulePicker` (`ui/study/widget/`). The student picks exactly
+  `requiredSlots` (3) weekday + hour slots, 09:00–20:00 hourly and fixed in the app. Confirm sends
+  `POST student/assignments` with `{ subscriptionId, schedule: [{ "mon": "09:00" }, …] }`. The API takes one
+  request per subscription.
+- **A request (assignment) on a running subscription:** this is separate from groups. It carries a **support mentor** (the
+  assignment's `mentor`) and the weekly **task submission times** (its `schedule`, shown as tiles).
+  - When a group is for the same course (matched on `course.id`), they sit under that group's mentors.
+  - Otherwise they get their own "Mentorlar" section, with "not assigned yet" until an admin picks a mentor.
+
+The `core/mentors/` domain is still separate and still
 lets a student view one mentor's profile and leave feedback (`GET student/mentors/:id`, `POST
 student/mentors/:id/feedbacks`) — there's no browse-all-mentors listing anymore, since the only way
 to reach a mentor profile now is through your own group.

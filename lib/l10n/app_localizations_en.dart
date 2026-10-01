@@ -212,6 +212,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeStatsCoins => 'Coins';
 
   @override
+  String get homeGoTo => 'Go to';
+
+  @override
   String get homeAiPartnerTitle => 'AI partner';
 
   @override
@@ -225,9 +228,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homePartnerBody => 'A live conversation with a partner';
-
-  @override
-  String get homePartnerAction => 'Find a partner';
 
   @override
   String get homeResume => 'Resume';
@@ -687,13 +687,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studyBrowseCourses => 'Browse courses';
 
   @override
-  String get studyWaitingTitle => 'You\'ll be added to a group soon';
-
-  @override
-  String get studyWaitingBody =>
-      'Your course is active. We\'re putting together your group and mentors.';
-
-  @override
   String get studyJoinGroup => 'Join the group';
 
   @override
@@ -719,6 +712,45 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get studyPickTitle => 'You\'ll join a group soon';
+
+  @override
+  String studyPickBody(int count) {
+    return 'Choose $count weekday times for your lessons';
+  }
+
+  @override
+  String get studyWeekdays => 'Weekdays';
+
+  @override
+  String studyTimeFor(String day) {
+    return 'Time — $day';
+  }
+
+  @override
+  String get studyWeekdayLetters => 'Mo,Tu,We,Th,Fr,Sa,Su';
+
+  @override
+  String studyConfirm(int count, int total) {
+    return 'Confirm ($count/$total)';
+  }
+
+  @override
+  String studyTooManySlots(int count) {
+    return 'You can choose only $count days — remove one first';
+  }
+
+  @override
+  String get studyRequestSent =>
+      'Request sent — we\'ll add you to a group soon';
+
+  @override
+  String get studyMentorPending => 'A mentor hasn\'t been assigned yet';
+
+  @override
+  String get studyTaskTimes => 'Task submission times';
 
   @override
   String get studyLoadFailed => 'Couldn\'t load your group';
